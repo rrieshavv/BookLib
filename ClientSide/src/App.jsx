@@ -1,16 +1,30 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import { ToastContainer } from "react-toastify";
+import { Route, Routes } from "react-router-dom";
+import RoleProtectedRoute from "./components/RoleProtectedRoute";
+import { routeConfig } from "./routes/routeConfig";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <div className='underline text-2xl'>BookLib</div>
+      <ToastContainer />
+      <Routes>
+        {routeConfig.map(
+          ({ path, component: Component, public: isPublic, allowedRoles }) => {
+            const element = isPublic ? (
+              <Component />
+            ) : (
+              <RoleProtectedRoute allowedRoles={allowedRoles}>
+                <Component />
+              </RoleProtectedRoute>
+            );
+
+            return <Route key={path} path={path} element={element} />;
+          }
+        )}
+      </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
