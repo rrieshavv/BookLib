@@ -31,9 +31,9 @@ namespace BookLib.Infrastructure.Data
                     mobile = "9803633427",
                     firstname = "Rishav",
                     lastname = "Karna",
-                    role = UserRole.admin,
+                    role = UserRole.admin.ToString(),
                     password = PasswordManager.HashPassword("Ktmnepal@1"),
-                    registration_date = DateTime.UtcNow.AddHours(5).AddMinutes(45)
+                    registration_date = DateTime.UtcNow
                 });
             }
         }

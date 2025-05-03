@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using BookLib.Application;
 using BookLib.Application.DTOs.Auth;
+using BookLib.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookLib.Controllers
@@ -25,15 +26,27 @@ namespace BookLib.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { message = "Internal Server Error" });
             }
         }
 
 
         [HttpPost("register")]
-        public IActionResult Register()
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
-            return Ok();
+            try
+            {
+                if (registerDto == null)
+                {
+                    return BadRequest(new { message = "Invalid data" });
+                }
+                var result = await _userService.Register(registerDto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Internal Server Error" });
+            }
         }
 
         [HttpPost("reset-password")]
