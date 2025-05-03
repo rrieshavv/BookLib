@@ -1,16 +1,15 @@
 using System.Text;
+using BookLib.Infrastructure.Data;
 using BookLib.Infrastructure.DI;
 using BookLib.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(option =>
@@ -64,9 +63,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:5174") // Allowed origins
-              .AllowAnyHeader() // Allow all headers
-              .AllowAnyMethod(); // Allow all HTTP methods
+        policy.WithOrigins("http://localhost:5173", "http://localhost:5174") 
+              .AllowAnyHeader() 
+              .AllowAnyMethod();
     });
 });
 
@@ -74,8 +73,14 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate(); 
+    dbContext.SeedAdminUser();
+}
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
