@@ -9,14 +9,14 @@ namespace BookLib.Functions
 {
     public static class TokenManager
     {
-        public static string GenerateJwtToken(string username, UserRole role,  JwtSettings _jwtSettings)
+        public static string GenerateJwtToken(string username, string role,  JwtSettings _jwtSettings)
         {
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, username),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.Role, role.ToString()),
+                new Claim(ClaimTypes.Role, role),
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));

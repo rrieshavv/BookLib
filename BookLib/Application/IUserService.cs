@@ -6,5 +6,6 @@ namespace BookLib.Application
     public interface IUserService
     {
         Task<CommonResponse<LoginResponse>> Login (string username, string password);
+        Task<CommonResponse> Register(RegisterDto registerDto);
     }
 }
