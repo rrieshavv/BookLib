@@ -42,6 +42,7 @@ builder.Services.AddSwaggerGen(option =>
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -70,7 +71,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -78,6 +79,7 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     dbContext.Database.Migrate(); 
     dbContext.SeedAdminUser();
+    dbContext.SaveChanges();
 }
 
 
