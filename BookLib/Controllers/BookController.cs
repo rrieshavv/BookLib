@@ -25,7 +25,7 @@ namespace BookLib.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("all")]
         [AllowAnonymous]
         public async Task<IActionResult> GetBooks([FromQuery] BookFilterDto filterDto)
         {
@@ -41,35 +41,48 @@ namespace BookLib.Controllers
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
-
             }
         }
 
-        [HttpGet("{id}")]
+
+
+        [HttpGet("search")]
         [AllowAnonymous]
-
-        public async Task<IActionResult> GetBookById(Guid id) {
-
+        public async Task<IActionResult> SearchBooks([FromQuery] BookFilterDto filterDto, [FromQuery] Guid? id)
+        {
             try
             {
-                var response = await _bookService.GetBookByIdAsync(id);
-
-                if (response.Code == ResponseCode.Success)
+                if (id.HasValue)
                 {
-                    return Ok(response);
+                    var bookResponse = await _bookService.GetBookByIdAsyn(id.Value);
+                    if (bookResponse.Code == ResponseCode.Success)
+                    {
+                        return Ok(bookResponse);
+                    }
+                    return NotFound(bookResponse);
                 }
-                return  NotFound(response);
-            }
-            catch (Exception ex) {
 
+                var booksResponse = await _bookService.GetBooksAsync(filterDto);
+
+                if (booksResponse.Code == ResponseCode.Success)
+                {
+                    return Ok(booksResponse);
+                }
+
+                return BadRequest(booksResponse);
+            }
+            catch (Exception ex)
+            {
                 return BadRequest(new { message = ex.Message });
-
-
             }
-
         }
 
-        [HttpPost]
+
+
+
+
+
+        [HttpPost("add")]
         public async Task<IActionResult> AddBook([FromBody] BookCreateDto bookDto)
         {
             try
@@ -119,18 +132,15 @@ namespace BookLib.Controllers
             try
             {
                 var response = await _bookService.DeleteBookAsync(id);
-
                 if (response.Code == ResponseCode.Success)
                 {
                     return Ok(response);
                 }
-                
                 return BadRequest(response);
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
-
             }
         }
 

@@ -5,7 +5,13 @@ namespace BookLib.Application
 {
     public interface IBookService
     {
-        Task<CommonResponse<BookDto>> GetBookByIdAsync(Guid id);
+     //   Task<CommonResponse<List<BookDto>>> GetAllBooks();
+
+
+
+        Task<CommonResponse<BookDto>> GetBookByIdAsyn(Guid id);
+        Task<CommonResponse<BookDto>> GetBookByName(String bookName);
+
         Task<CommonResponse<PaginatedBookResponseDto>> GetBooksAsync(BookFilterDto filterDto);
         Task<CommonResponse<BookDto>> AddBookAsync(BookCreateDto bookDto, string username);
         Task<CommonResponse<BookDto>> UpdateBookAsync(Guid id, BookUpdateDto bookDto, string username);

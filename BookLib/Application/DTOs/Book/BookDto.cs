@@ -129,14 +129,14 @@ namespace BookLib.Application.DTOs.Book
 
     public class BookFilterDto
     {
-        public string SearchTerm { get; set; }
-        public List<Guid> AuthorIds { get; set; }
-        public List<Guid> GenreIds { get; set; }
-        public List<Guid> PublisherIds { get; set; }
+        public string? SearchTerm { get; set; }
+        public List<Guid>? AuthorIds { get; set; }
+        public List<Guid>? GenreIds { get; set; }
+        public List<Guid>? PublisherIds { get; set; }
         public decimal? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
-        public string Language { get; set; }
-        public string Format { get; set; }
+        public string? Language { get; set; }
+        public string? Format { get; set; }
         public bool? InStock { get; set; }
         public bool? OnSale { get; set; }
         public int? MinRating { get; set; }
