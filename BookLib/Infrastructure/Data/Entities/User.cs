@@ -13,7 +13,7 @@ namespace BookLib.Infrastructure.Data.Entities
         [Key]
         public Guid user_id { get; set; }
 
-        public UserRole role { get; set; }
+        public string role { get; set; }
 
         [StringLength(20)]
         public string username { get; set; }
