@@ -27,6 +27,7 @@ namespace BookLib.Infrastructure.Data.Entities
         public string format { get; set; }
         public int stock_qty { get; set; }
         public bool is_on_sale { get; set; }
+        public string? image_url { get; set; }
         public DateTime created_date { get; set; }
 
 
