@@ -4,6 +4,8 @@ import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import ForgetPasswordPage from "../pages/ForgetPasswordPage";
+import CartPage from "../pages/CartPage";
+import CheckoutPage from "../pages/CheckoutPage";
 
 export const routeConfig = [
   {
@@ -35,5 +37,15 @@ export const routeConfig = [
     path: "/customer/profile",
     component: CustomerProfile,
     allowedRoles: ["customer"],
+  },
+  {
+    path: "/customer/cart",
+    component: CartPage,
+    public: true,
+  },
+  {
+    path: "/customer/checkout",
+    component: CheckoutPage,
+    public: true,
   },
 ];
