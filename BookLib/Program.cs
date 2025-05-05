@@ -94,6 +94,9 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.Migrate(); 
     dbContext.SeedAdminUser();
     dbContext.SaveChanges();
+
+    var services = scope.ServiceProvider;
+    await IdentityDataSeeder.SeedRolesAndAdminUser(services);
 }
 
 
