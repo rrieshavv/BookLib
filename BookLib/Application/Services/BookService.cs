@@ -341,6 +341,10 @@ namespace BookLib.Application.Services
                     return sortAscending ? query.OrderBy(b => b.publication_date) : query.OrderByDescending(b => b.publication_date);
                 case "createddate":
                     return sortAscending ? query.OrderBy(b => b.created_date) : query.OrderByDescending(b => b.created_date);
+                case "stockqty":
+                    return sortAscending ? query.OrderBy(b => b.stock_qty) : query.OrderByDescending(b => b.stock_qty);
+                case "isbn":
+                    return sortAscending ? query.OrderBy(b => b.isbn) : query.OrderByDescending(b => b.isbn);
                 default:
                     return sortAscending ? query.OrderBy(b => b.title) : query.OrderByDescending(b => b.title);
             }
