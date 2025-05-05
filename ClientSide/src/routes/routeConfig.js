@@ -2,6 +2,8 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import CustomerProfile from "../pages/customer/CustomerProfile";
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/LoginPage";
+import RegisterPage from "../pages/RegisterPage";
+import ForgetPasswordPage from "../pages/ForgetPasswordPage";
 
 export const routeConfig = [
   {
@@ -12,6 +14,16 @@ export const routeConfig = [
   {
     path: "/login",
     component: LoginPage,
+    public: true,
+  },
+  {
+    path: "/register",
+    component: RegisterPage,
+    public: true,
+  },
+  {
+    path: "/forget-password",
+    component: ForgetPasswordPage,
     public: true,
   },
   {
