@@ -18,6 +18,7 @@ namespace BookLib.Infrastructure.DI
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("MainDbConnection")));
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IBookService, BookService>();
 
             return services;
         }
