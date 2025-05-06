@@ -6,6 +6,8 @@ import RegisterPage from "../pages/RegisterPage";
 import ForgetPasswordPage from "../pages/ForgetPasswordPage";
 import CartPage from "../pages/CartPage";
 import CheckoutPage from "../pages/CheckoutPage";
+import OtpVerificationPage from "../pages/OtpVerificationPage";
+import ResetPasswordPage from "../pages/ResetPasswordPage";
 
 export const routeConfig = [
   {
@@ -48,4 +50,14 @@ export const routeConfig = [
     component: CheckoutPage,
     public: true,
   },
+  {
+    path: "/customer/otp-verification",
+    component: OtpVerificationPage,
+    public: true,
+  },
+  {
+    path: "/customer/reset-password",
+    component: ResetPasswordPage,
+    public: true,
+  }
 ];

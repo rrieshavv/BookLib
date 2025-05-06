@@ -1,9 +1,13 @@
 import React from "react";
+import NavBar from "../components/NavBar";
+import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
 
 const CartPage = () => {
   return (
-    <div className="bg-gray-100 font-sans min-h-screen">
+    <>
+    <NavBar theme="light"/>
+    <div className="bg-[#f4f1ea] font-sans min-h-screen flex flex-col pt-20">
       <div className="container mx-auto p-6 md:p-8 max-w-6xl">
         <div className="flex flex-col md:flex-row gap-8">
 
@@ -17,7 +21,7 @@ const CartPage = () => {
             {/* Cart Items */}
             <div className="flex flex-col gap-8 max-h-[400px] overflow-y-auto pr-2">
               {/* Item 1 */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b pb-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b border-gray-300/80 pb-4">
                 <img
                   src="https://m.media-amazon.com/images/I/91bYsX41DVL._AC_UF1000,1000_QL80_.jpg"
                   alt="Atomic Habits"
@@ -42,7 +46,8 @@ const CartPage = () => {
               </div>
 
               {/* Item 2 */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b pb-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b border-gray-300/80 pb-4">
+
                 <img
                   src="https://m.media-amazon.com/images/I/71QKQ9mwV7L.jpg"
                   alt="Subtle Art"
@@ -66,7 +71,8 @@ const CartPage = () => {
               </div>
 
               {/* Item 3 */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b pb-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b border-gray-300/80 pb-4">
+
                 <img
                   src="https://m.media-amazon.com/images/I/81BE7eeKzAL.jpg"
                   alt="Rich Dad Poor Dad"
@@ -90,7 +96,8 @@ const CartPage = () => {
               </div>
 
               {/* Item 3 */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b pb-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b border-gray-300/80 pb-4">
+
                 <img
                   src="https://m.media-amazon.com/images/I/81BE7eeKzAL.jpg"
                   alt="Rich Dad Poor Dad"
@@ -114,7 +121,8 @@ const CartPage = () => {
               </div>
 
               {/* Item 3 */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b pb-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b border-gray-300/80 pb-4">
+
                 <img
                   src="https://m.media-amazon.com/images/I/81BE7eeKzAL.jpg"
                   alt="Rich Dad Poor Dad"
@@ -138,7 +146,7 @@ const CartPage = () => {
               </div>
 
               {/* Item 3 */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b pb-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b border-gray-300/80 pb-4">
                 <img
                   src="https://m.media-amazon.com/images/I/81BE7eeKzAL.jpg"
                   alt="Rich Dad Poor Dad"
@@ -166,7 +174,7 @@ const CartPage = () => {
             {/* Continue Shopping */}
             <a
               href="#"
-              className="text-purple-600 hover:underline mt-6 inline-block"
+              className="text-emerald-600 hover:underline mt-6 inline-block"
             >
               &larr; Continue Shopping
             </a>
@@ -201,14 +209,14 @@ const CartPage = () => {
                   </button>
                 </div>
               </div>
-              <div className="flex justify-between font-bold text-lg border-t pt-4">
+              <div className="flex justify-between font-bold text-lg border-t border-gray-300/80 pt-4">
                 <p>Total Cost</p>
                 <p>Rs 1950</p>
               </div>
              
               <Link
                 to="/customer/checkout"
-                className="w-full block text-center bg-purple-600 text-white py-3 rounded hover:bg-purple-700 transition-all"
+                className="w-full block text-center bg-emerald-600 text-white px-6 py-2 rounded hover:bg-emerald-700 transition"
               >
                 Checkout
               </Link>
@@ -217,6 +225,8 @@ const CartPage = () => {
         </div>
       </div>
     </div>
+    <Footer />
+    </>
   );
 };
 
