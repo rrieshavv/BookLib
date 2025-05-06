@@ -8,6 +8,8 @@ import CartPage from "../pages/CartPage";
 import CheckoutPage from "../pages/CheckoutPage";
 import OtpVerificationPage from "../pages/OtpVerificationPage";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
+import AboutUsPage from "../pages/AboutUs";
+import Deals from "../pages/Deals";
 
 export const routeConfig = [
   {
@@ -58,6 +60,16 @@ export const routeConfig = [
   {
     path: "/customer/reset-password",
     component: ResetPasswordPage,
+    public: true,
+  },
+  {
+    path: "/about-us",
+    component: AboutUsPage,
+    public: true,
+  },
+  {
+    path: "/deals",
+    component: Deals,
     public: true,
   }
 ];
