@@ -15,7 +15,7 @@ const HomePage = () => {
         style={{ backgroundImage: "url('../src/assets/hero-section-img.jpg')" }}
       >
         <div className="absolute inset-0 bg-black/40">
-          <NavBar />
+          <NavBar theme="dark"/>
           <Hero />
         </div>
       </section>

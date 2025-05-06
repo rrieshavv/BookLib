@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 
 const RegisterPage = () => {
   return (
@@ -114,12 +115,12 @@ const RegisterPage = () => {
 
           <p className="text-center text-sm text-gray-600 mt-4">
             Already have an account?{' '}
-            <a
-              href="/login"
+            <Link
+              to="/login"
               className="text-emerald-500 hover:text-emerald-600 hover:underline"
             >
               Login
-            </a>
+            </Link>
           </p>
         </div>
       </div>
