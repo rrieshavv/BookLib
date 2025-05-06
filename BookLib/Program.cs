@@ -9,8 +9,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using BookLib.Infrastructure.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -42,6 +46,7 @@ builder.Services.AddSwaggerGen(option =>
         }
     });
 });
+
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -86,6 +91,9 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

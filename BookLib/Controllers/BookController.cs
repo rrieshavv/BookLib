@@ -24,9 +24,9 @@ namespace BookLib.Controllers
             _contextAccessor = contextAccessor;
         }
 
-
         [HttpGet("all")]
         [AllowAnonymous]
+
         public async Task<IActionResult> GetBooks([FromQuery] BookFilterDto filterDto)
         {
             try
@@ -34,52 +34,58 @@ namespace BookLib.Controllers
                 var response = await _bookService.GetBooksAsync(filterDto);
                 if (response.Code == ResponseCode.Success)
                 {
-                    return Ok(response);
+                    return StatusCode(StatusCodes.Status200OK, response);
                 }
-                return BadRequest(response);
+                return StatusCode(StatusCodes.Status400BadRequest);
+
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
-
 
 
         [HttpGet("search")]
         [AllowAnonymous]
-        public async Task<IActionResult> SearchBooks([FromQuery] BookFilterDto filterDto, [FromQuery] Guid? id)
+
+        public async Task<IActionResult> SearchBooks([FromQuery] BookFilterDto filterDto)
         {
             try
             {
-                if (id.HasValue)
-                {
-                    var bookResponse = await _bookService.GetBookByIdAsyn(id.Value);
-                    if (bookResponse.Code == ResponseCode.Success)
-                    {
-                        return Ok(bookResponse);
-                    }
-                    return NotFound(bookResponse);
-                }
-
                 var booksResponse = await _bookService.GetBooksAsync(filterDto);
-
                 if (booksResponse.Code == ResponseCode.Success)
                 {
-                    return Ok(booksResponse);
+                    return StatusCode(StatusCodes.Status200OK, booksResponse);
                 }
-
-                return BadRequest(booksResponse);
+                return StatusCode(StatusCodes.Status400BadRequest, booksResponse);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
         }
 
 
+        [HttpGet("{id}")]
+        [AllowAnonymous]
 
-
+        public async Task<IActionResult> GetBookById(Guid id)
+        {
+            try
+            {
+                var bookResponse = await _bookService.GetBookByIdAsyn(id);
+                if (bookResponse.Code == ResponseCode.Success)
+                {
+                    return StatusCode(StatusCodes.Status200OK, bookResponse);
+                }
+                return StatusCode(StatusCodes.Status404NotFound, bookResponse); 
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+        }
 
 
         [HttpPost("add")]
@@ -92,19 +98,20 @@ namespace BookLib.Controllers
                 var response = await _bookService.AddBookAsync(bookDto, username);
                 if (response.Code == ResponseCode.Success)
                 {
-                    return Ok(response);
+                    return StatusCode(StatusCodes.Status200OK, response);
                 }
-                return BadRequest(response);
+
+                return StatusCode(StatusCodes.Status400BadRequest);
+
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
-
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBook(Guid id, [FromBody] BookUpdateDto bookDto)
+        public async Task<IActionResult> UpdateBook(Guid id, [FromForm] BookUpdateDto bookDto)
         {
             try
             {
@@ -114,14 +121,14 @@ namespace BookLib.Controllers
                 var response = await _bookService.UpdateBookAsync(id, bookDto, username);
                 if (response.Code == ResponseCode.Success)
                 {
-                    return Ok(response);
+                    return StatusCode(StatusCodes.Status200OK, response);
                 }
-                
-                return BadRequest(response);
+
+                return StatusCode(StatusCodes.Status400BadRequest);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
 
             }
         }
@@ -134,13 +141,16 @@ namespace BookLib.Controllers
                 var response = await _bookService.DeleteBookAsync(id);
                 if (response.Code == ResponseCode.Success)
                 {
-                    return Ok(response);
+                    return StatusCode(StatusCodes.Status200OK, response);
                 }
-                return BadRequest(response);
+
+                return StatusCode(StatusCodes.Status400BadRequest);
+
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+
             }
         }
 
