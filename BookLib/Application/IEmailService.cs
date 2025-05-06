@@ -4,6 +4,6 @@ namespace BookLib.Application
 {
     public interface IEmailService
     {
-        void SendEmail(EmailMessage emailMessage);
+        Task SendEmail(EmailMessage emailMessage);
     }
 }

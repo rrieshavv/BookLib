@@ -8,8 +8,10 @@ using BookLib.Infrastructure.Data.Entities;
 using BookLib.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using static System.Net.WebRequestMethods;
 
 namespace BookLib.Application.Services
 {
@@ -19,14 +21,18 @@ namespace BookLib.Application.Services
         private readonly JwtSettings _jwtSettings;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService;
+        private readonly IMemoryCache _cache;
 
 
-        public UserService(ApplicationDbContext context, IOptions<JwtSettings> jwtSettings, UserManager<ApplicationUser> userManager, IConfiguration configuration)
+        public UserService(ApplicationDbContext context, IOptions<JwtSettings> jwtSettings, UserManager<ApplicationUser> userManager, IConfiguration configuration, IEmailService emailService, IMemoryCache cache)
         {
             _context = context;
             _jwtSettings = jwtSettings.Value;
             _userManager = userManager;
             _configuration = configuration;
+            _emailService = emailService;
+            _cache = cache;
         }
 
         public async Task<CommonResponse<LoginResponse>> Login(string username, string password)
@@ -108,6 +114,7 @@ namespace BookLib.Application.Services
             };
 
             var result = await _userManager.CreateAsync(applicationUser, registerDto.Password);
+
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(applicationUser, role.ToString());
@@ -126,6 +133,80 @@ namespace BookLib.Application.Services
                 };
             }
 
+        }
+
+        public async Task<CommonResponse> ResetPasswordRequest(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                return new CommonResponse
+                {
+                    Code = ResponseCode.Error,
+                    Message = "User not found",
+                };
+            }
+            // Injected IMemoryCache _cache
+
+            string otp = new Random().Next(100000, 999999).ToString();
+            _cache.Set($"ResetPasswordOtp:{user.Id}", otp, TimeSpan.FromMinutes(10));
+
+
+            await _emailService.SendEmail(new EmailMessage(
+                   new List<string> { user.Email },
+             "Password Reset OTP",
+                   EmailTemplates.ResetPasswordTokenEmail(otp, user.UserName)
+               ));
+
+            return new CommonResponse
+            {
+                Code = ResponseCode.Success,
+                Message = "Password reset token sent to email",
+            };
+        }
+
+        public async Task<CommonResponse> VerifyResetPassword(ResetPasswordDto dto)
+        {
+            var user = await _userManager.FindByNameAsync(dto.Username);
+            if (user == null)
+            {
+                return new CommonResponse
+                {
+                    Code = ResponseCode.Error,
+                    Message = "User not found"
+                };
+            }
+
+            if (!_cache.TryGetValue($"ResetPasswordOtp:{user.Id}", out string cachedOtp) || cachedOtp != dto.Otp)
+            {
+                return new CommonResponse
+                {
+                    Code = ResponseCode.Error,
+                    Message = "Invalid or expired OTP"
+                };
+            }
+
+            // OTP is valid – generate Identity reset token
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, dto.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                return new CommonResponse
+                {
+                    Code = ResponseCode.Error,
+                    Message = "Password reset failed"
+                };
+            }
+
+            // Remove OTP after success
+            _cache.Remove($"ResetPasswordOtp:{user.Id}");
+
+            return new CommonResponse
+            {
+                Code = ResponseCode.Success,
+                Message = "Password reset successful"
+            };
         }
 
         /// <summary>

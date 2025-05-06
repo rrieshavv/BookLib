@@ -94,16 +94,46 @@ namespace BookLib.Controllers
             }
         }
 
-        [HttpPost("reset-password")]
-        public IActionResult ResetPassword()
+        [HttpPost("reset-password/{username}")]
+        public async Task<IActionResult> ResetPassword(string username)
         {
-            return Ok();
+            try
+            {
+                var result = await _userService.ResetPasswordRequest(username);
+                if (result.Code == ResponseCode.Error)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, result.Message);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status200OK, result.Message);
+                }
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
-        [HttpPost("forgot-password/{username}")]
-        public IActionResult ForgotPassword(string username)
+        [HttpPost("forgot-password-verify")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ResetPasswordDto dto)
         {
-            return Ok();
+            try
+            {
+                var result = await _userService.VerifyResetPassword(dto);
+                if (result.Code == ResponseCode.Error)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, result.Message);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status200OK, result.Message);
+                }
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
     }

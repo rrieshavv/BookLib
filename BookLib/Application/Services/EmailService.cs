@@ -14,10 +14,10 @@ namespace BookLib.Application.Services
             _settings = settings;
         }
 
-        public void SendEmail(EmailMessage emailMessage)
+        public async Task SendEmail(EmailMessage emailMessage)
         {
             var email = CreateEmailMessage(emailMessage);
-            Send(email);
+            await Send(email);
         }
 
         private MimeMessage CreateEmailMessage(EmailMessage message)
@@ -31,7 +31,7 @@ namespace BookLib.Application.Services
             return emailMessage;
         }
 
-        private void Send(MimeMessage mailMessage)
+        private async Task Send(MimeMessage mailMessage)
         {
             using var client = new SmtpClient();
             try
@@ -46,7 +46,7 @@ namespace BookLib.Application.Services
             {
                 client.Disconnect(true);
                 client.Dispose();
-             //   _logger.LogError(ex);
+                //   _logger.LogError(ex);
                 throw new Exception("Could not send email", ex);
             }
             finally
