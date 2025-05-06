@@ -10,6 +10,7 @@ import OtpVerificationPage from "../pages/OtpVerificationPage";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
 import AboutUsPage from "../pages/AboutUs";
 import Deals from "../pages/Deals";
+import BookProductDetails from "../pages/ProductDetails";
 
 export const routeConfig = [
   {
@@ -70,6 +71,11 @@ export const routeConfig = [
   {
     path: "/deals",
     component: Deals,
+    public: true,
+  },
+  {
+    path: "/customer/product-details",
+    component:BookProductDetails,
     public: true,
   }
 ];
