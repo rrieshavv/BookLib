@@ -37,6 +37,9 @@ namespace BookLib.Application.DTOs.Book
         public List<GenreDto> Genres { get; set; }
 
         public List<PublisherDto> Publishers { get; set; }
+
+        public string ImageUrl { get; set; }
+
     }
 
     public class BookCreateDto
@@ -81,6 +84,8 @@ namespace BookLib.Application.DTOs.Book
 
         [Required]
         public List<Guid> PublisherIds { get; set; }
+
+        public IFormFile? ImageFile { get; set; }
     }
 
     public class BookUpdateDto
@@ -125,6 +130,9 @@ namespace BookLib.Application.DTOs.Book
 
         [Required]
         public List<Guid> PublisherIds { get; set; }
+
+        public IFormFile? ImageFile { get; set; }
+
     }
 
     public class BookFilterDto
@@ -149,6 +157,7 @@ namespace BookLib.Application.DTOs.Book
     public class PaginatedBookResponseDto
     {
         public List<BookDto> Books { get; set; }
+        public int PerPageCount { get; set; }
         public int TotalCount { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
