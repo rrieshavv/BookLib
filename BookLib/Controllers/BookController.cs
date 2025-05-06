@@ -47,28 +47,16 @@ namespace BookLib.Controllers
 
 
         [HttpGet("search")]
-        public async Task<IActionResult> SearchBooks([FromQuery] BookFilterDto filterDto, [FromQuery] Guid? id)
+        public async Task<IActionResult> SearchBooks([FromQuery] BookFilterDto filterDto)
         {
             try
             {
-                if (id.HasValue)
-                {
-                    var bookResponse = await _bookService.GetBookByIdAsyn(id.Value);
-                    if (bookResponse.Code == ResponseCode.Success)
-                    {
-                        return StatusCode(StatusCodes.Status200OK, bookResponse);
-                    }
-                    return StatusCode(StatusCodes.Status400BadRequest);
-                }
-
                 var booksResponse = await _bookService.GetBooksAsync(filterDto);
-
                 if (booksResponse.Code == ResponseCode.Success)
                 {
                     return StatusCode(StatusCodes.Status200OK, booksResponse);
                 }
-
-                return StatusCode(StatusCodes.Status400BadRequest);
+                return StatusCode(StatusCodes.Status400BadRequest, booksResponse);
             }
             catch (Exception ex)
             {
@@ -77,8 +65,23 @@ namespace BookLib.Controllers
         }
 
 
-
-
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBookById(Guid id)
+        {
+            try
+            {
+                var bookResponse = await _bookService.GetBookByIdAsyn(id);
+                if (bookResponse.Code == ResponseCode.Success)
+                {
+                    return StatusCode(StatusCodes.Status200OK, bookResponse);
+                }
+                return StatusCode(StatusCodes.Status404NotFound, bookResponse); 
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+        }
 
 
         [HttpPost("add")]

@@ -131,7 +131,6 @@ namespace BookLib.Application.Services
         }
 
 
-        [AllowAnonymous]
 
         public async Task<CommonResponse<bool>> DeleteBookAsync(Guid id)
         {
@@ -181,7 +180,6 @@ namespace BookLib.Application.Services
             throw new NotImplementedException();
         }
 
-        [AllowAnonymous]
 
         public async Task<CommonResponse<BookDto>> GetBookByIdAsyn(Guid id)
         {
@@ -445,7 +443,6 @@ namespace BookLib.Application.Services
             throw new NotImplementedException();
         }
 
-        [AllowAnonymous]
         public async Task<CommonResponse<BookDto>> UpdateBookAsync(Guid id, BookUpdateDto bookDto, string username)
         {
             var response = new CommonResponse<BookDto>();
@@ -583,7 +580,9 @@ namespace BookLib.Application.Services
             UpdatedBy = book.updated_by,
             Authors = book.authors?.Select(a => new AuthorDto { Id = a.author_id, Name = a.name }).ToList() ?? [],
             Genres = book.genres?.Select(g => new GenreDto { Id = g.genre_id, Name = g.name }).ToList() ?? [],
-            Publishers = book.publishers?.Select(p => new PublisherDto { Id = p.publisher_id, Name = p.name }).ToList() ?? []
+            Publishers = book.publishers?.Select(p => new PublisherDto { Id = p.publisher_id, Name = p.name }).ToList() ?? [],
+            ImageUrl = book.image_url
+
         };
 
 
