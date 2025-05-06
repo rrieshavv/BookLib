@@ -24,8 +24,9 @@ namespace BookLib.Controllers
             _contextAccessor = contextAccessor;
         }
 
-
         [HttpGet("all")]
+        [AllowAnonymous]
+
         public async Task<IActionResult> GetBooks([FromQuery] BookFilterDto filterDto)
         {
             try
@@ -45,8 +46,9 @@ namespace BookLib.Controllers
         }
 
 
-
         [HttpGet("search")]
+        [AllowAnonymous]
+
         public async Task<IActionResult> SearchBooks([FromQuery] BookFilterDto filterDto)
         {
             try
@@ -66,6 +68,8 @@ namespace BookLib.Controllers
 
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
+
         public async Task<IActionResult> GetBookById(Guid id)
         {
             try
