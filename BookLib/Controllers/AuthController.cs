@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using BookLib.Application;
 using BookLib.Application.DTOs.Auth;
+using BookLib.Infrastructure.Data.Entities;
 using BookLib.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookLib.Controllers
@@ -22,7 +24,11 @@ namespace BookLib.Controllers
             try
             {
                 var loginResponse = await _userService.Login(loginDto.Username, loginDto.Password);
-                return Ok(loginResponse);
+                if (loginResponse.Code == ResponseCode.Error)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, loginResponse.Message);
+                }
+                return StatusCode(StatusCodes.Status200OK, loginResponse);
             }
             catch (Exception ex)
             {
@@ -31,21 +37,60 @@ namespace BookLib.Controllers
         }
 
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+        [HttpPost("register-customer")]
+        public async Task<IActionResult> RegisterCustomer([FromBody] RegisterDto registerDto)
         {
             try
             {
-                if (registerDto == null)
+                var result = await _userService.Register(registerDto, UserRole.customer);
+                if (result.Code == ResponseCode.Error)
                 {
-                    return BadRequest(new { message = "Invalid data" });
+                    return StatusCode(StatusCodes.Status400BadRequest, result.Message);
                 }
-                var result = await _userService.Register(registerDto);
-                return Ok(result);
+                return StatusCode(StatusCodes.Status201Created, result.Message);
             }
-            catch (Exception ex)
+            catch
             {
-                return BadRequest(new { message = "Internal Server Error" });
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+
+        [Authorize(Roles = nameof(UserRole.admin))]
+        [HttpPost("register-admin")]
+        public async Task<IActionResult> RegisterAdmin([FromBody] RegisterDto registerDto)
+        {
+            try
+            {
+                var result = await _userService.Register(registerDto, UserRole.admin);
+                if (result.Code == ResponseCode.Error)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, result.Message);
+                }
+                return StatusCode(StatusCodes.Status201Created, result.Message);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [Authorize(Roles = nameof(UserRole.admin))]
+        [HttpPost("register-staff")]
+        public async Task<IActionResult> RegisterStaff([FromBody] RegisterDto registerDto)
+        {
+            try
+            {
+                var result = await _userService.Register(registerDto, UserRole.staff);
+                if (result.Code == ResponseCode.Error)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, result.Message);
+                }
+                return StatusCode(StatusCodes.Status201Created, result.Message);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
