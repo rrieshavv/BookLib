@@ -21,24 +21,24 @@ namespace BookLib.Infrastructure.Data
             base.OnModelCreating(modelBuilder);
         }
 
-        public void SeedAdminUser()
-        {
-            if (!Users.Any())
-            {
-                Users.Add(new User
-                {
-                    user_id = Guid.NewGuid(),
-                    username = "admin",
-                    email = "np01cp4a220267@islingtoncollege.edu.np",
-                    mobile = "9803633427",
-                    firstname = "Rishav",
-                    lastname = "Karna",
-                    role = UserRole.admin.ToString(),
-                    password = PasswordManager.HashPassword("Ktmnepal@1"),
-                    registration_date = DateTime.UtcNow
-                });
-            }
-        }
+        //public void SeedAdminUser()
+        //{
+        //    //if (!Users.Any())
+        //    //{
+        //    //    Users.Add(new User
+        //    //    {
+        //    //        user_id = Guid.NewGuid(),
+        //    //        username = "admin",
+        //    //        email = "np01cp4a220267@islingtoncollege.edu.np",
+        //    //        mobile = "9803633427",
+        //    //        firstname = "Rishav",
+        //    //        lastname = "Karna",
+        //    //        role = UserRole.Admin.ToString(),
+        //    //        password = PasswordManager.HashPassword("Ktmnepal@1"),
+        //    //        registration_date = DateTime.UtcNow
+        //    //    });
+        //    //}
+        //}
         public async Task SeedIdentityRolesAndAdminAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             string[] roles = { "admin", "staff", "customer" };
