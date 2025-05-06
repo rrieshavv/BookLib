@@ -1,22 +1,39 @@
 ﻿using BookLib.Application.DTOs.Book;
+using BookLib.Infrastructure.Configurations;
 using BookLib.Infrastructure.Data;
 using BookLib.Infrastructure.Data.Entities;
 using BookLib.Models;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using System.Net.WebSockets;
+using Microsoft.Extensions.Options;
 
 namespace BookLib.Application.Services
 {
     public class BookService : IBookService
     {
         private readonly ApplicationDbContext _context;
+        private readonly Cloudinary _cloudinary;
 
-        public BookService(ApplicationDbContext context)
+
+        public BookService(ApplicationDbContext context, IOptions<CloudinarySettings> config)
         {
             _context = context;
+
+            var acc = new Account(
+            config.Value.CloudName,
+            config.Value.ApiKey,
+            config.Value.ApiSecret
+            );
+
+            _cloudinary = new Cloudinary(acc);
+
+
         }
 
 
+        
 
         public async Task<CommonResponse<BookDto>> AddBookAsync(BookCreateDto bookDto, string username)
         {
@@ -25,17 +42,17 @@ namespace BookLib.Application.Services
             try
             {
 
-                   var authors = await _context.Authors
-                        .Where(a => bookDto.AuthorIds.Contains(a.author_id))
-                        .ToListAsync();
-            
-                    var genres = await _context.Genres
-                        .Where(g => bookDto.GenreIds.Contains(g.genre_id))
-                        .ToListAsync();
-            
-                    var publishers = await _context.Publishers
-                        .Where(p => bookDto.PublisherIds.Contains(p.publisher_id))
-                        .ToListAsync();
+                var authors = await _context.Authors
+                     .Where(a => bookDto.AuthorIds.Contains(a.author_id))
+                     .ToListAsync();
+
+                var genres = await _context.Genres
+                    .Where(g => bookDto.GenreIds.Contains(g.genre_id))
+                    .ToListAsync();
+
+                var publishers = await _context.Publishers
+                    .Where(p => bookDto.PublisherIds.Contains(p.publisher_id))
+                    .ToListAsync();
 
 
                 var book = new Book
@@ -43,22 +60,34 @@ namespace BookLib.Application.Services
                     book_id = Guid.NewGuid(),
                     title = bookDto.Title,
                     isbn = bookDto.ISBN,
-                    publication_date = DateTime.SpecifyKind(bookDto.PublicationDate, DateTimeKind.Utc)  ,
+                    publication_date = DateTime.SpecifyKind(bookDto.PublicationDate, DateTimeKind.Utc),
                     description = bookDto.Description,
                     price = bookDto.Price,
                     language = bookDto.Language,
                     format = bookDto.Format,
                     stock_qty = bookDto.StockQty,
                     is_on_sale = bookDto.IsOnSale,
-                    created_date = DateTime.SpecifyKind(DateTime.UtcNow,DateTimeKind.Utc),
+                    created_date = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
                     created_by = username,
                     updated_date = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
                     updated_by = username,
                     authors = authors,
                     genres = genres,
-                    publishers = publishers
+                    publishers = publishers,
+
                 };
 
+                if (bookDto.ImageFile != null && bookDto.ImageFile.Length > 0)
+                {
+
+                    var uploadResult = await UploadImageToCloudinary(bookDto.ImageFile, book.book_id.ToString());
+                    if (uploadResult != null)
+                    {
+                        book.image_url = uploadResult.SecureUrl.ToString();
+                    }
+
+
+                }
 
 
                 await _context.Books.AddAsync(book);
@@ -66,9 +95,11 @@ namespace BookLib.Application.Services
 
                 var bookDtoMap = MapToBookDto(book);
 
+
+
                 response.Code = ResponseCode.Success;
                 response.Message = "Book Added successfully";
-                response.Data = bookDtoMap;
+                response.Data = null;
                 return response;
             }
             catch (Exception ex)
@@ -80,6 +111,27 @@ namespace BookLib.Application.Services
             }
         }
 
+
+        private async Task<ImageUploadResult> UploadImageToCloudinary(IFormFile file, string publicId)
+        {
+            if (file == null) { return null; }
+
+            var uploadParams = new ImageUploadParams
+            {
+                File = new FileDescription(file.FileName, file.OpenReadStream()),
+                PublicId = $"books/{publicId}",
+                Transformation = new Transformation()
+                    .Width(500)
+                    .Height(700)
+                    .Crop("fill")
+                    .Quality(80)
+            };
+
+            return await _cloudinary.UploadAsync(uploadParams);
+        }
+
+
+        [AllowAnonymous]
 
         public async Task<CommonResponse<bool>> DeleteBookAsync(Guid id)
         {
@@ -94,6 +146,15 @@ namespace BookLib.Application.Services
                     response.Message = "Book not found";
                     response.Data = false;
                     return response;
+                }
+
+                if (!string.IsNullOrEmpty(book.image_url))
+                {
+                    var publicId = ExtractPublicIdFromUrl(book.image_url);
+                    if (!string.IsNullOrEmpty(publicId))
+                    {
+                        var deletionResult = await _cloudinary.DestroyAsync(new DeletionParams(publicId));
+                    }
                 }
 
                 _context.Books.Remove(book);
@@ -113,12 +174,14 @@ namespace BookLib.Application.Services
             }
         }
 
-       
+
 
         public async Task<CommonResponse<List<BookDto>>> GetBestsellerBooksAsync(int count)
         {
             throw new NotImplementedException();
         }
+
+        [AllowAnonymous]
 
         public async Task<CommonResponse<BookDto>> GetBookByIdAsyn(Guid id)
         {
@@ -258,6 +321,17 @@ namespace BookLib.Application.Services
 
                 int totalCount = await query.CountAsync();
                 int totalPages = (int)Math.Ceiling(totalCount / (double)filterDto.PageSize);
+                int perPageCount;
+
+                if (filterDto.PageNumber < totalPages)
+                {
+                    perPageCount = filterDto.PageSize;
+                }
+                else
+                {
+                    perPageCount = totalCount - ((totalPages - 1) * filterDto.PageSize);
+                }
+
 
                 var pagedBooks = await query
                     .Skip((filterDto.PageNumber - 1) * filterDto.PageSize)
@@ -304,6 +378,8 @@ namespace BookLib.Application.Services
                             Name = g.name,
                         }).ToList(),
 
+                        ImageUrl = book.image_url
+
                     });
                 }
 
@@ -313,7 +389,8 @@ namespace BookLib.Application.Services
                     TotalCount = totalCount,
                     PageNumber = filterDto.PageNumber,
                     PageSize = filterDto.PageSize,
-                    TotalPages = totalPages
+                    TotalPages = totalPages,
+                    PerPageCount = perPageCount,
                 };
 
                 response.Code = ResponseCode.Success;
@@ -368,6 +445,7 @@ namespace BookLib.Application.Services
             throw new NotImplementedException();
         }
 
+        [AllowAnonymous]
         public async Task<CommonResponse<BookDto>> UpdateBookAsync(Guid id, BookUpdateDto bookDto, string username)
         {
             var response = new CommonResponse<BookDto>();
@@ -398,6 +476,24 @@ namespace BookLib.Application.Services
                 book.isbn = bookDto.ISBN;
                 book.updated_by = username;
                 book.updated_date = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
+
+
+                if (bookDto.ImageFile != null && bookDto.ImageFile.Length > 0)
+                {
+                    if (!string.IsNullOrEmpty(book.image_url))
+                    {
+                        var publicId = ExtractPublicIdFromUrl(book.image_url);
+                        if (!string.IsNullOrEmpty(publicId))
+                        {
+                            await _cloudinary.DestroyAsync(new DeletionParams(publicId));
+                        }
+                    }
+                    var uploadResult = await UploadImageToCloudinary(bookDto.ImageFile, book.book_id.ToString());
+                    if (uploadResult != null)
+                    {
+                        book.image_url = uploadResult.SecureUrl.ToString();
+                    }
+                }
 
                 if (bookDto.PublisherIds != null)
                 {
@@ -456,13 +552,11 @@ namespace BookLib.Application.Services
                 var updatedBookDto = MapToBookDto(book);
                 response.Code = ResponseCode.Success;
                 response.Message = "Book updated successfully";
-                response.Data = updatedBookDto;
             }
             catch (Exception ex)
             {
                 response.Code = ResponseCode.Exception;
                 response.Message = ex.Message;
-                response.Data = null;
             }
 
             return response;
@@ -492,6 +586,41 @@ namespace BookLib.Application.Services
             Publishers = book.publishers?.Select(p => new PublisherDto { Id = p.publisher_id, Name = p.name }).ToList() ?? []
         };
 
-        
+
+        private string ExtractPublicIdFromUrl(string imageUrl)
+        {
+            if (string.IsNullOrEmpty(imageUrl))
+            {
+                return null;
+            };
+
+            try
+            {
+
+                var uri = new Uri(imageUrl);
+                var pathSegments = uri.AbsolutePath.Split('/');
+
+                int uploadIndex = Array.IndexOf(pathSegments, "upload");
+                if (uploadIndex >= 0 && uploadIndex < pathSegments.Length - 2)
+                {
+                    return string.Join("/", pathSegments.Skip(uploadIndex + 2));
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+
+
+
+
+        }
+
     }
+
+
+
+
 }
