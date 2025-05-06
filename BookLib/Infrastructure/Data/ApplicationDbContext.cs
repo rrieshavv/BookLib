@@ -1,5 +1,6 @@
 ﻿using BookLib.Functions;
 using BookLib.Infrastructure.Data.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +21,7 @@ namespace BookLib.Infrastructure.Data
             base.OnModelCreating(modelBuilder);
         }
 
-        public void SeedAdminUser ()
+        public void SeedAdminUser()
         {
             if (!Users.Any())
             {
@@ -38,5 +39,41 @@ namespace BookLib.Infrastructure.Data
                 });
             }
         }
-    }   
+        public async Task SeedIdentityRolesAndAdminAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        {
+            string[] roles = { "admin", "staff", "customer" };
+
+            foreach (var role in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }
+
+            var adminEmail = "np01cp4a220267@islingtoncollege.edu.np";
+            var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
+            if (adminUser == null)
+            {
+                var user = new ApplicationUser
+                {
+                    UserName = "admin",
+                    Email = adminEmail,
+                    EmailConfirmed = true,
+                    PhoneNumber = "9803633427"
+                };
+
+                var result = await userManager.CreateAsync(user, "Ktmnepal@1");
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(user, "admin");
+                }
+                else
+                {
+                    throw new Exception("Failed to create admin user: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+                }
+            }
+        }
+    }
 }
