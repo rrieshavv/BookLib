@@ -10,10 +10,8 @@ const NavBar = ({ theme = 'dark' }) => {
       <nav className={`space-x-6 text-sm ${isDark ? '' : 'text-gray-800'}`}>
         <Link to="/" className={`hover:text-emerald-500 transition`}>Home</Link>
         <Link to="/" className={`hover:text-emerald-500 transition`}>Catalogue</Link>
-        <Link to="/" className={`hover:text-emerald-500 transition`}>Deals</Link>
-        <Link to="/" className={`hover:text-emerald-500 transition`}>About</Link>
         <Link to="/customer/cart" className={`hover:text-emerald-500 transition`}>Cart</Link>
-        <Link to="/login" className={`hover:text-emerald-500 transition`}>Login</Link>
+
         <Link to="/deals" className={`hover:text-emerald-500 transition`}>Deals</Link>
         <Link to="/about-us" className={`hover:text-emerald-500 transition`}>About</Link>
         <Link to="/login" className={`hover:text-emerald-500 transition`}>Login</Link>
