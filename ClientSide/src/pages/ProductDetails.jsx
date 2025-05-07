@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { Star, StarHalf, Heart, ShoppingCart, Award, Calendar, BookOpen, Info, Clock, Check, X, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react';
 
+
 // Sample book data - this would come from your API in a real implementation
 const bookData = {
   id: "book-1234",
   title: "The Secret Garden of Bibliophiles",
   author: "Elena Blackwood",
-  coverImage: "/api/placeholder/300/450",
-  price: 24.99,
-  originalPrice: 29.99,
+  coverImage: "../src/assets/books/the-secret-garden.jpg",
+  price: 999,
+  originalPrice: 1599,
   discountPercent: 16,
   onSale: true,
   saleEnds: "May 20, 2025",
@@ -104,6 +105,7 @@ export default function BookProductDetails() {
   };
 
   return (
+    
     <div className="max-w-6xl mx-auto p-4 bg-white">
       {/* Breadcrumbs */}
       <div className="text-sm text-gray-500 mb-6">
@@ -162,7 +164,7 @@ export default function BookProductDetails() {
             <div className="flex items-baseline">
               {bookData.onSale ? (
                 <>
-                  <span className="text-3xl font-bold text-gray-800">${bookData.price.toFixed(2)}</span>
+                  <span className="text-3xl font-bold text-gray-800">Rs.{bookData.price.toFixed(2)}</span>
                   <span className="ml-2 text-xl text-gray-500 line-through">${bookData.originalPrice.toFixed(2)}</span>
                   <span className="ml-2 text-sm text-red-500 font-medium">Sale ends {bookData.saleEnds}</span>
                 </>
