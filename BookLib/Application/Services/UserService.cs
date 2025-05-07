@@ -31,122 +31,102 @@ namespace BookLib.Application.Services
 
         public async Task<CommonResponse<LoginResponse>> Login(string username, string password)
         {
-            try
+            CommonResponse<LoginResponse> response = new CommonResponse<LoginResponse>();
+            var user = await _userManager.FindByNameAsync(username);
+
+
+            if (user != null && await _userManager.CheckPasswordAsync(user, password))
             {
-                CommonResponse<LoginResponse> response = new CommonResponse<LoginResponse>();
-                var user = await _userManager.FindByNameAsync(username);
-
-
-                if (user != null && await _userManager.CheckPasswordAsync(user, password))
-                {
-                    var authClaims = new List<Claim>
+                var authClaims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, user.UserName!),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                     };
 
-                    // add roles to the list
-                    var userRoles = await _userManager.GetRolesAsync(user);
+                // add roles to the list
+                var userRoles = await _userManager.GetRolesAsync(user);
 
-                    foreach (var role in userRoles)
-                    {
-                        authClaims.Add(new Claim(ClaimTypes.Role, role));
-                    }
-
-                    // generate the token with the claims
-                    var jwtToken = GetToken(authClaims);
-
-                    response.Code = ResponseCode.Success;
-                    response.Message = "Login successful";
-                    response.Data = new LoginResponse
-                    {
-                        Token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
-                        Expiration = jwtToken.ValidTo,
-                        User = user.UserName,
-                        Roles =userRoles.ToList()
-                    };
-                    return response;
-                }
-                else
+                foreach (var role in userRoles)
                 {
-                    response.Code = ResponseCode.Error;
-                    response.Message = "Invalid credentials";
-                    return response;
+                    authClaims.Add(new Claim(ClaimTypes.Role, role));
                 }
-            }
-            catch
-            {
-                return new CommonResponse<LoginResponse>
+
+                // generate the token with the claims
+                var jwtToken = GetToken(authClaims);
+
+                response.Code = ResponseCode.Success;
+                response.Message = "Login successful";
+                response.Data = new LoginResponse
                 {
-                    Code = ResponseCode.Exception,
-                    Message = "Internal Server Error",
+                    Token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
+                    Expiration = jwtToken.ValidTo,
+                    User = user.UserName,
+                    Roles = userRoles.ToList()
                 };
+                return response;
             }
+            else
+            {
+                response.Code = ResponseCode.Error;
+                response.Message = "Invalid credentials";
+                return response;
+            }
+
         }
 
-        public async Task<CommonResponse> Register(RegisterDto registerDto)
+
+        public async Task<CommonResponse> Register(RegisterDto registerDto, UserRole role)
         {
-            try
+            var user = await _userManager.FindByNameAsync(registerDto.Username);
+            if (user != null)
             {
-                var user = await _context.Users.FirstOrDefaultAsync(x => x.username == registerDto.Username);
-                if (user != null)
+                return new CommonResponse
                 {
-                    if (user.mobile == registerDto.Mobile)
-                    {
-                        return new CommonResponse
-                        {
-                            Code = ResponseCode.Error,
-                            Message = "Mobile number already taken",
-                        };
-                    }
-
-                    if (user.email == registerDto.Email)
-                    {
-                        return new CommonResponse
-                        {
-                            Code = ResponseCode.Error,
-                            Message = "Email already taken",
-                        };
-                    }
-
-                    return new CommonResponse
-                    {
-                        Code = ResponseCode.Error,
-                        Message = "Username already taken",
-                    };
-                }
-
-                var newUser = new User
-                {
-                    username = registerDto.Username,
-                    firstname = registerDto.Firstname,
-                    lastname = registerDto.Lastname,
-                    email = registerDto.Email,
-                    mobile = registerDto.Mobile,
-                    password = PasswordManager.HashPassword(registerDto.Password),
-                    role = UserRole.customer.ToString(),
-                    registration_date = DateTime.UtcNow
-
+                    Code = ResponseCode.Error,
+                    Message = "Username already taken",
                 };
-                await _context.Users.AddAsync(newUser);
-                await _context.SaveChangesAsync();
+            }
+
+            user = await _userManager.FindByEmailAsync(registerDto.Email);
+            if (user != null)
+            {
+                return new CommonResponse
+                {
+                    Code = ResponseCode.Error,
+                    Message = "Email already taken",
+                };
+            }
+
+            var applicationUser = new ApplicationUser
+            {
+                UserName = registerDto.Username,
+                Email = registerDto.Email,
+                PhoneNumber = registerDto.Mobile,
+                FirstName = registerDto.Firstname,
+                LastName = registerDto.Lastname,
+                SecurityStamp = Guid.NewGuid().ToString()
+            };
+
+            var result = await _userManager.CreateAsync(applicationUser, registerDto.Password);
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(applicationUser, role.ToString());
                 return new CommonResponse
                 {
                     Code = ResponseCode.Success,
                     Message = "User registered successfully",
                 };
-
             }
-            catch (Exception ex)
+            else
             {
                 return new CommonResponse
                 {
-                    Code = ResponseCode.Exception,
-                    Message = "Internal Server Error",
+                    Code = ResponseCode.Error,
+                    Message = "Registration failed",
                 };
             }
-        }
 
+        }
 
         /// <summary>
         /// Generates the JWT authenticated token with the list of claims.

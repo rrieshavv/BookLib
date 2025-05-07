@@ -46,6 +46,7 @@ namespace BookLib.Infrastructure.Data.Entities
     public enum UserRole
     {
         admin,
-        customer
+        customer,
+        staff
     }
 }

@@ -14,10 +14,11 @@ namespace BookLib.Infrastructure.DI
             string connectionString = configuration.GetConnectionString("MainDbConnection")!;
             var emailSettings = configuration.GetSection("EmailSettings").Get<EmailConfig>()!;
 
-            services.AddSingleton(db => new EmailSettings(emailSettings.From, emailSettings.SmtpServer, emailSettings.Port, emailSettings.Username, emailSettings.Password));
+            services.AddSingleton(db => new EmailSettings(emailSettings.From, emailSettings.DisplayName, emailSettings.SmtpServer, emailSettings.Port, emailSettings.Username, emailSettings.Password));
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("MainDbConnection")));
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IBookService, BookService>();
 
             return services;
