@@ -13,8 +13,13 @@ namespace BookLib.Application.DTOs.Auth
 
     public class LoginResponse
     {
-        public string username { get; set;}
-        public string token { get; set;}
-        public string role { get; set;}
+        public LoginResponse()
+        {
+            Roles = new List<string>();
+        }
+        public string? Token { get; set; }
+        public string? User { get; set; }
+        public DateTime Expiration { get; set; }
+        public List<string> Roles { get; set; }
     }
 }

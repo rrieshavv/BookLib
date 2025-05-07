@@ -26,7 +26,7 @@ namespace BookLib.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "Internal Server Error" });
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 

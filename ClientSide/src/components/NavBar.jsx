@@ -12,7 +12,8 @@ const NavBar = ({ theme = 'dark' }) => {
         <Link to="/" className={`hover:text-emerald-500 transition`}>Catalogue</Link>
         <Link to="/" className={`hover:text-emerald-500 transition`}>Deals</Link>
         <Link to="/" className={`hover:text-emerald-500 transition`}>About</Link>
-        <Link to="/" className={`hover:text-emerald-500 transition`}>Login</Link>
+        <Link to="/customer/cart" className={`hover:text-emerald-500 transition`}>Cart</Link>
+        <Link to="/login" className={`hover:text-emerald-500 transition`}>Login</Link>
       </nav>
     </header>
   );
