@@ -3,6 +3,7 @@ using System;
 using BookLib.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookLib.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250507155153_custom_users_table_removed")]
+    partial class custom_users_table_removed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,40 +208,6 @@ namespace BookLib.Migrations
                     b.ToTable("books");
                 });
 
-            modelBuilder.Entity("BookLib.Infrastructure.Data.Entities.Discount", b =>
-                {
-                    b.Property<Guid>("discount_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("book_id")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("discount_percentage")
-                        .HasPrecision(4, 2)
-                        .HasColumnType("numeric(4,2)");
-
-                    b.Property<DateTime>("end_date")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("start_date")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("discount_id");
-
-                    b.HasIndex("book_id");
-
-                    b.ToTable("Discounts");
-                });
-
             modelBuilder.Entity("BookLib.Infrastructure.Data.Entities.Genre", b =>
                 {
                     b.Property<Guid>("genre_id")
@@ -252,141 +221,6 @@ namespace BookLib.Migrations
                     b.HasKey("genre_id");
 
                     b.ToTable("genres");
-                });
-
-            modelBuilder.Entity("BookLib.Infrastructure.Data.Entities.Order", b =>
-                {
-                    b.Property<Guid>("order_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("address_line_1")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("address_line_2")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("cancelled_by")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("cancelled_ts")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("city")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("claim_code")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("cleared_by")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("cleared_ts")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("country")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime>("created_ts")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("first_name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("last_name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("order_code")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("character varying(8)");
-
-                    b.Property<string>("phone")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("state")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("status")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("user_id")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("zip_code")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.HasKey("order_id");
-
-                    b.HasIndex("user_id");
-
-                    b.ToTable("Orders");
-                });
-
-            modelBuilder.Entity("BookLib.Infrastructure.Data.Entities.OrderItems", b =>
-                {
-                    b.Property<int>("order_item_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("order_item_id"));
-
-                    b.Property<Guid>("book_id")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("discount")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("discount_percentage")
-                        .HasPrecision(4, 2)
-                        .HasColumnType("numeric(4,2)");
-
-                    b.Property<Guid>("order_id")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("price")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<int>("quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("total_price")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)");
-
-                    b.HasKey("order_item_id");
-
-                    b.HasIndex("book_id");
-
-                    b.HasIndex("order_id");
-
-                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("BookLib.Infrastructure.Data.Entities.Publisher", b =>
@@ -579,47 +413,6 @@ namespace BookLib.Migrations
                         .HasForeignKey("genresgenre_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("BookLib.Infrastructure.Data.Entities.Discount", b =>
-                {
-                    b.HasOne("BookLib.Infrastructure.Data.Entities.Book", "BookDetails")
-                        .WithMany()
-                        .HasForeignKey("book_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BookDetails");
-                });
-
-            modelBuilder.Entity("BookLib.Infrastructure.Data.Entities.Order", b =>
-                {
-                    b.HasOne("BookLib.Infrastructure.Data.Entities.ApplicationUser", "UserDetails")
-                        .WithMany()
-                        .HasForeignKey("user_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("UserDetails");
-                });
-
-            modelBuilder.Entity("BookLib.Infrastructure.Data.Entities.OrderItems", b =>
-                {
-                    b.HasOne("BookLib.Infrastructure.Data.Entities.Book", "BookDetails")
-                        .WithMany()
-                        .HasForeignKey("book_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BookLib.Infrastructure.Data.Entities.Order", "OrderDetails")
-                        .WithMany()
-                        .HasForeignKey("order_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BookDetails");
-
-                    b.Navigation("OrderDetails");
                 });
 
             modelBuilder.Entity("BookPublisher", b =>

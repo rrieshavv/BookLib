@@ -7,11 +7,9 @@ using BookLib.Infrastructure.Data;
 using BookLib.Infrastructure.Data.Entities;
 using BookLib.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using static System.Net.WebRequestMethods;
 
 namespace BookLib.Application.Services
 {

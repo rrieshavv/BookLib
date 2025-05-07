@@ -22,6 +22,7 @@ namespace BookLib.Infrastructure.DI
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IBookService, BookService>();
+            services.AddScoped<IOrderService, OrderService>();
 
             return services;
         }

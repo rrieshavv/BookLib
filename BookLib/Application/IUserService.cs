@@ -1,5 +1,4 @@
 ﻿using BookLib.Application.DTOs.Auth;
-using BookLib.Infrastructure.Data.Entities;
 using BookLib.Models;
 
 namespace BookLib.Application

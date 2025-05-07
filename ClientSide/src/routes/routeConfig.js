@@ -54,12 +54,12 @@ export const routeConfig = [
     public: true,
   },
   {
-    path: "/customer/otp-verification",
+    path: "/otp-verification",
     component: OtpVerificationPage,
     public: true,
   },
   {
-    path: "/customer/reset-password",
+    path: "/reset-password",
     component: ResetPasswordPage,
     public: true,
   },
@@ -74,7 +74,7 @@ export const routeConfig = [
     public: true,
   },
   {
-    path: "/customer/product-details",
+    path: "/product-details",
     component:BookProductDetails,
     public: true,
   }
