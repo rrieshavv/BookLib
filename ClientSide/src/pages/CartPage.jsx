@@ -6,8 +6,7 @@ import { Link } from "react-router-dom";
 const CartPage = () => {
   return (
     <>
-    <NavBar theme="light"/>
-    <div className="bg-[#f4f1ea] font-sans min-h-screen flex flex-col pt-20">
+    <div className="bg-[#f4f1ea] font-sans min-h-screen flex flex-col pt-5">
       <div className="container mx-auto p-6 md:p-8 max-w-6xl">
         <div className="flex flex-col md:flex-row gap-8">
 
@@ -19,7 +18,7 @@ const CartPage = () => {
             </div>
 
             {/* Cart Items */}
-            <div className="flex flex-col gap-8 max-h-[400px] overflow-y-auto pr-2">
+            <div className="flex flex-col gap-8 max-h-[350px] overflow-y-auto pr-2">
               {/* Item 1 */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b border-gray-300/80 pb-4">
                 <img
@@ -173,7 +172,7 @@ const CartPage = () => {
 
             {/* Continue Shopping */}
             <a
-              href="#"
+              href="/catalogue"
               className="text-emerald-600 hover:underline mt-6 inline-block"
             >
               &larr; Continue Shopping
@@ -225,7 +224,6 @@ const CartPage = () => {
         </div>
       </div>
     </div>
-    <Footer />
     </>
   );
 };
