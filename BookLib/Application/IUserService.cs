@@ -1,5 +1,4 @@
 ﻿using BookLib.Application.DTOs.Auth;
-using BookLib.Infrastructure.Data.Entities;
 using BookLib.Models;
 
 namespace BookLib.Application
@@ -8,5 +7,7 @@ namespace BookLib.Application
     {
         Task<CommonResponse<LoginResponse>> Login (string username, string password);
         Task<CommonResponse> Register(RegisterDto registerDto, UserRole role);
+        Task<CommonResponse> ResetPasswordRequest(string username);
+        Task<CommonResponse> VerifyResetPassword(ResetPasswordDto dto);
     }
 }

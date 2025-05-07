@@ -17,9 +17,12 @@ namespace BookLib.Infrastructure.DI
             services.AddSingleton(db => new EmailSettings(emailSettings.From, emailSettings.DisplayName, emailSettings.SmtpServer, emailSettings.Port, emailSettings.Username, emailSettings.Password));
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("MainDbConnection")));
 
+            services.AddMemoryCache();
+
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IBookService, BookService>();
+            services.AddScoped<IOrderService, OrderService>();
 
             return services;
         }
