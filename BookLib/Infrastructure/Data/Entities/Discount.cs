@@ -13,9 +13,7 @@ namespace BookLib.Infrastructure.Data.Entities
 
         [Precision(4,2)]
         public decimal discount_percentage { get; set; }
-        [Timestamp]
         public DateTime start_date { get; set; }
-        [Timestamp]
         public DateTime end_date { get; set; }
 
 
