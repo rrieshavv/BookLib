@@ -14,7 +14,7 @@ function Footer() {
             <h4 className="font-bold mb-2">Explore</h4>
             <ul className="space-y-1">
               <li><a href="#">All Books</a></li>
-              <li><a href="#">Deals</a></li>
+              <li><a href="/deals">Deals</a></li>
               <li><a href="#">Coming Soon</a></li>
             </ul>
           </div>
@@ -22,7 +22,7 @@ function Footer() {
           <div>
             <h4 className="font-bold mb-2">Company</h4>
             <ul className="space-y-1">
-              <li><a href="#">About</a></li>
+              <li><a href="/about-us">About</a></li>
               <li><a href="#">Privacy</a></li>
               <li><a href="#">Support</a></li>
             </ul>

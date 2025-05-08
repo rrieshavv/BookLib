@@ -11,6 +11,7 @@ import ResetPasswordPage from "../pages/ResetPasswordPage";
 import AboutUsPage from "../pages/AboutUs";
 import Deals from "../pages/Deals";
 import BookProductDetails from "../pages/ProductDetails";
+import InvoicePage from "../pages/InvoicePage";
 
 export const routeConfig = [
   {
@@ -76,6 +77,11 @@ export const routeConfig = [
   {
     path: "/product-details",
     component:BookProductDetails,
+    public: true,
+  },
+  {
+    path: "/invoice",
+    component: InvoicePage,
     public: true,
   }
 ];
