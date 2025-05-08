@@ -13,15 +13,12 @@ namespace BookLib.Infrastructure.Data.Entities
 
         public string user_id { get; set; }
 
-        [Timestamp]
         public DateTime created_ts { get; set; }
 
-        [Timestamp]
         public DateTime cleared_ts { get; set; }
 
         public string? cleared_by { get; set; }
 
-        [Timestamp]
         public DateTime cancelled_ts { get; set; }
 
         public string? cancelled_by { get; set; }
