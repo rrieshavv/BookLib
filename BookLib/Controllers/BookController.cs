@@ -98,7 +98,7 @@ namespace BookLib.Controllers
                 var response = await _bookService.AddBookAsync(bookDto, username);
                 if (response.Code == ResponseCode.Success)
                 {
-                    return StatusCode(StatusCodes.Status200OK, response);
+                    return StatusCode(StatusCodes.Status201Created, response);
                 }
 
                 return StatusCode(StatusCodes.Status400BadRequest);

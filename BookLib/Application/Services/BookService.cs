@@ -336,50 +336,8 @@ namespace BookLib.Application.Services
                     .Take(filterDto.PageSize)
                     .ToListAsync();
 
-                List<BookDto> bookDtoList = new List<BookDto>();
-                foreach (var book in pagedBooks)
-                {
-                    bookDtoList.Add(new BookDto
-                    {
-                        Id = book.book_id,
-                        PublicationDate = book.publication_date,
-                        Title = book.title,
-                        UpdatedBy = book.updated_by,
-                        UpdatedDate = book.updated_date,
-                        Language = book.language,
-                        StockQty = book.stock_qty,
-                        IsOnSale = book.is_on_sale,
-                        Description = book.description,
-                        CreatedDate = book.created_date,
-                        Format = book.format,
-                        Price = book.price,
-                        ISBN = book.isbn,
-                        CreatedBy = book.created_by,
+                List<BookDto> bookDtoList = pagedBooks.Select(MapToBookDto).ToList();
 
-                        Publishers = book.publishers.Select(p => new PublisherDto
-                        {
-                            Id = p.publisher_id,
-                            Name = p.name,
-                        }).ToList(),
-
-
-                        Authors = book.authors.Select(a => new AuthorDto
-                        {
-                            Id = a.author_id,
-                            Name = a.name,
-                        }).ToList(),
-
-
-                        Genres = book.genres.Select(g => new GenreDto
-                        {
-                            Id = g.genre_id,
-                            Name = g.name,
-                        }).ToList(),
-
-                        ImageUrl = book.image_url
-
-                    });
-                }
 
                 var paginatedResponse = new PaginatedBookResponseDto
                 {
@@ -425,23 +383,6 @@ namespace BookLib.Application.Services
             }
         }
 
-
-
-
-        public Task<CommonResponse<List<BookDto>>> GetNewestBooksAsync(int count)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<CommonResponse<List<BookDto>>> GetOnSaleBooksAsync(int count)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<CommonResponse<int>> GetTotalBooksCountAsync()
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<CommonResponse<BookDto>> UpdateBookAsync(Guid id, BookUpdateDto bookDto, string username)
         {
@@ -546,7 +487,7 @@ namespace BookLib.Application.Services
 
                 await _context.SaveChangesAsync();
 
-                var updatedBookDto = MapToBookDto(book);
+                //var updatedBookDto = MapToBookDto(book);
                 response.Code = ResponseCode.Success;
                 response.Message = "Book updated successfully";
             }
