@@ -12,6 +12,7 @@ import AboutUsPage from "../pages/AboutUs";
 import Deals from "../pages/Deals";
 import BookProductDetails from "../pages/ProductDetails";
 import InvoicePage from "../pages/InvoicePage";
+import CatalogPage from "../pages/CatalogPage";
 
 export const routeConfig = [
   {
@@ -82,6 +83,11 @@ export const routeConfig = [
   {
     path: "/invoice",
     component: InvoicePage,
+    public: true,
+  },
+  {
+    path: "/catalog",
+    component: CatalogPage,
     public: true,
   }
 ];
