@@ -19,7 +19,7 @@ namespace BookLib.Controllers
         private readonly IEmailService _emailService;
         public OrderController(IOrderService orderService, IEmailService emailService)
         {
-            _emailService = emailService;   
+            _emailService = emailService;
             _orderService = orderService;
         }
 
@@ -28,24 +28,27 @@ namespace BookLib.Controllers
         [Authorize(Roles = nameof(UserRole.customer))]
         public async Task<IActionResult> PlaceOrder(OrderDto orderDto)
         {
-            try
+            var createOrder = await _orderService.CreateOrder(orderDto, ClaimsHelper.GetUserIdFromClaims(User));
+
+            if (createOrder.Code == ResponseCode.Error)
             {
-                var createOrder = await _orderService.CreateOrder(orderDto, ClaimsHelper.GetUserIdFromClaims(User));
-
-                if(createOrder.Code == ResponseCode.Error)
-                {
-                    return StatusCode(StatusCodes.Status400BadRequest, createOrder.Message);
-                }
-
-                
-
-
-                return StatusCode(StatusCodes.Status201Created, createOrder.Data);
+                return StatusCode(StatusCodes.Status400BadRequest, createOrder.Message);
             }
-            catch
+
+            return StatusCode(StatusCodes.Status201Created, createOrder.Data);
+        }
+
+        [HttpPost]
+        [Route("cancel-order")]
+        [Authorize(Roles = nameof(UserRole.customer))]
+        public async Task<IActionResult> CancelOrder([FromBody] OrderCancelDto orderCancelDto)
+        {
+            var cancelOrder = await _orderService.CancelOrderByCustomer(orderCancelDto.OrderId, orderCancelDto.Password, ClaimsHelper.GetUsernameFromClaims(User));
+            if (cancelOrder.Code == ResponseCode.Error)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while placing the order." });
+                return StatusCode(StatusCodes.Status400BadRequest, cancelOrder.Message);
             }
+            return StatusCode(StatusCodes.Status200OK, cancelOrder.Message);
         }
     }
 }
