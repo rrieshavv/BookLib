@@ -5,6 +5,6 @@ namespace BookLib.Application
 {
     public interface IOrderService
     {
-        Task<CommonResponse> CreateOrder(OrderDto orderDto);
+        Task<CommonResponse<OrderResponse>> CreateOrder(OrderDto orderDto, string userId);
     }
 }

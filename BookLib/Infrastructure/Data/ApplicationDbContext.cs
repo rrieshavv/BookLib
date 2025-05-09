@@ -18,10 +18,18 @@ namespace BookLib.Infrastructure.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItems> OrderItems { get; set; }
         public DbSet<Discount> Discounts{ get; set; }
+        public DbSet<Announcement> Announcements { get; set; }
+        public DbSet<Invoice> Invoices { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Invoice)
+                .WithOne(i => i.Order)
+                .HasForeignKey<Invoice>(i => i.invoice_id);
+
         }
 
         //public void SeedAdminUser()
