@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 using BookLib.Infrastructure.Data;
 using BookLib.Infrastructure.Data.Entities;
@@ -10,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using BookLib.Infrastructure.Configurations;
+using BookLib.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -95,6 +95,9 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 
 
 var app = builder.Build();
+
+app.UseMiddleware<AccessAuditMiddleware>();
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 using (var scope = app.Services.CreateScope())
 {

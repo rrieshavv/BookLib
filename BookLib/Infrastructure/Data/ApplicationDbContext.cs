@@ -20,6 +20,8 @@ namespace BookLib.Infrastructure.Data
         public DbSet<Discount> Discounts{ get; set; }
         public DbSet<Announcement> Announcements { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
+        public DbSet<ErrorLog> ErrorLogs { get; set; }
+        public DbSet<ApiAccessLog> ApiAccessLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

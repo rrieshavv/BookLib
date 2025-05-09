@@ -3,19 +3,94 @@ using BookLib.Functions;
 using BookLib.Infrastructure.Data;
 using BookLib.Infrastructure.Data.Entities;
 using BookLib.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace BookLib.Application.Services
 {
     public class OrderService : IOrderService
     {
-        public readonly ApplicationDbContext _context;
-        public readonly IEmailService _emailService;
-        public OrderService(ApplicationDbContext context, IEmailService emailService)
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IEmailService _emailService;
+        public OrderService(ApplicationDbContext context, IEmailService emailService, UserManager<ApplicationUser> userManager)
         {
+            _userManager = userManager;
             _context = context;
             _emailService = emailService;
+        }
+
+        public async Task<CommonResponse> CancelOrderByCustomer(Guid order_id, string password, string username)
+        {
+            throw new Exception("Test error");
+
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
+            {
+                return new CommonResponse
+                {
+                    Code = ResponseCode.Error,
+                    Message = "User not found"
+                };
+            }
+
+            var isValidPassword = await _userManager.CheckPasswordAsync(user, password);
+
+            if (!isValidPassword)
+            {
+                return new CommonResponse
+                {
+                    Code = ResponseCode.Error,
+                    Message = "Invalid password"
+                };
+            }
+
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(x => x.order_id == order_id && x.user_id == user.Id);
+
+            if (order == null)
+            {
+                return new CommonResponse
+                {
+                    Code = ResponseCode.Error,
+                    Message = "Order not found"
+                };
+            }
+
+            if(order.status != "Pending")
+            {
+                return new CommonResponse
+                {
+                    Code = ResponseCode.Error,
+                    Message = "Order cannot be cancelled"
+                };
+            }
+
+            order.status = "Cancelled";
+            order.cancelled_ts = DateTime.UtcNow;
+            order.cancelled_by = user.Id;
+            _context.Orders.Update(order);
+            var orderItems = await _context.OrderItems
+                .Where(x => x.order_id == order_id)
+                .ToListAsync();
+            foreach (var item in orderItems)
+            {
+                var book = await _context.Books
+                    .FirstOrDefaultAsync(x => x.book_id == item.book_id);
+                if (book != null)
+                {
+                    book.stock_qty += item.quantity;
+                    _context.Books.Update(book);
+                }
+            }
+          // _context.OrderItems.RemoveRange(orderItems);
+            await _context.SaveChangesAsync();
+            return new CommonResponse
+            {
+                Code = ResponseCode.Success,
+                Message = "Order cancelled successfully"
+            };
         }
 
         public async Task<CommonResponse<OrderResponse>> CreateOrder(OrderDto dto, string userId)
