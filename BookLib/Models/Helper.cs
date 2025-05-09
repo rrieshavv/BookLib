@@ -4,6 +4,30 @@ namespace BookLib.Models
 {
     public static class Helper
     {
+
+        private static Random random = new Random();
+
+        public static int GenerateNumberWithDigits(int digits)
+        {
+            if (digits < 1)
+                throw new ArgumentException("Digits must be at least 1");
+
+            int min = (int)Math.Pow(10, digits - 1);
+            int max = (int)Math.Pow(10, digits) - 1;
+
+            return random.Next(min, max + 1);
+        }
+
+        public static string GenerateAlphanumericString(int length)
+        {
+            if (length < 1)
+                throw new ArgumentException("Length must be at least 1");
+
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
         /// <summary>
         /// map object
         /// </summary>

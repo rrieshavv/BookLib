@@ -3,6 +3,7 @@ using System;
 using BookLib.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookLib.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250509152256_announcement_table_added_and_profile_image_Added_to_user")]
+    partial class announcement_table_added_and_profile_image_Added_to_user
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,6 +69,7 @@ namespace BookLib.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("display_end_ts")
@@ -82,6 +86,7 @@ namespace BookLib.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("updated_by")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("updated_ts")

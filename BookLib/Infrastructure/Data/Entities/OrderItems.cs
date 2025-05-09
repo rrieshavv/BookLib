@@ -23,6 +23,8 @@ namespace BookLib.Infrastructure.Data.Entities
         [Precision(4, 2)]
         public decimal discount_percentage { get; set; }
 
+        public string? discount_title { get; set; }
+
         [Precision(10, 2)]
         public decimal total_price { get; set; }
 

@@ -44,7 +44,8 @@ namespace BookLib.Application.Services
                 var authClaims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, user.UserName!),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim("UserId", user.Id)
                     };
 
                 // add roles to the list
@@ -111,6 +112,11 @@ namespace BookLib.Application.Services
                 SecurityStamp = Guid.NewGuid().ToString()
             };
 
+            if(role == UserRole.customer)
+            {
+                applicationUser.MembershipCode = ("bmem" + Helper.GenerateNumberWithDigits(7)).ToUpper();
+            }
+
             var result = await _userManager.CreateAsync(applicationUser, registerDto.Password);
 
             if (result.Succeeded)
@@ -124,10 +130,11 @@ namespace BookLib.Application.Services
             }
             else
             {
+                var errorMessages = result.Errors.Select(e => e.Description);
                 return new CommonResponse
                 {
                     Code = ResponseCode.Error,
-                    Message = "Registration failed",
+                    Message = string.Join("; ", errorMessages)
                 };
             }
 

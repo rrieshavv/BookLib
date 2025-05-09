@@ -8,7 +8,7 @@ namespace BookLib.Infrastructure.Data.Entities
         [Key]
         public Guid order_id { get; set; }
 
-        [StringLength(8)]
+        [StringLength(20)]
         public string order_code { get; set; }
 
         public string user_id { get; set; }
@@ -58,6 +58,8 @@ namespace BookLib.Infrastructure.Data.Entities
         [ForeignKey("user_id")]
         public virtual ApplicationUser UserDetails { get; set; }
 
+
+        public Invoice Invoice { get; set; }
     }
 }
 

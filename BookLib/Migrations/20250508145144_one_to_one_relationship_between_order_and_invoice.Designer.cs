@@ -3,6 +3,7 @@ using System;
 using BookLib.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookLib.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250508145144_one_to_one_relationship_between_order_and_invoice")]
+    partial class one_to_one_relationship_between_order_and_invoice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,46 +53,6 @@ namespace BookLib.Migrations
                     b.HasIndex("genresgenre_id");
 
                     b.ToTable("BookGenre");
-                });
-
-            modelBuilder.Entity("BookLib.Infrastructure.Data.Entities.Announcement", b =>
-                {
-                    b.Property<Guid>("announcement_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("created_by")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("created_ts")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("description")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("display_end_ts")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("display_start_ts")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("is_active")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("updated_by")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("updated_ts")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("announcement_id");
-
-                    b.ToTable("Announcements");
                 });
 
             modelBuilder.Entity("BookLib.Infrastructure.Data.Entities.ApplicationUser", b =>
@@ -144,9 +107,6 @@ namespace BookLib.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("ProfileImage")
-                        .HasColumnType("text");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
@@ -301,20 +261,8 @@ namespace BookLib.Migrations
                     b.Property<Guid>("invoice_id")
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("bulk_discount")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<decimal>("bulk_discount_percentage")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)");
-
                     b.Property<DateTime>("cleard_ts")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("grand_total_amount")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)");
 
                     b.Property<string>("invoice_no")
                         .IsRequired()
@@ -323,16 +271,9 @@ namespace BookLib.Migrations
                     b.Property<DateTime>("issued_ts")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("remarks")
-                        .HasColumnType("text");
-
                     b.Property<string>("status")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<decimal>("total_amount")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)");
 
                     b.HasKey("invoice_id");
 
@@ -393,8 +334,8 @@ namespace BookLib.Migrations
 
                     b.Property<string>("order_code")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
 
                     b.Property<string>("phone")
                         .IsRequired()
@@ -444,9 +385,6 @@ namespace BookLib.Migrations
                     b.Property<decimal>("discount_percentage")
                         .HasPrecision(4, 2)
                         .HasColumnType("numeric(4,2)");
-
-                    b.Property<string>("discount_title")
-                        .HasColumnType("text");
 
                     b.Property<Guid>("order_id")
                         .HasColumnType("uuid");
