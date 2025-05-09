@@ -6,6 +6,7 @@ import Catalog from "../components/Catalog";
 import Testimonials from "../components/Testimonials";
 import Newsletter from "../components/Newsletter";
 import Footer from "../components/Footer";
+import BookPreview from "../components/BookPreview";
 
 const HomePage = () => {
   return (
@@ -24,7 +25,7 @@ const HomePage = () => {
       <Category />
 
       {/* Catalog Section */}
-      <Catalog />
+      <BookPreview />
 
       {/* Testimonials */}
       <Testimonials />
