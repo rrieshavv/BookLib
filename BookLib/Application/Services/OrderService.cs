@@ -4,6 +4,7 @@ using BookLib.Infrastructure.Data;
 using BookLib.Infrastructure.Data.Entities;
 using BookLib.Models;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace BookLib.Application.Services
 {
@@ -73,7 +74,7 @@ namespace BookLib.Application.Services
 
             decimal totalPrice = 0;
 
-            List<InvoiceOrderItems> orderItems = new List<InvoiceOrderItems>();
+            List<OrderItems> orderItems = new List<OrderItems>();
 
             foreach (var item in dto.OrderItems)
             {
@@ -121,10 +122,10 @@ namespace BookLib.Application.Services
                 orderItem.total_price = (book.price * item.Quantity) - (orderItem.discount * item.Quantity);
                 totalPrice += orderItem.total_price;
                 _context.OrderItems.Add(orderItem);
-    
-                InvoiceOrderItems invoiceOrderItems = orderItems.MapObject<InvoiceOrderItems>();
-                invoiceOrderItems.BookTitle = book.title;
-                orderItems.Add(invoiceOrderItems);
+            
+
+
+                orderItems.Add(orderItem);
             }
 
 

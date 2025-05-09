@@ -43,7 +43,7 @@ namespace BookLib.Functions
         }
 
 
-        public static string InvoiceEmail(Invoice invoice, List<InvoiceOrderItems> orderItems, Order order, ApplicationUser user)
+        public static string InvoiceEmail(Invoice invoice, List<OrderItems> orderItems, Order order, ApplicationUser user)
         {
             string html = $@"
 
@@ -123,7 +123,7 @@ namespace BookLib.Functions
             {
                 html += $@"
   <tr style=""border-top: 1px solid #f3f4f6;"">
-            <td style=""padding: 0.5rem;"">{x.BookTitle}</td>
+            <td style=""padding: 0.5rem;"">{x.BookDetails.title}</td>
             <td style=""padding: 0.5rem; text-align: center;"">{x.quantity}</td>
             <td style=""padding: 0.5rem; text-align: right;"">Rs. {x.price}</td>
             <td style=""padding: 0.5rem; text-align: right;"">Rs. {x.discount}</td>
