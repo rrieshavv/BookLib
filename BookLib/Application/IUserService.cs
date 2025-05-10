@@ -9,5 +9,6 @@ namespace BookLib.Application
         Task<CommonResponse> Register(RegisterDto registerDto, UserRole role);
         Task<CommonResponse> ResetPasswordRequest(string username);
         Task<CommonResponse> VerifyResetPassword(ResetPasswordDto dto);
+        Task<CommonResponse<UserDetailsDto>> GetUserDetails(string userId);
     }
 }

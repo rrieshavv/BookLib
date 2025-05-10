@@ -1,12 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router';
-import { FiShoppingCart, FiUser, FiLogOut, FiSettings, FiPackage, FiEye, FiEyeOff, FiAlertCircle, FiCheckCircle, FiX } from 'react-icons/fi';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router";
+import {
+  FiShoppingCart,
+  FiUser,
+  FiLogOut,
+  FiSettings,
+  FiPackage,
+} from "react-icons/fi";
+import { clearAuthData, getAuthData, getRole } from "../utils/authStorage";
+import { toast } from "react-toastify";
 
-const NavBar = ({ theme = 'dark', user = { fullName: 'John Doe', email: 'john.doe@example.com' } }) => {
-  const isDark = theme === 'dark';
+const NavBar = ({
+  theme = "dark",
+  user = { fullName: "John Doe", email: "john.doe@example.com" },
+}) => {
+  const [role, setRole] = useState();
+  useEffect(() => {
+    setRole(getRole());
+  }, []);
+
+  // useEffect(() => {
+  //   setRole(getRole());
+  // }, []);
+
+  const isDark = theme === "dark";
   const [profileOpen, setProfileOpen] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-  
+
   // Form state
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -36,7 +56,10 @@ const NavBar = ({ theme = 'dark', user = { fullName: 'John Doe', email: 'john.do
 
   const handleLogout = () => {
     // Implement logout functionality here
-    console.log('Logging out');
+    clearAuthData();
+    setRole();
+    setProfileOpen(false);
+    toast.success("Logged out successfully");
   };
 
   const togglePasswordModal = () => {
@@ -185,33 +208,53 @@ const NavBar = ({ theme = 'dark', user = { fullName: 'John Doe', email: 'john.do
 
   return (
     <>
-      <header className={`absolute top-0 left-0 w-full z-20 px-6 md:px-16 py-4 flex items-center justify-between ${isDark ? 'text-white' : 'text-gray-900'}`}>
+      <header
+        className={`absolute top-0 left-0 w-full z-20 px-6 md:px-16 py-4 flex items-center justify-between ${
+          isDark ? "text-white" : "text-gray-900"
+        }`}
+      >
         <h1 className="text-xl font-bold">BookLib</h1>
-        
+
         {/* Navigation Links */}
         <div className="flex items-center space-x-6 text-sm">
-          <nav className={`${isDark ? '' : 'text-gray-800'} flex space-x-6`}>
-            <Link to="/" className="hover:text-emerald-500 transition">Home</Link>
-            <Link to="/catalog" className="hover:text-emerald-500 transition">Catalogue</Link>
-            <Link to="/deals" className="hover:text-emerald-500 transition">Deals</Link>
-            <Link to="/about-us" className="hover:text-emerald-500 transition">About</Link>
-            <Link to="/login" className="hover:text-emerald-500 transition">Login</Link>
-            
+          <nav className={`${isDark ? "" : "text-gray-800"} flex space-x-6`}>
+            <Link to="/" className="hover:text-emerald-500 transition">
+              Home
+            </Link>
+            <Link to="/catalog" className="hover:text-emerald-500 transition">
+              Catalogue
+            </Link>
+            <Link to="/deals" className="hover:text-emerald-500 transition">
+              Deals
+            </Link>
+            <Link to="/about-us" className="hover:text-emerald-500 transition">
+              About
+            </Link>
+            <Link to="/login" className="hover:text-emerald-500 transition">
+              Login
+            </Link>
+
             {/* Cart Icon Button */}
-            <Link to="/customer/cart" aria-label="Cart" className="ml-4 text-xl hover:text-emerald-500 transition">
+            <Link
+              to="/customer/cart"
+              aria-label="Cart"
+              className="ml-4 text-xl hover:text-emerald-500 transition"
+            >
               <FiShoppingCart />
             </Link>
-            
+
             {/* Profile Icon Button */}
             <div className="relative ml-4">
-              <button 
-                onClick={toggleProfile} 
-                className="text-xl hover:text-emerald-500 transition"
-                aria-label="User Profile"
-              >
-                <FiUser />
-              </button>
-              
+              {role && (
+                <button
+                  onClick={toggleProfile}
+                  className="text-xl hover:text-emerald-500 transition"
+                  aria-label="User Profile"
+                >
+                  <FiUser />
+                </button>
+              )}
+
               {/* Profile Dropdown */}
               {profileOpen && (
                 <div className="absolute right-0 mt-2 w-64 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-50">
@@ -219,25 +262,57 @@ const NavBar = ({ theme = 'dark', user = { fullName: 'John Doe', email: 'john.do
                     {/* User Avatar */}
                     <div className="flex items-center mb-2">
                       <div className="h-10 w-10 rounded-full bg-emerald-500 flex items-center justify-center text-white">
-                        {user.fullName.split(' ').map(n => n[0]).join('')}
+                        {user.fullName
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
                       </div>
                       <div className="ml-3">
-                        <p className="text-sm font-medium text-gray-900">{user.fullName}</p>
+                        <p className="text-sm font-medium text-gray-900">
+                          {user.fullName}
+                        </p>
                         <p className="text-xs text-gray-500">{user.email}</p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="py-1">
-                    <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
                       <div className="flex items-center">
                         <FiUser className="mr-2" />
                         Profile
                       </div>
                     </Link>
-                    
-                    <button 
-                      onClick={togglePasswordModal} 
+
+                    {role === "staff" && (
+                      <Link
+                        to="/staff/dashboard"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        <div className="flex items-center">
+                          <FiSettings className="mr-2" />
+                          Staff Site
+                        </div>
+                      </Link>
+                    )}
+
+                    {role === "admin" && (
+                      <Link
+                        to="/admin/dashboard"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        <div className="flex items-center">
+                          <FiSettings className="mr-2" />
+                          Admin Site
+                        </div>
+                      </Link>
+                    )}
+
+                    <button
+                      onClick={togglePasswordModal}
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       <div className="flex items-center">
@@ -245,9 +320,9 @@ const NavBar = ({ theme = 'dark', user = { fullName: 'John Doe', email: 'john.do
                         Change Password
                       </div>
                     </button>
-                    
-                    <button 
-                      onClick={handleLogout} 
+
+                    <button
+                      onClick={handleLogout}
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       <div className="flex items-center">
