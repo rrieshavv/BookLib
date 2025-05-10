@@ -6,7 +6,8 @@ namespace BookLib.Infrastructure.Data.Entities
     {
         [Key]
         public Guid announcement_id { get; set; }
-
+        
+        [Required]
         [Length(1,255)]
         public string title { get; set; }
 
@@ -22,7 +23,8 @@ namespace BookLib.Infrastructure.Data.Entities
         public DateTime created_ts { get; set; }
 
         public DateTime updated_ts { get; set; }
-
+        
+        [Required]
         public string created_by { get; set; }
 
         public string? updated_by { get; set; }
