@@ -236,13 +236,6 @@ const NavBar = ({ theme = 'dark', user = { fullName: 'John Doe', email: 'john.do
                       </div>
                     </Link>
                     
-                    <Link to="/my-orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                      <div className="flex items-center">
-                        <FiPackage className="mr-2" />
-                        My Orders
-                      </div>
-                    </Link>
-                    
                     <button 
                       onClick={togglePasswordModal} 
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
