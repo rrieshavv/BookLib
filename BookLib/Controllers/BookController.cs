@@ -29,8 +29,7 @@ namespace BookLib.Controllers
 
         public async Task<IActionResult> GetBooks([FromQuery] BookFilterDto filterDto)
         {
-            try
-            {
+            
                 var response = await _bookService.GetBooksAsync(filterDto);
                 if (response.Code == ResponseCode.Success)
                 {
@@ -38,11 +37,7 @@ namespace BookLib.Controllers
                 }
                 return StatusCode(StatusCodes.Status400BadRequest);
 
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+          
         }
 
 
@@ -51,19 +46,15 @@ namespace BookLib.Controllers
 
         public async Task<IActionResult> SearchBooks([FromQuery] BookFilterDto filterDto)
         {
-            try
-            {
+            
                 var booksResponse = await _bookService.GetBooksAsync(filterDto);
                 if (booksResponse.Code == ResponseCode.Success)
                 {
                     return StatusCode(StatusCodes.Status200OK, booksResponse);
                 }
                 return StatusCode(StatusCodes.Status400BadRequest, booksResponse);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
-            }
+            
+           
         }
 
 
@@ -72,27 +63,22 @@ namespace BookLib.Controllers
 
         public async Task<IActionResult> GetBookById(Guid id)
         {
-            try
-            {
+            
                 var bookResponse = await _bookService.GetBookByIdAsyn(id);
                 if (bookResponse.Code == ResponseCode.Success)
                 {
                     return StatusCode(StatusCodes.Status200OK, bookResponse);
                 }
+
                 return StatusCode(StatusCodes.Status404NotFound, bookResponse); 
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
-            }
+            
         }
 
 
         [HttpPost("add")]
         public async Task<IActionResult> AddBook([FromBody] BookCreateDto bookDto)
         {
-            try
-            {
+           
                 String username = TokenManager.GetUserName(_contextAccessor);
 
                 var response = await _bookService.AddBookAsync(bookDto, username);
@@ -103,18 +89,13 @@ namespace BookLib.Controllers
 
                 return StatusCode(StatusCodes.Status400BadRequest);
 
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
-            }
+           
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBook(Guid id, [FromForm] BookUpdateDto bookDto)
         {
-            try
-            {
+           
                 String username = TokenManager.GetUserName(_contextAccessor);
 
 
@@ -125,19 +106,13 @@ namespace BookLib.Controllers
                 }
 
                 return StatusCode(StatusCodes.Status400BadRequest);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
-
-            }
+            
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(Guid id)
         {
-            try
-            {
+           
                 var response = await _bookService.DeleteBookAsync(id);
                 if (response.Code == ResponseCode.Success)
                 {
@@ -145,13 +120,6 @@ namespace BookLib.Controllers
                 }
 
                 return StatusCode(StatusCodes.Status400BadRequest);
-
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
-
-            }
         }
 
 

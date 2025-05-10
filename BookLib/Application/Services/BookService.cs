@@ -5,6 +5,7 @@ using BookLib.Infrastructure.Data.Entities;
 using BookLib.Models;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
+using MailKit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -14,26 +15,17 @@ namespace BookLib.Application.Services
     public class BookService : IBookService
     {
         private readonly ApplicationDbContext _context;
-        private readonly Cloudinary _cloudinary;
+        private readonly IImageService _imageService;
 
 
-        public BookService(ApplicationDbContext context, IOptions<CloudinarySettings> config)
+        public BookService(ApplicationDbContext context, IImageService imageService)
         {
             _context = context;
-
-            var acc = new Account(
-            config.Value.CloudName,
-            config.Value.ApiKey,
-            config.Value.ApiSecret
-            );
-
-            _cloudinary = new Cloudinary(acc);
-
-
+            _imageService = imageService;
         }
 
 
-        
+
 
         public async Task<CommonResponse<BookDto>> AddBookAsync(BookCreateDto bookDto, string username)
         {
@@ -80,7 +72,8 @@ namespace BookLib.Application.Services
                 if (bookDto.ImageFile != null && bookDto.ImageFile.Length > 0)
                 {
 
-                    var uploadResult = await UploadImageToCloudinary(bookDto.ImageFile, book.book_id.ToString());
+                    var uploadResult = await _imageService.UploadImageAsync(bookDto.ImageFile,"books",book.book_id.ToString(),500,700,"fill");
+
                     if (uploadResult != null)
                     {
                         book.image_url = uploadResult.SecureUrl.ToString();
@@ -112,26 +105,6 @@ namespace BookLib.Application.Services
         }
 
 
-        private async Task<ImageUploadResult> UploadImageToCloudinary(IFormFile file, string publicId)
-        {
-            if (file == null) { return null; }
-
-            var uploadParams = new ImageUploadParams
-            {
-                File = new FileDescription(file.FileName, file.OpenReadStream()),
-                PublicId = $"books/{publicId}",
-                Transformation = new Transformation()
-                    .Width(500)
-                    .Height(700)
-                    .Crop("fill")
-                    .Quality(80)
-            };
-
-            return await _cloudinary.UploadAsync(uploadParams);
-        }
-
-
-
         public async Task<CommonResponse<bool>> DeleteBookAsync(Guid id)
         {
             CommonResponse<bool> response = new CommonResponse<bool>();
@@ -152,7 +125,7 @@ namespace BookLib.Application.Services
                     var publicId = ExtractPublicIdFromUrl(book.image_url);
                     if (!string.IsNullOrEmpty(publicId))
                     {
-                        var deletionResult = await _cloudinary.DestroyAsync(new DeletionParams(publicId));
+                        await _imageService.DeleteImageAsync(publicId);
                     }
                 }
 
@@ -421,12 +394,15 @@ namespace BookLib.Application.Services
                     if (!string.IsNullOrEmpty(book.image_url))
                     {
                         var publicId = ExtractPublicIdFromUrl(book.image_url);
+                        
                         if (!string.IsNullOrEmpty(publicId))
                         {
-                            await _cloudinary.DestroyAsync(new DeletionParams(publicId));
+                            await _imageService.DeleteImageAsync(publicId);
                         }
                     }
-                    var uploadResult = await UploadImageToCloudinary(bookDto.ImageFile, book.book_id.ToString());
+
+                    var uploadResult = await _imageService.UploadImageAsync(bookDto.ImageFile, "books", book.book_id.ToString(), 500, 700, "fill");
+
                     if (uploadResult != null)
                     {
                         book.image_url = uploadResult.SecureUrl.ToString();

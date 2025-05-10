@@ -8,5 +8,6 @@ namespace BookLib.Infrastructure.Data.Entities
         public string LastName { get; set; }
         public string? MembershipCode { get; set; }
         public string? ProfileImage { get; set; }
+    
     }
 }
