@@ -229,8 +229,13 @@ const NavBar = ({ theme = "dark" }) => {
   };
 
   return (
-    <header className={`absolute top-0 left-0 w-full z-20 px-6 md:px-16 py-4 flex items-center justify-between ${isDark ? 'text-white' : 'text-gray-900'}`}>
-      <h1 className="text-xl font-bold">BookLib</h1>
+    <>
+      <header
+        className={`absolute top-0 left-0 w-full z-20 px-6 md:px-16 py-4 flex items-center justify-between ${
+          isDark ? "text-white" : "text-gray-900"
+        }`}
+      >
+        <h1 className="text-xl font-bold">BookLib</h1>
 
         {/* Navigation Links */}
         <div className="flex items-center space-x-6 text-sm">

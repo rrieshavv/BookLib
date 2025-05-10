@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getAllBooks } from "../services/bookService";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const BookPreview = () => {
   const [books, setBooks] = useState([]);

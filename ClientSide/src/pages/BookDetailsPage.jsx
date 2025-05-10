@@ -135,19 +135,19 @@ export default function BookDetailsPage() {
   }
 
   const incrementQuantity = () => {
-    setQuantity(prevQty => prevQty + 1);
+    setQuantity((prevQty) => prevQty + 1);
   };
-  
+
   const decrementQuantity = () => {
     if (quantity > 1) {
-      setQuantity(prevQty => prevQty - 1);
+      setQuantity((prevQty) => prevQty - 1);
     }
   };
-  
+
   const toggleWishlist = () => {
     setIsWishlisted(!isWishlisted);
   };
-  
+
   const toggleSection = (section) => {
     setExpandedSection(expandedSection === section ? null : section);
   };
@@ -184,7 +184,7 @@ export default function BookDetailsPage() {
     const stars = [];
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 >= 0.5;
-    
+
     for (let i = 0; i < fullStars; i++) {
       stars.push(
         <Star
@@ -194,7 +194,7 @@ export default function BookDetailsPage() {
         />
       );
     }
-    
+
     if (hasHalfStar) {
       stars.push(
         <StarHalf
@@ -204,14 +204,14 @@ export default function BookDetailsPage() {
         />
       );
     }
-    
+
     const emptyStars = 5 - stars.length;
     for (let i = 0; i < emptyStars; i++) {
       stars.push(
         <Star key={`empty-${i}`} className="text-gray-300" size={16} />
       );
     }
-    
+
     return stars;
   };
 

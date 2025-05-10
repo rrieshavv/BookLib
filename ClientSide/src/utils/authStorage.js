@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 export const saveAuthData = (token, username) => {
   sessionStorage.setItem("token", token);
   sessionStorage.setItem("username", username);
-  sessionStorage.setItem("role", role);
 };
 
 export const getAuthData = () => {
