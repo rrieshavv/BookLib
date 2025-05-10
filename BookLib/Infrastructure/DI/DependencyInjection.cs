@@ -28,6 +28,9 @@ namespace BookLib.Infrastructure.DI
             services.AddScoped<IAnnouncementService, AnnouncementService>();
             services.AddScoped<IImageService, ImageService>();
 
+
+
+
             return services;
         }
     }

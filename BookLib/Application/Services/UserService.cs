@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using BookLib.Application.DTOs.Auth;
-using BookLib.Application.DTOs.User;
+using BookLib.Application.DTOs.Users;
 using BookLib.Functions;
 using BookLib.Infrastructure.Configurations;
 using BookLib.Infrastructure.Data;
@@ -28,8 +28,6 @@ namespace BookLib.Application.Services
         private readonly IImageService _imageService;
 
 
-
-
         public UserService(ApplicationDbContext context, IOptions<JwtSettings> jwtSettings, UserManager<ApplicationUser> userManager, IConfiguration configuration, IEmailService emailService, IMemoryCache cache, IImageService imageService)
         {
             _context = context;
@@ -37,8 +35,9 @@ namespace BookLib.Application.Services
             _userManager = userManager;
             _configuration = configuration;
             _emailService = emailService;
-            _cache = cache;          
+            _cache = cache;
             _imageService = imageService;
+
         }
 
       
@@ -245,20 +244,19 @@ namespace BookLib.Application.Services
             return token;
         }
 
-       
         public async Task<CommonResponse<UserDto>> UpdateUserProfileAsync(string userId, UserUpdateDto updateDto)
         {
 
             var response = new CommonResponse<UserDto>();
 
-             var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId);
 
-                if (user == null)
-                {
-                    response.Code = ResponseCode.Error;
-                    response.Message = "User not found";
-                    return response;
-                }
+            if (user == null)
+            {
+                response.Code = ResponseCode.Error;
+                response.Message = "User not found";
+                return response;
+            }
 
             user.FirstName = updateDto.FirstName;
             user.LastName = updateDto.LastName;
@@ -307,6 +305,7 @@ namespace BookLib.Application.Services
 
             return response;
         }
+
 
         public async Task<CommonResponse> UploadProfileImageAsync(string userId, IFormFile imageFile)
         {
@@ -357,7 +356,6 @@ namespace BookLib.Application.Services
             return response;
         }
 
-
         private UserDto MapToUserDto(ApplicationUser user) => new UserDto
         {
             Id = user.Id,
@@ -368,9 +366,8 @@ namespace BookLib.Application.Services
             MembershipCode = user.MembershipCode,
             ProfileImage = user.ProfileImage
         };
-    
-    
+
+
+
     }
-
 }
-

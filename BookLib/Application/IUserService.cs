@@ -1,5 +1,5 @@
 ﻿using BookLib.Application.DTOs.Auth;
-using BookLib.Application.DTOs.User;
+using BookLib.Application.DTOs.Users;
 using BookLib.Models;
 
 namespace BookLib.Application
@@ -10,8 +10,10 @@ namespace BookLib.Application
         Task<CommonResponse> Register(RegisterDto registerDto, UserRole role);
         Task<CommonResponse> ResetPasswordRequest(string username);
         Task<CommonResponse> VerifyResetPassword(ResetPasswordDto dto);
+        Task<CommonResponse<UserDetailsDto>> GetUserDetails(string userId);
         Task<CommonResponse> UploadProfileImageAsync(string userId, IFormFile imageFile);
         Task<CommonResponse<UserDto>> UpdateUserProfileAsync(string userId, UserUpdateDto updateDto);
+
 
 
     }

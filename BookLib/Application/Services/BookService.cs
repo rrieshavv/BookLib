@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
+
+
 namespace BookLib.Application.Services
 {
     public class BookService : IBookService
@@ -72,7 +74,7 @@ namespace BookLib.Application.Services
                 if (bookDto.ImageFile != null && bookDto.ImageFile.Length > 0)
                 {
 
-                    var uploadResult = await _imageService.UploadImageAsync(bookDto.ImageFile,"books",book.book_id.ToString(),500,700,"fill");
+                    var uploadResult = await _imageService.UploadImageAsync(bookDto.ImageFile, "books", book.book_id.ToString(), 500, 700, "fill");
 
                     if (uploadResult != null)
                     {
@@ -394,7 +396,7 @@ namespace BookLib.Application.Services
                     if (!string.IsNullOrEmpty(book.image_url))
                     {
                         var publicId = ExtractPublicIdFromUrl(book.image_url);
-                        
+
                         if (!string.IsNullOrEmpty(publicId))
                         {
                             await _imageService.DeleteImageAsync(publicId);
@@ -540,3 +542,4 @@ namespace BookLib.Application.Services
 
 
 }
+
