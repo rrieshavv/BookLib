@@ -13,6 +13,8 @@ import Deals from "../pages/Deals";
 import InvoicePage from "../pages/InvoicePage";
 import CatalogPage from "../pages/CatalogPage";
 import BookDetailsPage from "../pages/BookDetailsPage";
+import ProfilePage from "../pages/ProfilePage";
+
 
 export const routeConfig = [
   {
@@ -88,6 +90,11 @@ export const routeConfig = [
   {
     path: "/catalog",
     component: CatalogPage,
+    public: true,
+  },
+  {
+    path: "/profile",
+    component: ProfilePage,
     public: true,
   }
 ];
