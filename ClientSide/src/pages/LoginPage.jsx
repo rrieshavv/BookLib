@@ -1,34 +1,36 @@
-import React, { useState } from "react";
-import { loginUser } from "../services/authService"; // Make sure this function returns a Promise
-import { Link, useNavigate } from "react-router";
-import { toast } from "react-toastify";
+import React, { useState } from 'react';
+import { loginUser } from '../services/authService'; // Make sure this function returns a Promise
+import { Link, useNavigate } from 'react-router';
 
 const LoginPage = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const nav = useNavigate();
+  const nav= useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
-  
-    const response = await loginUser(username, password);
-    console.log(response);
-  
-    if (response.success) {
-      toast.success(response.message || "Logged in successfully");
-      nav("/");
-    } else {
-      setError(response.message || "Login failed");
-      toast.error(response.message || "Login failed");
+    setError('');
+
+    try {
+      const response = await loginUser(username, password);
+      // Example: handle token or redirect
+      if (response.success) {
+        // Replace with your actual redirect or auth logic
+        console.log('Login successful:', response.data);
+        nav('/');
+      } else {
+        setError(response.message || 'Login failed. Try again.');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('An error occurred during login.');
+    } finally {
+      setLoading(false);
     }
-  
-    setLoading(false);
   };
-  
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
@@ -77,25 +79,25 @@ const LoginPage = () => {
               />
             </div>
             <div className="text-right text-sm">
-              <Link
-                to="/forget-password"
-                className="text-emerald-500 hover:text-emerald-600 hover:underline"
-              >
-                Forgot password?
-              </Link>
+            <Link
+              to="/forget-password"
+              className="text-emerald-500 hover:text-emerald-600 hover:underline"
+            >
+              Forgot password?
+            </Link>
             </div>
             <button
               type="submit"
               disabled={loading}
               className="w-full bg-emerald-600 text-white py-2 sm:py-3 rounded-md hover:bg-emerald-700 transition"
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? 'Logging in...' : 'Login'}
             </button>
           </form>
           <p className="text-center text-sm text-gray-600 mt-4">
-            Don’t have an account?{" "}
+            Don’t have an account?{' '}
             <Link
-              to="/register"
+              to='/register'
               className="text-emerald-500 hover:text-emerald-600 hover:underline"
             >
               Register

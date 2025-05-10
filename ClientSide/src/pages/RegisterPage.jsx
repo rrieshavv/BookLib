@@ -1,139 +1,120 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { registerUser } from "../services/authService";
-import InputField from "../components/Frms/InputFIeld";
-import { toast } from "react-toastify";
+import React from 'react';
+import { Link } from "react-router-dom";
 
 const RegisterPage = () => {
-  const [formdata, setFormdata] = useState({
-    username: "",
-    firstname: "",
-    lastname: "",
-    email: "",
-    mobile: "",
-    password: "",
-    confirmPassword: "",
-  });
-
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setFormdata({ ...formdata, [e.target.id]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-
-    if (formdata.confirmPassword !== formdata.password) {
-      setError("Passwords do not match.");
-      return;
-    }
-
-    setLoading(true); // Start loading
-
-    try {
-      const result = await registerUser(formdata);
-      if (result.success) {
-        toast.success(result.message);
-        navigate("/login");
-      } else {
-        setError(result.message);
-      }
-    } finally {
-      setLoading(false); // Stop loading
-    }
-  };
-
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
+      {/* Left panel with form */}
       <div className="w-full md:w-1/2 h-screen flex items-center justify-center bg-gray-50">
         <div className="bg-white/80 shadow-xl rounded-lg p-6 sm:p-8 w-full max-w-md">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-6 text-center">
             Register for BookLib
           </h2>
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            {error && <p className="text-red-600 text-sm">{error}</p>}
-            {success && <p className="text-green-600 text-sm">{success}</p>}
-
-            <InputField
-              id="username"
-              label="Username"
-              value={formdata.username}
-              onChange={handleChange}
-              required
-            />
-            <div className="flex space-x-2">
-              <InputField
-                id="firstname"
-                label="First Name"
-                value={formdata.firstname}
-                onChange={handleChange}
-                half
-                required
-              />
-              <InputField
-                id="lastname"
-                label="Last Name"
-                value={formdata.lastname}
-                onChange={handleChange}
-                half
+          <form className="space-y-4">
+            <div>
+              <label htmlFor="username" className="block text-sm text-gray-700 mb-1">
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                placeholder="Choose a username"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-400 outline-none"
                 required
               />
             </div>
-            <InputField
-              id="email"
-              label="Email"
-              type="email"
-              value={formdata.email}
-              onChange={handleChange}
-              required
-            />
-            <InputField
-              id="mobile"
-              label="Mobile Number"
-              type="tel"
-              value={formdata.mobile}
-              onChange={handleChange}
-              required
-            />
-            <InputField
-              id="password"
-              label="Password"
-              type="password"
-              value={formdata.password}
-              onChange={handleChange}
-              required
-            />
-            <InputField
-              id="confirmPassword"
-              label="Confirm Password"
-              type="password"
-              value={formdata.confirmPassword}
-              onChange={handleChange}
-              required
-            />
+
+            <div className="flex space-x-2">
+              <div className="w-1/2">
+                <label htmlFor="firstName" className="block text-sm text-gray-700 mb-1">
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  id="firstName"
+                  placeholder="First name"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-400 outline-none"
+                  required
+                />
+              </div>
+
+              <div className="w-1/2">
+                <label htmlFor="lastName" className="block text-sm text-gray-700 mb-1">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  id="lastName"
+                  placeholder="Last name"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-400 outline-none"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="email" className="block text-sm text-gray-700 mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                placeholder="you@example.com"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-400 outline-none"
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="mobile" className="block text-sm text-gray-700 mb-1">
+                Mobile Number
+              </label>
+              <input
+                type="tel"
+                id="mobile"
+                placeholder="98XXXXXXXX"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-400 outline-none"
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm text-gray-700 mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                placeholder="Create a password"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-400 outline-none"
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm text-gray-700 mb-1">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                id="confirmPassword"
+                placeholder="Re-enter password"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-400 outline-none"
+                required
+              />
+            </div>
 
             <button
               type="submit"
-              disabled={loading}
-              className={`w-full text-white py-2 sm:py-3 rounded-md transition ${
-                loading
-                  ? "bg-emerald-400 cursor-not-allowed"
-                  : "bg-emerald-600 hover:bg-emerald-700"
-              }`}
+              className="w-full bg-emerald-600 text-white py-2 sm:py-3 rounded-md hover:bg-emerald-700 transition"
             >
-              {loading ? "Registering..." : "Register"}
+              Register
             </button>
           </form>
 
           <p className="text-center text-sm text-gray-600 mt-4">
-            Already have an account?{" "}
+            Already have an account?{' '}
             <Link
               to="/login"
               className="text-emerald-500 hover:text-emerald-600 hover:underline"
@@ -144,6 +125,7 @@ const RegisterPage = () => {
         </div>
       </div>
 
+      {/* Right image panel */}
       <div className="hidden md:block w-1/2 h-screen">
         <img
           src="../src/assets/rightPannelImageAuth.jpg"

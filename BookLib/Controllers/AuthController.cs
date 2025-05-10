@@ -23,24 +23,38 @@ namespace BookLib.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var loginResponse = await _userService.Login(loginDto.Username, loginDto.Password);
-            if (loginResponse.Code == ResponseCode.Error)
+            try
             {
-                return StatusCode(StatusCodes.Status400BadRequest, loginResponse.Message);
+                var loginResponse = await _userService.Login(loginDto.Username, loginDto.Password);
+                if (loginResponse.Code == ResponseCode.Error)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, loginResponse.Message);
+                }
+                return StatusCode(StatusCodes.Status200OK, loginResponse);
             }
-            return StatusCode(StatusCodes.Status200OK, loginResponse);
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
 
         [HttpPost("register-customer")]
         public async Task<IActionResult> RegisterCustomer([FromBody] RegisterDto registerDto)
         {
-            var result = await _userService.Register(registerDto, UserRole.customer);
-            if (result.Code == ResponseCode.Error)
+            try
             {
-                return StatusCode(StatusCodes.Status400BadRequest, result.Message);
+                var result = await _userService.Register(registerDto, UserRole.customer);
+                if (result.Code == ResponseCode.Error)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, result.Message);
+                }
+                return StatusCode(StatusCodes.Status201Created, result.Message);
             }
-            return StatusCode(StatusCodes.Status201Created, result.Message);
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
 
@@ -48,62 +62,80 @@ namespace BookLib.Controllers
         [HttpPost("register-admin")]
         public async Task<IActionResult> RegisterAdmin([FromBody] RegisterDto registerDto)
         {
-            var result = await _userService.Register(registerDto, UserRole.admin);
-            if (result.Code == ResponseCode.Error)
+            try
             {
-                return StatusCode(StatusCodes.Status400BadRequest, result.Message);
+                var result = await _userService.Register(registerDto, UserRole.admin);
+                if (result.Code == ResponseCode.Error)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, result.Message);
+                }
+                return StatusCode(StatusCodes.Status201Created, result.Message);
             }
-            return StatusCode(StatusCodes.Status201Created, result.Message);
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [Authorize(Roles = nameof(UserRole.admin))]
         [HttpPost("register-staff")]
         public async Task<IActionResult> RegisterStaff([FromBody] RegisterDto registerDto)
         {
-            var result = await _userService.Register(registerDto, UserRole.staff);
-            if (result.Code == ResponseCode.Error)
+            try
             {
-                return StatusCode(StatusCodes.Status400BadRequest, result.Message);
+                var result = await _userService.Register(registerDto, UserRole.staff);
+                if (result.Code == ResponseCode.Error)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, result.Message);
+                }
+                return StatusCode(StatusCodes.Status201Created, result.Message);
             }
-            return StatusCode(StatusCodes.Status201Created, result.Message);
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpPost("reset-password/{username}")]
         public async Task<IActionResult> ResetPassword(string username)
         {
-            var result = await _userService.ResetPasswordRequest(username);
-            if (result.Code == ResponseCode.Error)
+            try
             {
-                return StatusCode(StatusCodes.Status400BadRequest, result.Message);
+                var result = await _userService.ResetPasswordRequest(username);
+                if (result.Code == ResponseCode.Error)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, result.Message);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status200OK, result.Message);
+                }
             }
-
-            return StatusCode(StatusCodes.Status200OK, result.Message);
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpPost("forgot-password-verify")]
         public async Task<IActionResult> ForgotPassword([FromBody] ResetPasswordDto dto)
         {
-            var result = await _userService.VerifyResetPassword(dto);
-            if (result.Code == ResponseCode.Error)
+            try
             {
-                return StatusCode(StatusCodes.Status400BadRequest, result.Message);
+                var result = await _userService.VerifyResetPassword(dto);
+                if (result.Code == ResponseCode.Error)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, result.Message);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status200OK, result.Message);
+                }
             }
-            else
+            catch
             {
-                return StatusCode(StatusCodes.Status200OK, result.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
-        }
-
-        [HttpGet("Get-User-Details")]
-        [Authorize]
-        public async Task<IActionResult> GetUserDetails()
-        {
-            var result = await _userService.GetUserDetails(ClaimsHelper.GetUserIdFromClaims(User));
-            if (result.Code == ResponseCode.Error)
-            {
-                return StatusCode(StatusCodes.Status400BadRequest, result.Message);
-            }
-            return StatusCode(StatusCodes.Status200OK, result.Data);
         }
 
 

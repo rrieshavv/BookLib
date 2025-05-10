@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getAllBooks } from "../services/bookService";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const BookPreview = () => {
   const [books, setBooks] = useState([]);
@@ -28,7 +28,9 @@ const BookPreview = () => {
     console.log("Adding book to cart:", book);
   };
 
-  
+  const handleViewDetails = (bookId) => {
+    console.log("Viewing book details:", bookId);
+  };
 
   return (
     <div className="bg-white py-10 px-4">
@@ -93,11 +95,12 @@ const BookPreview = () => {
                     Add to Cart
                   </button>
 
-                  <Link to={`/books/${book.id}`}>
-                    <button className="bg-blue-500 text-white px-4 py-2 rounded">
-                      View Details
-                    </button>
-                  </Link>
+                  <button
+                    onClick={() => handleViewDetails(book.id)}
+                    className="bg-white border border-emerald-600 text-emerald-700 hover:bg-emerald-50 text-sm px-4 py-2 rounded transition"
+                  >
+                    View Details
+                  </button>
                 </div>
               </div>
             ))}

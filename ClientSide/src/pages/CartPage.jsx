@@ -172,7 +172,7 @@ const CartPage = () => {
 
             {/* Continue Shopping */}
             <a
-              href="/catalog"
+              href="/catalogue"
               className="text-emerald-600 hover:underline mt-6 inline-block"
             >
               &larr; Continue Shopping
