@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using BookLib.Application.DTOs.Auth;
-using BookLib.Application.DTOs.Users;
+using BookLib.Application.DTOs.User;
 using BookLib.Functions;
 using BookLib.Infrastructure.Configurations;
 using BookLib.Infrastructure.Data;
