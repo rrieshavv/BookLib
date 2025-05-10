@@ -25,6 +25,7 @@ namespace BookLib.Infrastructure.DI
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<ILoggerService, LoggerService>();
             services.AddScoped<IDiscountService, DiscountService>();
+            services.AddScoped<IAnnouncementService, AnnouncementService>();
 
             return services;
         }
