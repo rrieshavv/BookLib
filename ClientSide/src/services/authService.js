@@ -3,24 +3,66 @@ import { saveAuthData } from "../utils/authStorage";
 
 export const loginUser = async (username, password) => {
   try {
-    const response = (
-      await apiClient.post("/auth/login", {
-        username,
-        password,
-      })
-    ).data;
+    const res = await apiClient.post("/auth/login", { username, password });
 
-    const { token, role } = response.data;
-
-    // Save auth data to sessionStorage
-    saveAuthData(token, username, role);
-
-    return { success: true, role };
-  } catch (error) {
-    console.error("Login failed:", error.response?.data || error.message);
+    if (res.status === 200) {
+      const { token, user } = res.data.data;
+      saveAuthData(token, user);
+      return { success: true, message: "Login successful" };
+    } else {
+      return { success: false, message: res.data?.message || "Login failed" };
+    }
+  } catch (err) {
     return {
       success: false,
-      error: error.response?.data?.message || "Login failed",
+      message: err.response?.data || "Login failed",
+    };
+  }
+};
+
+export const registerUser = async (formdata) => {
+  try {
+    const res = await apiClient.post("/auth/register-customer", {
+      username: formdata.username,
+      firstname: formdata.firstname,
+      lastname: formdata.lastname,
+      email: formdata.email,
+      mobile: formdata.mobile,
+      password: formdata.password,
+      confirmPassword: formdata.confirmPassword,
+    });
+    console.log(res);
+    if (res.status === 201) {
+      return { success: true, message: res.data };
+    } else {
+      return { success: false, message: res.data || "Registrationd failed" };
+    }
+  } catch (err) {
+    return {
+      success: false,
+      message: err.response?.data || "Registrationsdf failed",
+    };
+  }
+};
+
+export const getUserDetails = async () => {
+  try {
+    const res = await apiClient.get("/auth/Get-User-Details");
+    if (res.status == 200) {
+      return {
+        success: true,
+        data: res.data,
+      };
+    } else {
+      return {
+        success: false,
+        data: res.data,
+      };
+    }
+  } catch (err) {
+    return {
+      success: false,
+      message: err.response?.data || "Internal error",
     };
   }
 };

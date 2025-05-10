@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import NavBar from "../components/NavBar";
 import Hero from "../components/Hero";
 import Category from "../components/Category";
@@ -7,10 +7,16 @@ import Testimonials from "../components/Testimonials";
 import Newsletter from "../components/Newsletter";
 import Footer from "../components/Footer";
 import Announcement from "../components/Announcement";
+import { getRole } from "../utils/authStorage";
 
 
 const HomePage = () => {
   // You can hardcode announcement data here or store it in a constant file
+
+
+  useEffect(()=>{
+    console.log(getRole())
+  },[])
   const announcement = {
     title: "Summer Reading Sale!",
     message: "Enjoy 30% off on all bestsellers until June 15th. Browse our collection now and find your next favorite book!",
