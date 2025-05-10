@@ -10,10 +10,11 @@ import OtpVerificationPage from "../pages/OtpVerificationPage";
 import ResetPasswordPage from "../pages/ResetPasswordPage";
 import AboutUsPage from "../pages/AboutUs";
 import Deals from "../pages/Deals";
-import BookProductDetails from "../pages/ProductDetails";
 import InvoicePage from "../pages/InvoicePage";
 import CatalogPage from "../pages/CatalogPage";
+import BookDetailsPage from "../pages/BookDetailsPage";
 import ProfilePage from "../pages/ProfilePage";
+
 
 export const routeConfig = [
   {
@@ -77,8 +78,8 @@ export const routeConfig = [
     public: true,
   },
   {
-    path: "/product-details",
-    component:BookProductDetails,
+    path: "/books/:id",
+    component:BookDetailsPage,
     public: true,
   },
   {

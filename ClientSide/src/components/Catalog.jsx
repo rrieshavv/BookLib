@@ -1,190 +1,132 @@
 import React, { useState, useEffect } from "react";
 import { Filter } from "lucide-react";
-import { getAllBooks } from "../services/bookService";
+import { getFilteredBooks } from "../services/bookService";
+import { Link } from "react-router-dom";
 
 const Catalog = () => {
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [allBooks, setAllBooks] = useState([]);
-  const [filterBooks, setFilterBooks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [filters, setFilters] = useState({
-    author: "",
-    genre: "",
-    format: "",
+  const initialFilters = {
+    searchTerm: "",
+    authorIds: [],
+    genreIds: [],
+    publisherIds: [],
     minPrice: "",
     maxPrice: "",
     language: "",
+    format: "",
     inStock: false,
-    publisher: "",
-    search: "",
-    sortBy: "popularity",
-  });
-  const pageSize = 12;
+    onSale: false,
+    minRating: "",
+    pageNumber: 1,
+    pageSize: 12,
+    sortOption: "title-asc",
+  };
 
-  // Fetching all books
+  // State management
+  const [filters, setFilters] = useState(initialFilters); // Current filter inputs
+  const [appliedFilters, setAppliedFilters] = useState(initialFilters); // Filters applied to API
+  const [books, setBooks] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // Fetching books when appliedFilters change
   useEffect(() => {
-    fetchAllBooks();
-  }, []);
+    fetchBooks();
+  }, [appliedFilters]);
 
-  const fetchAllBooks = async () => {
+  // Function to fetch books from the API
+  const fetchBooks = async () => {
     try {
-      const response = await getAllBooks(1, 500);
-      if (response && response.data && response.data.books) {
-        const books = response.data.books;
-        setAllBooks(books);
-        setFilterBooks(books); // Initializiing filterBooks with all books
-        setTotalPages(Math.ceil(books.length / pageSize));
+      setLoading(true);
+      const [sortField, sortDirection] = appliedFilters.sortOption.split("-");
+      const sortBy = sortField;
+      const sortAscending = sortDirection === "asc";
+
+      // Base parameters for pagination and sorting
+      const params = {
+        pageNumber: appliedFilters.pageNumber,
+        pageSize: appliedFilters.pageSize,
+        sortBy,
+        sortAscending,
+      };
+
+      // Add filter parameters only if they are set
+      if (appliedFilters.searchTerm)
+        params.searchTerm = appliedFilters.searchTerm;
+      if (appliedFilters.authorIds.length > 0)
+        params.authorIds = appliedFilters.authorIds;
+      if (appliedFilters.genreIds.length > 0)
+        params.genreIds = appliedFilters.genreIds;
+      if (appliedFilters.publisherIds.length > 0)
+        params.publisherIds = appliedFilters.publisherIds;
+      if (appliedFilters.minPrice)
+        params.minPrice = parseFloat(appliedFilters.minPrice);
+      if (appliedFilters.maxPrice)
+        params.maxPrice = parseFloat(appliedFilters.maxPrice);
+      if (appliedFilters.language) params.language = appliedFilters.language;
+      if (appliedFilters.format) params.format = appliedFilters.format;
+      if (appliedFilters.inStock) params.inStock = appliedFilters.inStock;
+      if (appliedFilters.onSale) params.onSale = appliedFilters.onSale;
+      if (appliedFilters.minRating)
+        params.minRating = parseInt(appliedFilters.minRating);
+
+      const response = await getFilteredBooks(params);
+
+      if (response && response.data && response.data.data) {
+        setBooks(response.data.data.books || []);
+        setTotalPages(response.data.data.totalPages || 1);
       } else {
         setError("No books found.");
       }
     } catch (err) {
       setError("Error connecting to the books API");
-      console.error("Error fetching books:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Applying filters
-  useEffect(() => {
-    applyFilters();
-  }, [filters, allBooks]);
-
-  const applyFilters = () => {
-    let filtered = [...allBooks];
-
-    // Applying filters based on backend data fields
-    // Filter by author
-    if (filters.author) {
-      const filterAuthor = filters.author.toLowerCase(); // Normalize filter
-      filtered = filtered.filter((book) =>
-        book.authors.some(
-          (author) => author.name.toLowerCase() === filterAuthor // Normalize data
-        )
-      );
-    }
-
-    // Filter by genre
-    if (filters.genre) {
-      const filterGenre = filters.genre.toLowerCase(); // Normalize filter
-      filtered = filtered.filter((book) =>
-        book.genres.some(
-          (genre) => genre.name.toLowerCase() === filterGenre // Normalize data
-        )
-      );
-    }
-
-    // Filter by publisher
-    if (filters.publisher) {
-      const filterPublisher = filters.publisher.toLowerCase(); // Normalize filter
-      filtered = filtered.filter((book) =>
-        book.publishers.some(
-          (publisher) => publisher.name.toLowerCase() === filterPublisher // Normalize data
-        )
-      );
-    }
-
-
-    if (filters.format) {
-      filtered = filtered.filter((book) => book.format === filters.format);
-    }
-
-
-    if (filters.minPrice) {
-      filtered = filtered.filter(
-        (book) => book.price >= parseFloat(filters.minPrice)
-      );
-    }
-
-
-    if (filters.maxPrice) {
-      filtered = filtered.filter(
-        (book) => book.price <= parseFloat(filters.maxPrice)
-      );
-    }
-
-
-    if (filters.language) {
-      filtered = filtered.filter((book) => book.language === filters.language);
-    }
-
-
-    if (filters.inStock) {
-      filtered = filtered.filter((book) => book.stockQty > 0);
-    }
-
-
-
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      filtered = filtered.filter(
-        (book) =>
-          book.title.toLowerCase().includes(searchLower) ||
-          book.isbn.includes(searchLower) ||
-          book.description.toLowerCase().includes(searchLower)
-      );
-    }
-
-    // Applying sorting
-    switch (filters.sortBy) {
-      case "price-low":
-        filtered.sort((a, b) => a.price - b.price);
-        break;
-      case "price-high":
-        filtered.sort((a, b) => b.price - a.price);
-        break;
-      case "newest":
-        filtered.sort(
-          (a, b) => new Date(b.publicationDate) - new Date(a.publicationDate)
-        );
-        break;
-      case "title":
-        filtered.sort((a, b) => a.title.localeCompare(b.title));
-        break;
-      default:
-        // Default sorting (e.g., popularity) can be implemented if API provides it
-        break;
-    }
-
-    setFilterBooks(filtered);
-    setTotalPages(Math.ceil(filtered.length / pageSize));
-    setCurrentPage(1); // Reset to first page after filtering
-  };
-
-  const toggleFilter = () => {
-    setIsFilterOpen(!isFilterOpen);
-  };
-
+  // Handling changes in filter inputs and applying them immediately
   const handleFilterChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFilters((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    let updatedFilters = { ...filters };
+
+    if (
+      name === "authorIds" ||
+      name === "genreIds" ||
+      name === "publisherIds"
+    ) {
+      updatedFilters[name] = value ? [value] : [];
+    } else if (type === "checkbox") {
+      updatedFilters[name] = checked;
+    } else {
+      updatedFilters[name] = value;
+    }
+
+    setFilters(updatedFilters);
+    setAppliedFilters({ ...updatedFilters, pageNumber: 1 });
   };
 
+  const applyFilters = () => {
+    setAppliedFilters({ ...filters, pageNumber: 1 });
+  };
+
+  // Reset filters
   const resetFilters = () => {
-    setFilters({
-      author: "",
-      genre: "",
-      format: "",
-      minPrice: "",
-      maxPrice: "",
-      language: "",
-      inStock: false,
-      publisher: "",
-      search: "",
-      sortBy: "popularity",
-    });
+    setFilters(initialFilters);
+    setAppliedFilters(initialFilters);
   };
 
+  // Handle pagination
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
-      setCurrentPage(newPage);
+      setAppliedFilters((prev) => ({ ...prev, pageNumber: newPage }));
     }
+  };
+
+  // Toggle filter panel visibility
+  const toggleFilter = () => {
+    setIsFilterOpen(!isFilterOpen);
   };
 
   const handleAddToCart = (book) => {
@@ -195,14 +137,10 @@ const Catalog = () => {
     console.log("Viewing book details:", bookId);
   };
 
-  // Geting current page books
-  const indexOfLastBook = currentPage * pageSize;
-  const indexOfFirstBook = indexOfLastBook - pageSize;
-  const currentBooks = filterBooks.slice(indexOfFirstBook, indexOfLastBook);
-
   return (
     <div className="min-h-screen bg-white p-4">
       <div className="max-w-7xl mx-auto">
+        {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold">Book Catalogue</h2>
           <button
@@ -217,42 +155,68 @@ const Catalog = () => {
         {isFilterOpen && (
           <div className="bg-[#fdfaf5] p-6 rounded-lg shadow mb-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* Author */}
+              {/* Author Filter */}
               <div>
                 <label className="block mb-1 font-medium">Author</label>
                 <select
-                  name="author"
-                  value={filters.author}
+                  name="authorIds"
+                  value={filters.authorIds[0] || ""}
                   onChange={handleFilterChange}
                   className="w-full border p-2 rounded"
                 >
                   <option value="">All Authors</option>
-                  <option value="Robert Kaysaki">Robert Kaysaki</option>
-                  <option value="Jane Austen">Jane Austen</option>
+                  <option value="94a46826-4406-4b88-8181-5fa8177c9000">
+                    Robert Kiyosaki
+                  </option>
+                  <option value="a1b2c3d4-e5f6-7890-abcd-ef1234567890">
+                    Jane Austen
+                  </option>
                 </select>
               </div>
 
-              {/* Genre */}
+              {/* Genre Filter */}
               <div>
                 <label className="block text-sm font-semibold mb-2">
                   Genre
                 </label>
                 <select
-                  name="genre"
-                  value={filters.genre}
+                  name="genreIds"
+                  value={filters.genreIds[0] || ""}
                   onChange={handleFilterChange}
                   className="w-full p-2 border rounded focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white"
                 >
                   <option value="">All Genres</option>
-                  <option value="fiction">Fiction</option>
-                  <option value="non-fiction">Non-Fiction</option>
-                  <option value="fantasy">Fantasy</option>
-                  <option value="mystery">Mystery</option>
-                  <option value="finance">Finance</option>
+                  <option value="86a902a3-a20c-4fd7-bb7b-4fc0161a51b3">
+                    Finance
+                  </option>
+                  <option value="123e4567-e89b-12d3-a456-426614174000">
+                    Fiction
+                  </option>
                 </select>
               </div>
 
-              {/* Format */}
+              {/* Publisher Filter */}
+              <div>
+                <label className="block text-sm font-semibold mb-2">
+                  Publisher
+                </label>
+                <select
+                  name="publisherIds"
+                  value={filters.publisherIds[0] || ""}
+                  onChange={handleFilterChange}
+                  className="w-full p-2 border rounded focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white"
+                >
+                  <option value="">All Publishers</option>
+                  <option value="38044e82-d1e8-4de6-992f-98d0a2436a62">
+                    Plata Publishing
+                  </option>
+                  <option value="987fcdeb-1234-5678-9abc-def123456789">
+                    HarperCollins
+                  </option>
+                </select>
+              </div>
+
+              {/* Format Filter */}
               <div>
                 <label className="block text-sm font-semibold mb-2">
                   Format
@@ -272,7 +236,7 @@ const Catalog = () => {
                 </select>
               </div>
 
-              {/* Price Range */}
+              {/* Price Range Filter */}
               <div>
                 <label className="block text-sm font-semibold mb-2">
                   Price Range
@@ -298,7 +262,7 @@ const Catalog = () => {
                 </div>
               </div>
 
-              {/* Language */}
+              {/* Language Filter */}
               <div>
                 <label className="block text-sm font-semibold mb-2">
                   Language
@@ -316,7 +280,7 @@ const Catalog = () => {
                 </select>
               </div>
 
-              {/* Availability */}
+              {/* Availability Filter */}
               <div>
                 <label className="block text-sm font-semibold mb-2">
                   Availability
@@ -332,60 +296,70 @@ const Catalog = () => {
                     />
                     In Stock
                   </label>
+                  <label className="flex items-center">
+                    <input
+                      name="onSale"
+                      checked={filters.onSale}
+                      onChange={handleFilterChange}
+                      type="checkbox"
+                      className="mr-2"
+                    />
+                    On Sale
+                  </label>
                 </div>
               </div>
 
-              {/* Publisher */}
-              <div>
-                <label className="block text-sm font-semibold mb-2">
-                  Publisher
-                </label>
-                <select
-                  name="publisher"
-                  value={filters.publisher}
-                  onChange={handleFilterChange}
-                  className="w-full p-2 border rounded focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white"
-                >
-                  <option value="">All Publishers</option>
-                  <option value="Plata Publishing">Plata Publishing</option>
-                  <option value="harpercollins">HarperCollins</option>
-                  <option value="simon">Simon & Schuster</option>
-                </select>
-              </div>
-
-              {/* Search */}
+              {/* Search Filter */}
               <div>
                 <label className="block text-sm font-semibold mb-2">
                   Search
                 </label>
                 <input
-                  name="search"
-                  value={filters.search}
+                  name="searchTerm"
+                  value={filters.searchTerm}
                   onChange={handleFilterChange}
                   type="text"
                   placeholder="Title, ISBN or Description"
                   className="w-full p-2 border rounded focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white"
                 />
               </div>
+
+              {/* Minimum Rating Filter */}
+              <div>
+                <label className="block text-sm font-semibold mb-2">
+                  Min Rating
+                </label>
+                <input
+                  name="minRating"
+                  value={filters.minRating}
+                  onChange={handleFilterChange}
+                  type="number"
+                  min="0"
+                  max="5"
+                  placeholder="0-5"
+                  className="w-full p-2 border rounded focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white"
+                />
+              </div>
             </div>
 
-            {/* Sorting & Apply Section */}
+            {/* Sorting and Action Buttons */}
             <div className="flex flex-col md:flex-row justify-between items-center mt-6 gap-4">
               <div className="w-full md:w-auto">
                 <label className="block text-sm font-semibold mb-2">
                   Sort By
                 </label>
                 <select
-                  name="sortBy"
-                  value={filters.sortBy}
+                  name="sortOption"
+                  value={filters.sortOption}
                   onChange={handleFilterChange}
                   className="w-full md:w-48 p-2 border rounded focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white"
                 >
-                  <option value="popularity">Popularity</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="newest">Newest First</option>
-                  <option value="title">Title: A-Z</option>
+                  <option value="title-asc">Title: A-Z</option>
+                  <option value="title-desc">Title: Z-A</option>
+                  <option value="price-asc">Price: Low to High</option>
+                  <option value="price-desc">Price: High to Low</option>
+                  <option value="publicationDate-desc">Newest First</option>
+                  <option value="popularity-desc">Popularity</option>
                 </select>
               </div>
             </div>
@@ -415,8 +389,8 @@ const Catalog = () => {
         ) : (
           <section id="book-catalog" className="bg-white">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-              {currentBooks.length > 0 ? (
-                currentBooks.map((book) => (
+              {books.length > 0 ? (
+                books.map((book) => (
                   <div
                     key={book.id}
                     className="bg-[#fdfaf5] p-4 rounded shadow hover:shadow-lg flex flex-col justify-between min-h-[520px] relative"
@@ -471,12 +445,11 @@ const Catalog = () => {
                         Add to Cart
                       </button>
 
-                      <button
-                        onClick={() => handleViewDetails(book.id)}
-                        className="bg-white border border-emerald-600 text-emerald-700 hover:bg-emerald-50 text-sm px-4 py-2 rounded transition"
-                      >
-                        View Details
-                      </button>
+                      <Link to={`/books/${book.id}`}>
+                        <button className="bg-blue-500 text-white px-4 py-2 rounded">
+                          View Details
+                        </button>
+                      </Link>
                     </div>
                   </div>
                 ))
@@ -492,18 +465,18 @@ const Catalog = () => {
         {/* Pagination */}
         <div className="flex justify-center items-center mt-8 space-x-4">
           <button
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={appliedFilters.pageNumber === 1}
+            onClick={() => handlePageChange(appliedFilters.pageNumber - 1)}
             className="bg-gray-200 px-3 py-1 rounded disabled:opacity-50"
           >
             Previous
           </button>
           <span>
-            Page {currentPage} of {totalPages}
+            Page {appliedFilters.pageNumber} of {totalPages}
           </span>
           <button
-            disabled={currentPage === totalPages}
-            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={appliedFilters.pageNumber === totalPages}
+            onClick={() => handlePageChange(appliedFilters.pageNumber + 1)}
             className="bg-gray-200 px-3 py-1 rounded disabled:opacity-50"
           >
             Next
