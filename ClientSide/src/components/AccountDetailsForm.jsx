@@ -45,7 +45,7 @@ const AccountDetailsForm = ({ user, setUser }) => {
             </label>
             <input
               type="tel"
-              value={user.phone}
+              value={user.phoneNumber}
               onChange={(e) => setUser({ ...user, phone: e.target.value })}
               placeholder="Enter your phone number"
               className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
