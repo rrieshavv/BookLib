@@ -33,6 +33,35 @@ namespace BookLib.Application.Services
             _cache = cache;
         }
 
+        public async Task<CommonResponse<UserDetailsDto>> GetUserDetails(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return new CommonResponse<UserDetailsDto>
+                {
+                    Code = ResponseCode.Error,
+                    Message = "User not found"
+                };
+            }
+            var userDetails = new UserDetailsDto
+            {
+                Username = user.UserName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                MembershipCode = user.MembershipCode,
+                ProfileImage = user.ProfileImage
+            };
+            return new CommonResponse<UserDetailsDto>
+            {
+                Code = ResponseCode.Success,
+                Message = "User details retrieved successfully",
+                Data = userDetails
+            };
+        }
+
         public async Task<CommonResponse<LoginResponse>> Login(string username, string password)
         {
             CommonResponse<LoginResponse> response = new CommonResponse<LoginResponse>();
