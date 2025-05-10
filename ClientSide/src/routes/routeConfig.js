@@ -1,5 +1,5 @@
 import AdminDashboard from "../pages/admin/AdminDashboard";
-import CustomerProfile from "../pages/customer/CustomerProfile";
+import StaffDashboard from "../pages/staff/StaffDashboard";
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
@@ -41,9 +41,9 @@ export const routeConfig = [
     allowedRoles: ["admin"],
   },
   {
-    path: "/customer/profile",
-    component: CustomerProfile,
-    allowedRoles: ["customer"],
+    path: "/staff/dashboard",
+    component: StaffDashboard,
+    allowedRoles: ["staff"],
   },
   {
     path: "/customer/cart",

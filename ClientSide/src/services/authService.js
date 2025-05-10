@@ -15,9 +15,21 @@ export const loginUser = async (username, password) => {
     // Save auth data to sessionStorage
     saveAuthData(token, username, role);
 
-    return { success: true, role };
-  } catch (error) {
-    console.error("Login failed:", error.response?.data || error.message);
+export const getUserInfo = async () => {
+  try {
+    const res = await apiClient.get("/auth/Get-User-Details");
+    if (res.status == 200) {
+      return {
+        success: true,
+        data: res.data,
+      };
+    } else {
+      return {
+        success: false,
+        data: res.data,
+      };
+    }
+  } catch (err) {
     return {
       success: false,
       error: error.response?.data?.message || "Login failed",
