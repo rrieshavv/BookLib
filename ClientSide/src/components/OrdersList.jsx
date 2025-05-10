@@ -6,7 +6,7 @@ const OrdersList = ({ orders }) => {
     <div>
       <h2 className="text-2xl font-bold mb-6">My Orders</h2>
       {orders.length > 0 ? (
-        <div className="space-y-6">
+        <div className="space-y-6 overflow-y-scroll max-h-[395px]">
           {orders.map((order) => (
             <div
               key={order.id}

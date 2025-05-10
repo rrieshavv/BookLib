@@ -45,7 +45,7 @@ export const registerUser = async (formdata) => {
   }
 };
 
-export const getUserDetails = async () => {
+export const getUserInfo = async () => {
   try {
     const res = await apiClient.get("/auth/Get-User-Details");
     if (res.status == 200) {
