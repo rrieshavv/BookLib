@@ -7,6 +7,7 @@ import Testimonials from "../components/Testimonials";
 import Newsletter from "../components/Newsletter";
 import Footer from "../components/Footer";
 import Announcement from "../components/Announcement";
+import { Book } from "lucide-react";
 import { getRole } from "../utils/authStorage";
 
 
@@ -45,7 +46,9 @@ const HomePage = () => {
       <Category />
       
       {/* Catalog Section */}
+      <section id="book-catalog">
       <BookPreview />
+      </section>
       
       {/* Testimonials */}
       <Testimonials />
