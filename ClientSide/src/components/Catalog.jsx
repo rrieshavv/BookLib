@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Filter } from "lucide-react";
-import { getFilteredBooks } from "../services/bookService";
+import { getFilteredBooks, getAllAuthors, getAllGenres, getAllPublishers, getAllLanguages, getAllFormats } from "../services/bookService";
 import { Link } from "react-router-dom";
 
 const Catalog = () => {
@@ -22,8 +22,8 @@ const Catalog = () => {
   };
 
   // State management
-  const [filters, setFilters] = useState(initialFilters); // Current filter inputs
-  const [appliedFilters, setAppliedFilters] = useState(initialFilters); // Filters applied to API
+  const [filters, setFilters] = useState(initialFilters);
+  const [appliedFilters, setAppliedFilters] = useState(initialFilters);
   const [books, setBooks] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,37 @@ const Catalog = () => {
   const [cartIds, setCartIds] = useState([]);
   const [favoriteIds, setFavoriteIds] = useState([]);
 
-  // Fetching books when appliedFilters change
+  // State for dynamic filter options
+  const [authors, setAuthors] = useState([]);
+  const [genres, setGenres] = useState([]);
+  const [publishers, setPublishers] = useState([]);
+  const [languages, setLanguages] = useState([]);
+  const [formats, setFormats] = useState([]);
+
+  // Fetch filter options on component mount
+  useEffect(() => {
+    const fetchFilterOptions = async () => {
+      try {
+        const [authorsData, genresData, publishersData, languagesData, formatsData] = await Promise.all([
+          getAllAuthors(),
+          getAllGenres(),
+          getAllPublishers(),
+          getAllLanguages(),
+          getAllFormats(),
+        ]);
+        setAuthors(authorsData.data || []);
+        setGenres(genresData.data || []);
+        setPublishers(publishersData.data || []);
+        setLanguages(languagesData.data || []);
+        setFormats(formatsData.data || []);
+      } catch (error) {
+        console.error("Error fetching filter options:", error);
+      }
+    };
+    fetchFilterOptions();
+  }, []);
+
+  // Fetch books when appliedFilters change
   useEffect(() => {
     fetchBooks();
     setCartIds(JSON.parse(localStorage.getItem("cart") || "[]"));
@@ -47,7 +77,6 @@ const Catalog = () => {
       const sortBy = sortField;
       const sortAscending = sortDirection === "asc";
 
-      // Base parameters for pagination and sorting
       const params = {
         pageNumber: appliedFilters.pageNumber,
         pageSize: appliedFilters.pageSize,
@@ -55,25 +84,17 @@ const Catalog = () => {
         sortAscending,
       };
 
-      // Add filter parameters only if they are set
-      if (appliedFilters.searchTerm)
-        params.searchTerm = appliedFilters.searchTerm;
-      if (appliedFilters.authorIds.length > 0)
-        params.authorIds = appliedFilters.authorIds;
-      if (appliedFilters.genreIds.length > 0)
-        params.genreIds = appliedFilters.genreIds;
-      if (appliedFilters.publisherIds.length > 0)
-        params.publisherIds = appliedFilters.publisherIds;
-      if (appliedFilters.minPrice)
-        params.minPrice = parseFloat(appliedFilters.minPrice);
-      if (appliedFilters.maxPrice)
-        params.maxPrice = parseFloat(appliedFilters.maxPrice);
+      if (appliedFilters.searchTerm) params.searchTerm = appliedFilters.searchTerm;
+      if (appliedFilters.authorIds.length > 0) params.authorIds = appliedFilters.authorIds;
+      if (appliedFilters.genreIds.length > 0) params.genreIds = appliedFilters.genreIds;
+      if (appliedFilters.publisherIds.length > 0) params.publisherIds = appliedFilters.publisherIds;
+      if (appliedFilters.minPrice) params.minPrice = parseFloat(appliedFilters.minPrice);
+      if (appliedFilters.maxPrice) params.maxPrice = parseFloat(appliedFilters.maxPrice);
       if (appliedFilters.language) params.language = appliedFilters.language;
       if (appliedFilters.format) params.format = appliedFilters.format;
       if (appliedFilters.inStock) params.inStock = appliedFilters.inStock;
       if (appliedFilters.onSale) params.onSale = appliedFilters.onSale;
-      if (appliedFilters.minRating)
-        params.minRating = parseInt(appliedFilters.minRating);
+      if (appliedFilters.minRating) params.minRating = parseInt(appliedFilters.minRating);
 
       const response = await getFilteredBooks(params);
 
@@ -90,16 +111,12 @@ const Catalog = () => {
     }
   };
 
-  // Handling changes in filter inputs and applying them immediately
+  // Handle filter changes
   const handleFilterChange = (e) => {
     const { name, value, type, checked } = e.target;
     let updatedFilters = { ...filters };
 
-    if (
-      name === "authorIds" ||
-      name === "genreIds" ||
-      name === "publisherIds"
-    ) {
+    if (name === "authorIds" || name === "genreIds" || name === "publisherIds") {
       updatedFilters[name] = value ? [value] : [];
     } else if (type === "checkbox") {
       updatedFilters[name] = checked;
@@ -115,42 +132,33 @@ const Catalog = () => {
     setAppliedFilters({ ...filters, pageNumber: 1 });
   };
 
-  // Reset filters
   const resetFilters = () => {
     setFilters(initialFilters);
     setAppliedFilters(initialFilters);
   };
 
-  // Handle pagination
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
       setAppliedFilters((prev) => ({ ...prev, pageNumber: newPage }));
     }
   };
 
-  // Toggle filter panel visibility
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
   };
 
   const handleAddToCart = (bookId) => {
-    let updatedCart;
-    if (cartIds.includes(bookId)) {
-      updatedCart = cartIds.filter((id) => id !== bookId);
-    } else {
-      updatedCart = [...cartIds, bookId];
-    }
+    let updatedCart = cartIds.includes(bookId)
+      ? cartIds.filter((id) => id !== bookId)
+      : [...cartIds, bookId];
     setCartIds(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
   const handleAddToFavorites = (bookId) => {
-    let updatedFavorites;
-    if (favoriteIds.includes(bookId)) {
-      updatedFavorites = favoriteIds.filter((id) => id !== bookId);
-    } else {
-      updatedFavorites = [...favoriteIds, bookId];
-    }
+    let updatedFavorites = favoriteIds.includes(bookId)
+      ? favoriteIds.filter((id) => id !== bookId)
+      : [...favoriteIds, bookId];
     setFavoriteIds(updatedFavorites);
     localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
   };
@@ -178,9 +186,7 @@ const Catalog = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Author Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Author
-                </label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Author</label>
                 <select
                   name="authorIds"
                   value={filters.authorIds[0] || ""}
@@ -188,20 +194,17 @@ const Catalog = () => {
                   className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 >
                   <option value="">All Authors</option>
-                  <option value="94a46826-4406-4b88-8181-5fa8177c9000">
-                    Robert Kiyosaki
-                  </option>
-                  <option value="a1b2c3d4-e5f6-7890-abcd-ef1234567890">
-                    Jane Austen
-                  </option>
+                  {authors.map((author) => (
+                    <option key={author.id} value={author.id}>
+                      {author.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               {/* Genre Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Genre
-                </label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Genre</label>
                 <select
                   name="genreIds"
                   value={filters.genreIds[0] || ""}
@@ -209,20 +212,17 @@ const Catalog = () => {
                   className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 >
                   <option value="">All Genres</option>
-                  <option value="86a902a3-a20c-4fd7-bb7b-4fc0161a51b3">
-                    Finance
-                  </option>
-                  <option value="123e4567-e89b-12d3-a456-426614174000">
-                    Fiction
-                  </option>
+                  {genres.map((genre) => (
+                    <option key={genre.id} value={genre.id}>
+                      {genre.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               {/* Publisher Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Publisher
-                </label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Publisher</label>
                 <select
                   name="publisherIds"
                   value={filters.publisherIds[0] || ""}
@@ -230,20 +230,17 @@ const Catalog = () => {
                   className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 >
                   <option value="">All Publishers</option>
-                  <option value="38044e82-d1e8-4de6-992f-98d0a2436a62">
-                    Plata Publishing
-                  </option>
-                  <option value="987fcdeb-1234-5678-9abc-def123456789">
-                    HarperCollins
-                  </option>
+                  {publishers.map((publisher) => (
+                    <option key={publisher.id} value={publisher.id}>
+                      {publisher.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               {/* Format Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Format
-                </label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Format</label>
                 <select
                   name="format"
                   value={filters.format}
@@ -251,19 +248,17 @@ const Catalog = () => {
                   className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 >
                   <option value="">All Formats</option>
-                  <option value="Paperback">Paperback</option>
-                  <option value="Hardcover">Hardcover</option>
-                  <option value="signed">Signed Edition</option>
-                  <option value="limited">Limited Edition</option>
-                  <option value="deluxe">Deluxe Edition</option>
+                  {formats.map((format) => (
+                    <option key={format} value={format}>
+                      {format}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               {/* Price Range Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Price Range
-                </label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Price Range</label>
                 <div className="flex items-center gap-2">
                   <input
                     name="minPrice"
@@ -287,9 +282,7 @@ const Catalog = () => {
 
               {/* Language Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Language
-                </label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Language</label>
                 <select
                   name="language"
                   value={filters.language}
@@ -297,17 +290,17 @@ const Catalog = () => {
                   className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 >
                   <option value="">All Languages</option>
-                  <option value="English">English</option>
-                  <option value="Hindi">Hindi</option>
-                  <option value="Spanish">Spanish</option>
+                  {languages.map((lang) => (
+                    <option key={lang} value={lang}>
+                      {lang}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               {/* Availability Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Availability
-                </label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Availability</label>
                 <div className="flex items-center gap-6">
                   <label className="flex items-center cursor-pointer">
                     <input
@@ -334,9 +327,7 @@ const Catalog = () => {
 
               {/* Search Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Search
-                </label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Search</label>
                 <input
                   name="searchTerm"
                   value={filters.searchTerm}
@@ -349,9 +340,7 @@ const Catalog = () => {
 
               {/* Minimum Rating Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Min Rating
-                </label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Min Rating</label>
                 <input
                   name="minRating"
                   value={filters.minRating}
@@ -368,9 +357,7 @@ const Catalog = () => {
             {/* Sorting and Action Buttons */}
             <div className="flex flex-col md:flex-row justify-between items-center mt-8 gap-4">
               <div className="w-full md:w-auto">
-                <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Sort By
-                </label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Sort By</label>
                 <select
                   name="sortOption"
                   value={filters.sortOption}
@@ -604,12 +591,8 @@ const Catalog = () => {
                       d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
                     />
                   </svg>
-                  <p className="text-xl text-gray-500">
-                    No books found matching your criteria
-                  </p>
-                  <p className="text-gray-400 mt-2">
-                    Try adjusting your filters or search terms
-                  </p>
+                  <p className="text-xl text-gray-500">No books found matching your criteria</p>
+                  <p className="text-gray-400 mt-2">Try adjusting your filters or search terms</p>
                 </div>
               )}
             </div>
