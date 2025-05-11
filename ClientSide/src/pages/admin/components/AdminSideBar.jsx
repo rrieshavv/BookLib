@@ -6,6 +6,7 @@ import {
   FiPieChart,
   FiShoppingBag,
   FiFileText,
+  FiBell,
   FiLogOut,
 } from "react-icons/fi";
 import SideBarItem from "./SideBarItem";
@@ -27,6 +28,9 @@ const AdminSideBar = () => {
           </Link>
           <Link to="/admin/books">
             <SideBarItem icon={<FiUsers className="h-5 w-5" />} text="Books" />
+          </Link>
+          <Link to="/admin/announcements">
+            <SideBarItem icon={<FiBell className="h-5 w-5" />} text="Announcements" />
           </Link>
           {/* <SideBarItem
             icon={<FiShoppingBag className="h-5 w-5" />}
