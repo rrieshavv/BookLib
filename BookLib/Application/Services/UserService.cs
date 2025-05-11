@@ -26,7 +26,7 @@ namespace BookLib.Application.Services
         private readonly Cloudinary _cloudinary;
         private readonly IImageService _imageService;
 
-        public UserService(ApplicationDbContext context, IOptions<JwtSettings> jwtSettings, UserManager<ApplicationUser> userManager, IConfiguration configuration, IEmailService emailService, IMemoryCache cache)
+        public UserService(ApplicationDbContext context, IOptions<JwtSettings> jwtSettings, UserManager<ApplicationUser> userManager, IConfiguration configuration, IEmailService emailService, IMemoryCache cache, IImageService imageService)
         {
             _context = context;
             _jwtSettings = jwtSettings.Value;
@@ -34,6 +34,7 @@ namespace BookLib.Application.Services
             _configuration = configuration;
             _emailService = emailService;
             _cache = cache;
+            _imageService = imageService;
         }
 
         public async Task<CommonResponse<UserDetailsDto>> GetUserDetails(string userId)
