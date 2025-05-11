@@ -14,6 +14,7 @@ import InvoicePage from "../pages/InvoicePage";
 import CatalogPage from "../pages/CatalogPage";
 import BookDetailsPage from "../pages/BookDetailsPage";
 import ProfilePage from "../pages/ProfilePage";
+import BooksDashboard from "../pages/admin/BooksDashboard";
 
 
 export const routeConfig = [
@@ -37,11 +38,7 @@ export const routeConfig = [
     component: ForgetPasswordPage,
     public: true,
   },
-  {
-    path: "/admin/dashboard",
-    component: AdminDashboard,
-    allowedRoles: ["admin"],
-  },
+
   {
     path: "/staff/dashboard",
     component: StaffDashboard,
@@ -96,5 +93,15 @@ export const routeConfig = [
     path: "/profile",
     component: ProfilePage,
     public: true,
-  }
+  },
+    {
+    path: "/admin/dashboard",
+    component: AdminDashboard,
+    allowedRoles: ["admin"],
+  },
+  {
+    path: "/admin/books",
+    component: BooksDashboard,
+    allowedRoles: ["admin"],
+  },
 ];
