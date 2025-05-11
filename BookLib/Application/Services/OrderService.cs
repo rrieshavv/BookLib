@@ -20,9 +20,110 @@ namespace BookLib.Application.Services
             _emailService = emailService;
         }
 
+
+        public async Task<CommonResponse<OrderDetailsDto>> GetOrderDetails(string claim_code, string membershipCode)
+        {
+            var customer = await _userManager.Users.FirstOrDefaultAsync(x => x.MembershipCode == membershipCode);
+            if (customer == null)
+            {
+                return new CommonResponse<OrderDetailsDto>
+                {
+                    Code = ResponseCode.Error,
+                    Message = "User not found"
+                };
+            }
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(x => x.claim_code == claim_code);
+            if (order == null)
+            {
+                return new CommonResponse<OrderDetailsDto>
+                {
+                    Code = ResponseCode.Error,
+                    Message = "Order not found"
+                };
+            }
+            if (order.status != "Pending")
+            {
+                return new CommonResponse<OrderDetailsDto>
+                {
+                    Code = ResponseCode.Error,
+                    Message = "Order cannot be processed"
+                };
+            }
+
+            var orderItems = await _context.OrderItems
+                .Where(x => x.order_id == order.order_id)
+                .ToListAsync();
+            if (orderItems == null || orderItems.Count == 0)
+            {
+                return new CommonResponse<OrderDetailsDto>
+                {
+                    Code = ResponseCode.Error,
+                    Message = "Order items not found"
+                };
+            }
+            var bookIds = orderItems.Select(x => x.book_id).ToList();
+            var books = await _context.Books
+                .Where(x => bookIds.Contains(x.book_id))
+                .ToListAsync();
+            if (books == null || books.Count == 0)
+            {
+                return new CommonResponse<OrderDetailsDto>
+                {
+                    Code = ResponseCode.Error,
+                    Message = "Books not found"
+                };
+            }
+            var orderDetails = new OrderDetailsDto
+            {
+                OrderCode = order.order_code,
+                ClaimCode = order.claim_code,
+                FirstName = order.first_name,
+                LastName = order.last_name,
+                PhoneNumber = order.phone,
+                AddressLine1 = order.address_line_1,
+                AddressLine2 = order.address_line_2,
+                City = order.city,
+                State = order.state,
+                ZipCode = order.zip_code,
+                Country = order.country,
+                OrderItems = new List<OrderDetailsItemDto>()
+            };
+            foreach (var item in orderItems)
+            {
+                var book = books.FirstOrDefault(x => x.book_id == item.book_id);
+                if (book != null)
+                {
+                    orderDetails.OrderItems.Add(new OrderDetailsItemDto
+                    {
+                        BookId = book.book_id,
+                        BookName = book.title,
+                        Quantity = item.quantity,
+                        Price = item.price,
+                        Discount = item.discount,
+                        TotalPrice = item.total_price
+                    });
+                }
+            }
+            var invoice = await _context.Invoices
+                .FirstOrDefaultAsync(x => x.invoice_id == order.order_id);
+            if (invoice != null)
+            {
+                orderDetails.InvoiceCode = invoice.invoice_no;
+                orderDetails.TotalAmount = invoice.total_amount;
+                orderDetails.BulkDiscount = invoice.bulk_discount;
+                orderDetails.GrandTotalAmount = invoice.grand_total_amount;
+            }
+            return new CommonResponse<OrderDetailsDto>
+            {
+                Code = ResponseCode.Success,
+                Message = "Order details retrieved successfully",
+                Data = orderDetails
+            };
+        }
+
         public async Task<CommonResponse> CancelOrderByCustomer(Guid order_id, string password, string username)
         {
-            throw new Exception("Test error");
 
             var user = await _userManager.FindByNameAsync(username);
 
@@ -58,7 +159,7 @@ namespace BookLib.Application.Services
                 };
             }
 
-            if(order.status != "Pending")
+            if (order.status != "Pending")
             {
                 return new CommonResponse
                 {
@@ -84,7 +185,7 @@ namespace BookLib.Application.Services
                     _context.Books.Update(book);
                 }
             }
-          // _context.OrderItems.RemoveRange(orderItems);
+            // _context.OrderItems.RemoveRange(orderItems);
             await _context.SaveChangesAsync();
             return new CommonResponse
             {
@@ -197,7 +298,7 @@ namespace BookLib.Application.Services
                 orderItem.total_price = (book.price * item.Quantity) - (orderItem.discount * item.Quantity);
                 totalPrice += orderItem.total_price;
                 _context.OrderItems.Add(orderItem);
-            
+
 
 
                 orderItems.Add(orderItem);
@@ -253,6 +354,38 @@ namespace BookLib.Application.Services
                     OrderCode = order.order_code,
                     InvoiceCode = invoice.invoice_no
                 }
+            };
+        }
+
+        public async Task<CommonResponse> ProcessOrder(string claimCode, string membershipCode, string remarks)
+        {
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(x => x.claim_code == claimCode);
+            if (order == null)
+            {
+                return new CommonResponse
+                {
+                    Code = ResponseCode.Error,
+                    Message = "Order not found"
+                };
+            }
+            if (order.status != "Pending")
+            {
+                return new CommonResponse
+                {
+                    Code = ResponseCode.Error,
+                    Message = "Order cannot be processed"
+                };
+            }
+            order.status = "Completed";
+            order.cleared_ts = DateTime.UtcNow;
+            order.remarks = remarks;
+            _context.Orders.Update(order);
+            await _context.SaveChangesAsync();
+            return new CommonResponse
+            {
+                Code = ResponseCode.Success,
+                Message = "Order processed successfully"
             };
         }
     }

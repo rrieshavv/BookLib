@@ -1,7 +1,7 @@
 import React from 'react'
 
 const SideBarItem = ({ icon, text, active = false }) => (
-  <a
+  <span
     href="#"
     className={`flex items-center px-4 py-2 text-sm rounded-lg ${
       active
@@ -11,7 +11,7 @@ const SideBarItem = ({ icon, text, active = false }) => (
   >
     <span className="mr-3">{icon}</span>
     {text}
-  </a>
+  </span>
 );
 
 

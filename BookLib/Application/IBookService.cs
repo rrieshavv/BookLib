@@ -15,5 +15,15 @@ namespace BookLib.Application
         Task<CommonResponse<bool>> DeleteBookAsync(Guid id);
         Task<CommonResponse<List<BookDto>>> GetBestsellerBooksAsync(int count);
 
+        Task<CommonResponse<List<AuthorDto>>> GetAllAuthorsAsync();
+        Task<CommonResponse<List<GenreDto>>> GetAllGenresAsync();
+        Task<CommonResponse<List<PublisherDto>>> GetAllPublishersAsync();
+        Task<CommonResponse<List<string>>> GetAllLanguagesAsync(); 
+        Task<CommonResponse<List<string>>> GetAllFormatsAsync();
+
+
+
+
+
     }
 }

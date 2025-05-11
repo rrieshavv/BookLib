@@ -7,5 +7,7 @@ namespace BookLib.Application
     {
         Task<CommonResponse<OrderResponse>> CreateOrder (OrderDto orderDto, string userId);
         Task<CommonResponse> CancelOrderByCustomer(Guid order_id, string password, string userId);
+        Task<CommonResponse<OrderDetailsDto>> GetOrderDetails(string claim_code, string membershipCode);
+        Task<CommonResponse> ProcessOrder(string claimCode, string membershipCode, string remarks);
     }
 }

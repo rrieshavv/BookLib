@@ -21,7 +21,7 @@ namespace BookLib.Infrastructure.Data.Entities
 
         [StringLength(50)]
         public string language { get; set; }
-
+       
 
         [StringLength(255)]
         public string format { get; set; }

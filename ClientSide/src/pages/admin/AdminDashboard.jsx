@@ -20,6 +20,7 @@ const AdminDashboard = () => {
       {/* Main Content */}
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Top Navigation */}
+        <TopNavAdmin />
     <TopNavAdmin />
 
         {/* Content Area */}
@@ -194,7 +195,6 @@ const AdminDashboard = () => {
     </div>
   );
 };
-
 
 const StatCard = ({ title, value, change, icon, negative = false }) => (
   <div className="bg-white p-6 rounded-lg shadow">
