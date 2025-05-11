@@ -165,28 +165,9 @@ const CartPage = () => {
                   <p>Items ({itemCount})</p>
                   <p>Rs {totalPrice.toFixed(2)}</p>
                 </div>
-                <div className="flex justify-between">
-                  <p>Shipping</p>
-                  <p className="text-gray-500">Standard Delivery: Rs 100</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Promo Code
-                  </label>
-                  <div className="flex gap-2 mt-2">
-                    <input
-                      type="text"
-                      placeholder="Enter your code"
-                      className="w-full p-2 border rounded"
-                    />
-                    <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                      Apply
-                    </button>
-                  </div>
-                </div>
                 <div className="flex justify-between font-bold text-lg border-t border-gray-300/80 pt-4">
                   <p>Total Cost</p>
-                  <p>Rs {(totalPrice + 100).toFixed(2)}</p>
+                  <p>Rs {(totalPrice).toFixed(2)}</p>
                 </div>
                 
                 <Link

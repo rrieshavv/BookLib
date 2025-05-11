@@ -71,38 +71,11 @@ loadUserInfo()
     },
   ]);
 
-  // Mock bookmarked books
-  const [bookmarks, setBookmarks] = useState([
-    {
-      id: 1,
-      title: "Don Quixote",
-      author: "Alex Michaelides",
-      cover: "src/assets/books/don-quixote.jpg",
-      price: 450,
-    },
-    {
-      id: 2,
-      title: "Normal People",
-      author: "Tara Westover",
-      cover: "src/assets/books/normal-people.jpg",
-      price: 550,
-    },
-    {
-      id: 3,
-      title: "War Peace",
-      author: "Delia Owens",
-      cover: "src/assets/books/war-peace.jpg",
-      price: 650,
-    },
-  ]);
 
   // UI State
   const [activeTab, setActiveTab] = useState("profile");
 
-  // Handle remove bookmark
-  const removeBookmark = (bookId) => {
-    setBookmarks(bookmarks.filter((book) => book.id !== bookId));
-  };
+
 
   return (
     <div className="bg-[#f4f1ea] font-sans min-h-screen flex flex-col pt-5">
@@ -159,13 +132,13 @@ loadUserInfo()
               {/* Orders Tab */}
               {activeTab === "orders" && <OrdersList orders={orders} />}
 
-              {/* Bookmarks Tab */}
+              {/* Bookmarks Tab
               {activeTab === "bookmarks" && (
                 <BookmarksList
                   bookmarks={bookmarks}
                   removeBookmark={removeBookmark}
                 />
-              )}
+              )} */}
             </div>
           </div>
         </div>
