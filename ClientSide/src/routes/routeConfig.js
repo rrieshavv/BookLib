@@ -15,6 +15,8 @@ import CatalogPage from "../pages/CatalogPage";
 import BookDetailsPage from "../pages/BookDetailsPage";
 import ProfilePage from "../pages/ProfilePage";
 import BooksDashboard from "../pages/admin/BooksDashboard";
+import AdminBookDetailsPage from "../pages/admin/components/BookDetailPage";
+
 
 
 export const routeConfig = [
@@ -102,6 +104,11 @@ export const routeConfig = [
   {
     path: "/admin/books",
     component: BooksDashboard,
+    allowedRoles: ["admin"],
+  },
+  {
+    path: "/admin/books/:id",
+    component: AdminBookDetailsPage,
     allowedRoles: ["admin"],
   },
 ];

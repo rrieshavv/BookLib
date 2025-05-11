@@ -42,5 +42,20 @@ export const getFilteredBooks = async (filters = {}) => {
   });
 };
 
+export const updateBook = async (id, bookData) => {
+  try {
+    const response = await apiClient.put(`/book/${id}`, bookData, {
+      headers: {
+        'Content-Type': 'multipart/form-data', // Important for file uploads
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating book:", error);
+    throw error;
+  }
+};
+
+
 
 
