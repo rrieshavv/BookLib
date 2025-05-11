@@ -12,12 +12,7 @@ import { getRole } from "../utils/authStorage";
 
 
 const HomePage = () => {
-  // You can hardcode announcement data here or store it in a constant file
 
-
-  useEffect(()=>{
-    console.log(getRole())
-  },[])
   const announcement = {
     title: "Summer Reading Sale!",
     message: "Enjoy 30% off on all bestsellers until June 15th. Browse our collection now and find your next favorite book!",

@@ -55,6 +55,8 @@ namespace BookLib.Infrastructure.Data.Entities
         [StringLength(100)]
         public string country { get; set; }
 
+        public string? remarks { get; set; }
+
         [ForeignKey("user_id")]
         public virtual ApplicationUser UserDetails { get; set; }
 

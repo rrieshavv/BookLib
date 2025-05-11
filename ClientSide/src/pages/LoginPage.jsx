@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { loginUser } from "../services/authService"; // Make sure this function returns a Promise
 import { Link, useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import { getRole } from "../utils/authStorage";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -14,21 +15,27 @@ const LoginPage = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-  
+
     const response = await loginUser(username, password);
     console.log(response);
-  
+
     if (response.success) {
+      const role = getRole();
       toast.success(response.message || "Logged in successfully");
-      nav("/");
+      if (role === "staff") {
+        nav("/staff/dashboard");
+      } else if (role === "admin") {
+        nav("/admin/dashboard");
+      } else {
+        nav("/");
+      }
     } else {
       setError(response.message || "Login failed");
       toast.error(response.message || "Login failed");
     }
-  
+
     setLoading(false);
   };
-  
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
