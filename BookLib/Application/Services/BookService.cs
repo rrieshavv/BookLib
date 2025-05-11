@@ -558,6 +558,143 @@ namespace BookLib.Application.Services
 
         }
 
+
+
+
+
+
+        public async Task<CommonResponse<List<AuthorDto>>> GetAllAuthorsAsync()
+        {
+            CommonResponse<List<AuthorDto>> response = new CommonResponse<List<AuthorDto>>();
+
+            try
+            {
+                var authors = await _context.Authors
+                    .Select(a => new AuthorDto
+                    {
+                        Id = a.author_id,
+                        Name = a.name
+                    })
+                    .ToListAsync();
+
+                response.Code = ResponseCode.Success;
+                response.Message = "Authors retrieved successfully";
+                response.Data = authors;
+            }
+            catch (Exception ex)
+            {
+                response.Code = ResponseCode.Exception;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
+
+
+
+        public async Task<CommonResponse<List<GenreDto>>> GetAllGenresAsync()
+        {
+            CommonResponse<List<GenreDto>> response = new CommonResponse<List<GenreDto>>();
+
+            try
+            {
+                var genres = await _context.Genres
+                    .Select(g => new GenreDto
+                    {
+                        Id = g.genre_id,
+                        Name = g.name
+                    })
+                    .ToListAsync();
+
+                response.Code = ResponseCode.Success;
+                response.Message = "Genres retrieved successfully";
+                response.Data = genres;
+            }
+            catch (Exception ex)
+            {
+                response.Code = ResponseCode.Exception;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
+
+        public async Task<CommonResponse<List<PublisherDto>>> GetAllPublishersAsync()
+        {
+            CommonResponse<List<PublisherDto>> response = new CommonResponse<List<PublisherDto>>();
+
+            try
+            {
+                var publishers = await _context.Publishers
+                    .Select(p => new PublisherDto
+                    {
+                        Id = p.publisher_id,
+                        Name = p.name
+                    })
+                    .ToListAsync();
+
+                response.Code = ResponseCode.Success;
+                response.Message = "Publishers retrieved successfully";
+                response.Data = publishers;
+            }
+            catch (Exception ex)
+            {
+                response.Code = ResponseCode.Exception;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
+
+        public async Task<CommonResponse<List<string>>> GetAllLanguagesAsync()
+        {
+            CommonResponse<List<string>> response = new CommonResponse<List<string>>();
+
+            try
+            {
+                var languages = await _context.Books
+                    .Select(b => b.language)
+                    .Where(l => !string.IsNullOrEmpty(l))
+                    .Distinct()
+                    .ToListAsync();
+
+                response.Code = ResponseCode.Success;
+                response.Message = "Languages retrieved successfully";
+                response.Data = languages;
+            }
+            catch (Exception ex)
+            {
+                response.Code = ResponseCode.Exception;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
+
+        public async Task<CommonResponse<List<string>>> GetAllFormatsAsync()
+        {
+            CommonResponse<List<string>> response = new CommonResponse<List<string>>();
+
+            try
+            {
+                var formats = await _context.Books
+                    .Select(b => b.format)
+                    .Where(f => !string.IsNullOrEmpty(f))
+                    .Distinct()
+                    .ToListAsync();
+
+                response.Code = ResponseCode.Success;
+                response.Message = "Formats retrieved successfully";
+                response.Data = formats;
+            }
+            catch (Exception ex)
+            {
+                response.Code = ResponseCode.Exception;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
     }
 
 

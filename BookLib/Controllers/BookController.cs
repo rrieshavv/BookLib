@@ -155,6 +155,103 @@ namespace BookLib.Controllers
         }
 
 
+        [HttpGet("authors")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAllAuthors()
+        {
+            try
+            {
+                var response = await _bookService.GetAllAuthorsAsync();
+                if (response.Code == ResponseCode.Success)
+                {
+                    return StatusCode(StatusCodes.Status200OK, response);
+                }
+                return StatusCode(StatusCodes.Status400BadRequest, response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+
+        [HttpGet("genres")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAllGenres()
+        {
+            try
+            {
+                var response = await _bookService.GetAllGenresAsync();
+                if (response.Code == ResponseCode.Success)
+                {
+                    return StatusCode(StatusCodes.Status200OK, response);
+                }
+                return StatusCode(StatusCodes.Status400BadRequest, response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("publishers")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAllPublishers()
+        {
+            try
+            {
+                var response = await _bookService.GetAllPublishersAsync();
+                if (response.Code == ResponseCode.Success)
+                {
+                    return StatusCode(StatusCodes.Status200OK, response);
+                }
+                return StatusCode(StatusCodes.Status400BadRequest, response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("languages")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAllLanguages()
+        {
+            try
+            {
+                var response = await _bookService.GetAllLanguagesAsync();
+                if (response.Code == ResponseCode.Success)
+                {
+                    return StatusCode(StatusCodes.Status200OK, response);
+                }
+                return StatusCode(StatusCodes.Status400BadRequest, response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("formats")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAllFormats()
+        {
+            try
+            {
+                var response = await _bookService.GetAllFormatsAsync();
+                if (response.Code == ResponseCode.Success)
+                {
+                    return StatusCode(StatusCodes.Status200OK, response);
+                }
+                return StatusCode(StatusCodes.Status400BadRequest, response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+
 
     }
 }
