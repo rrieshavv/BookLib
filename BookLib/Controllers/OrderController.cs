@@ -23,8 +23,7 @@ namespace BookLib.Controllers
             _orderService = orderService;
         }
 
-        [HttpPost]
-        [Route("place-order")]
+        [HttpPost("place-order")]
         [Authorize(Roles = nameof(UserRole.customer))]
         public async Task<IActionResult> PlaceOrder(OrderDto orderDto)
         {
@@ -38,8 +37,7 @@ namespace BookLib.Controllers
             return StatusCode(StatusCodes.Status201Created, createOrder.Data);
         }
 
-        [HttpPost]
-        [Route("cancel-order")]
+        [HttpPost("cancel-order")]
         [Authorize(Roles = nameof(UserRole.customer))]
         public async Task<IActionResult> CancelOrder([FromBody] OrderCancelDto orderCancelDto)
         {
@@ -49,6 +47,31 @@ namespace BookLib.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest, cancelOrder.Message);
             }
             return StatusCode(StatusCodes.Status200OK, cancelOrder.Message);
+        }
+
+
+        [HttpGet("order-details/{membershipCode}/{claimCode}")]
+        [Authorize(Roles = $"{nameof(UserRole.staff)},{nameof(UserRole.admin)}")]
+        public async Task<IActionResult> GetOrderDetails(string claimCode, string membershipCode)
+        {
+            var orderDetails = await _orderService.GetOrderDetails(claimCode, membershipCode);
+            if (orderDetails.Code == ResponseCode.Error)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, orderDetails.Message);
+            }
+            return StatusCode(StatusCodes.Status200OK, orderDetails.Data);
+        }
+
+        [HttpPost("process-order")]
+        [Authorize(Roles = $"{nameof(UserRole.staff)},{nameof(UserRole.admin)}")]
+        public async Task<IActionResult> ProcessOrder([FromBody] OrderProcessDto orderProcessDto)
+        {
+            var processOrder = await _orderService.ProcessOrder(orderProcessDto.ClaimCode, orderProcessDto.MembershipCode, orderProcessDto.Remarks);
+            if (processOrder.Code == ResponseCode.Error)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, processOrder.Message);
+            }
+            return StatusCode(StatusCodes.Status200OK, processOrder.Message);
         }
     }
 }
