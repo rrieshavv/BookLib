@@ -3,6 +3,7 @@ using BookLib.Application;
 using BookLib.Application.Services;
 using BookLib.Infrastructure.Data;
 using BookLib.Models;
+using MailKit;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookLib.Infrastructure.DI
@@ -26,6 +27,8 @@ namespace BookLib.Infrastructure.DI
             services.AddScoped<ILoggerService, LoggerService>();
             services.AddScoped<IDiscountService, DiscountService>();
             services.AddScoped<IAnnouncementService, AnnouncementService>();
+            services.AddScoped<IImageService, ImageService>();
+
 
             return services;
         }

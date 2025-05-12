@@ -2,10 +2,12 @@
 using System.Security.Claims;
 using System.Text;
 using BookLib.Application.DTOs.Auth;
+using BookLib.Application.DTOs.User;
 using BookLib.Functions;
 using BookLib.Infrastructure.Data;
 using BookLib.Infrastructure.Data.Entities;
 using BookLib.Models;
+using CloudinaryDotNet;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -21,9 +23,10 @@ namespace BookLib.Application.Services
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
         private readonly IMemoryCache _cache;
+        private readonly Cloudinary _cloudinary;
+        private readonly IImageService _imageService;
 
-
-        public UserService(ApplicationDbContext context, IOptions<JwtSettings> jwtSettings, UserManager<ApplicationUser> userManager, IConfiguration configuration, IEmailService emailService, IMemoryCache cache)
+        public UserService(ApplicationDbContext context, IOptions<JwtSettings> jwtSettings, UserManager<ApplicationUser> userManager, IConfiguration configuration, IEmailService emailService, IMemoryCache cache, IImageService imageService)
         {
             _context = context;
             _jwtSettings = jwtSettings.Value;
@@ -31,6 +34,7 @@ namespace BookLib.Application.Services
             _configuration = configuration;
             _emailService = emailService;
             _cache = cache;
+            _imageService = imageService;
         }
 
         public async Task<CommonResponse<UserDetailsDto>> GetUserDetails(string userId)
@@ -302,5 +306,131 @@ namespace BookLib.Application.Services
 
             return token;
         }
+
+
+
+        public async Task<CommonResponse<UserDto>> UpdateUserProfileAsync(string userId, UserUpdateDto updateDto)
+        {
+
+            var response = new CommonResponse<UserDto>();
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                response.Code = ResponseCode.Error;
+                response.Message = "User not found";
+                return response;
+            }
+
+            user.FirstName = updateDto.FirstName;
+            user.LastName = updateDto.LastName;
+            user.PhoneNumber = updateDto.PhoneNumber;
+
+            if (updateDto.ProfileImage != null && updateDto.ProfileImage.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(user.ProfileImage))
+                {
+                    var publicId = _imageService.ExtractPublicIdFromUrl(user.ProfileImage);
+                    if (!string.IsNullOrEmpty(publicId))
+                    {
+                        await _imageService.DeleteImageAsync(publicId);
+                    }
+                }
+
+                var uploadResult = await _imageService.UploadImageAsync(
+                    updateDto.ProfileImage,
+                    "profiles",
+                    $"user_{userId}",
+                    400,
+                    400,
+                    "fill",
+                    "face");
+
+                if (uploadResult != null)
+                {
+                    user.ProfileImage = uploadResult.SecureUrl.ToString();
+                }
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                response.Code = ResponseCode.Error;
+                response.Message = "User profile updated failed";
+                return response;
+            }
+
+            var userDto = MapToUserDto(user);
+
+            response.Code = ResponseCode.Success;
+            response.Message = "User profile updated successfully";
+            response.Data = userDto;
+
+            return response;
+        }
+
+
+        public async Task<CommonResponse> UploadProfileImageAsync(string userId, IFormFile imageFile)
+        {
+
+            var response = new CommonResponse<UserDto>();
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                response.Code = ResponseCode.Error;
+                response.Message = "User not found";
+                return response;
+            }
+
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(user.ProfileImage))
+                {
+                    var publicId = _imageService.ExtractPublicIdFromUrl(user.ProfileImage);
+                    if (!string.IsNullOrEmpty(publicId))
+                    {
+                        await _imageService.DeleteImageAsync(publicId);
+                    }
+                }
+                var uploadResult = await _imageService.UploadImageAsync(
+                    imageFile,
+                    "profiles",
+                    $"user_{userId}",
+                    400,
+                    400,
+                    "fill",
+                    "face");
+
+                if (uploadResult != null)
+                {
+                    user.ProfileImage = uploadResult.SecureUrl.ToString();
+                    await _userManager.UpdateAsync(user);
+                }
+            }
+
+            var userDto = MapToUserDto(user);
+
+            response.Code = ResponseCode.Success;
+            response.Message = "Profile image updated successfully";
+            response.Data = userDto;
+
+            return response;
+        }
+
+        private UserDto MapToUserDto(ApplicationUser user) => new UserDto
+        {
+            Id = user.Id,
+            Email = user.Email,
+            PhoneNumber = user.PhoneNumber,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            MembershipCode = user.MembershipCode,
+            ProfileImage = user.ProfileImage
+        };
+
     }
 }

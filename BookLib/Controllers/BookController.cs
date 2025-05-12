@@ -89,7 +89,7 @@ namespace BookLib.Controllers
 
 
         [HttpPost("add")]
-        public async Task<IActionResult> AddBook([FromBody] BookCreateDto bookDto)
+        public async Task<IActionResult> AddBook([FromForm] BookCreateDto bookDto)
         {
             try
             {

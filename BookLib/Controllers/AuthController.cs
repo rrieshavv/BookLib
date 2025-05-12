@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using BookLib.Application;
 using BookLib.Application.DTOs.Auth;
+using BookLib.Application.DTOs.User;
 using BookLib.Functions;
 using BookLib.Infrastructure.Data.Entities;
 using BookLib.Models;
@@ -103,6 +104,52 @@ namespace BookLib.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest, result.Message);
             }
             return StatusCode(StatusCodes.Status200OK, result.Data);
+        }
+
+        [HttpPut("user/profile")]
+        public async Task<IActionResult> UpdateProfile([FromForm] UserUpdateDto updateDto)
+        {
+
+            var userId = ClaimsHelper.GetUserIdFromClaims(User);
+
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _userService.UpdateUserProfileAsync(userId, updateDto);
+            if (result.Code == Models.ResponseCode.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+
+        [HttpPost("user/profile/image")]
+        public async Task<IActionResult> UploadProfileImage(IFormFile imageFile)
+        {
+            var userId = ClaimsHelper.GetUserIdFromClaims(User);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            if (imageFile == null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, "No image file provided");
+            }
+
+            var result = await _userService.UploadProfileImageAsync(userId, imageFile);
+
+            if (result.Code == Models.ResponseCode.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        
         }
 
         [HttpPost("change-Password")]
