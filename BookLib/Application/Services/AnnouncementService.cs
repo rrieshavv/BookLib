@@ -2,16 +2,19 @@ using BookLib.Application.DTOs.Announcement;
 using BookLib.Infrastructure.Data;
 using BookLib.Infrastructure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace BookLib.Application.Services
 {
     public class AnnouncementService : IAnnouncementService
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<AnnouncementService> _logger;
 
-        public AnnouncementService(ApplicationDbContext context)
+        public AnnouncementService(ApplicationDbContext context, ILogger<AnnouncementService> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task<AnnouncementResponseDto> CreateAnnouncementAsync(CreateAnnouncementDto createDto, string createdBy)
@@ -21,8 +24,8 @@ namespace BookLib.Application.Services
                 announcement_id = Guid.NewGuid(),
                 title = createDto.Title,
                 description = createDto.Description,
-                display_start_ts = createDto.DisplayStartTs,
-                display_end_ts = createDto.DisplayEndTs,
+                display_start_ts = DateTime.SpecifyKind(createDto.DisplayStartTs, DateTimeKind.Utc),
+                display_end_ts = DateTime.SpecifyKind(createDto.DisplayEndTs, DateTimeKind.Utc),
                 is_active = createDto.IsActive,
                 created_ts = DateTime.UtcNow,
                 updated_ts = DateTime.UtcNow,
@@ -49,10 +52,10 @@ namespace BookLib.Application.Services
     
             announcement.title = updateDto.Title;
             announcement.description = updateDto.Description;
-            announcement.display_start_ts = updateDto.DisplayStartTs;
-            announcement.display_end_ts = updateDto.DisplayEndTs;
+            announcement.display_start_ts = DateTime.SpecifyKind(updateDto.DisplayStartTs, DateTimeKind.Utc);
+            announcement.display_end_ts = DateTime.SpecifyKind(updateDto.DisplayEndTs, DateTimeKind.Utc);
             announcement.is_active = updateDto.IsActive;
-            announcement.updated_ts = DateTime.UtcNow; // Should be updated_ts, not created_ts
+            announcement.updated_ts = DateTime.UtcNow;
             announcement.updated_by = updatedBy;
 
             await _context.SaveChangesAsync();
@@ -74,12 +77,26 @@ namespace BookLib.Application.Services
         public async Task<IEnumerable<AnnouncementResponseDto>> GetCurrentAnnouncementsAsync()
         {
             var currentTime = DateTime.UtcNow;
+            _logger.LogInformation($"Getting current announcements at {currentTime}");
+
+            // First, get all announcements to debug
+            var allAnnouncements = await _context.Announcements.ToListAsync();
+            _logger.LogInformation($"Total announcements in database: {allAnnouncements.Count}");
+            
+            foreach (var announcement in allAnnouncements)
+            {
+                _logger.LogInformation($"Announcement: {announcement.title}, Active: {announcement.is_active}, " +
+                    $"Start: {announcement.display_start_ts}, End: {announcement.display_end_ts}, " +
+                    $"Current Time: {currentTime}");
+            }
+
             var announcements = await _context.Announcements
                 .Where(a => a.is_active &&
                             a.display_start_ts <= currentTime &&
                             (a.display_end_ts >= currentTime || a.display_end_ts == a.display_start_ts))
                 .ToListAsync();
 
+            _logger.LogInformation($"Found {announcements.Count} current announcements");
             return announcements.Select(MapToResponseDto);
         }
 

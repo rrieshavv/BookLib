@@ -1,6 +1,6 @@
 import React from "react";
 
-const AdminAnnouncementHeader = ({ onAddClick }) => (
+const Header = ({ onAddClick }) => (
   <div className="flex justify-between items-center mb-8">
     <div>
       <h2 className="text-3xl font-bold text-gray-800">📢 Announcements</h2>
@@ -17,4 +17,4 @@ const AdminAnnouncementHeader = ({ onAddClick }) => (
   </div>
 );
 
-export default AdminAnnouncementHeader;
+export default Header;

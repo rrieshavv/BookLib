@@ -11,6 +11,16 @@ const announcementService = {
     }
   },
 
+  // Get current announcements
+  getCurrentAnnouncements: async () => {
+    try {
+      const response = await apiClient.get('/announcements/current');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+
   // Create a new announcement
   createAnnouncement: async (announcementData) => {
     try {
