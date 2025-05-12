@@ -1,7 +1,7 @@
 import React from "react";
 import { FiTrash2, FiEdit } from "react-icons/fi";
 
-const AdminAnnouncementList = ({ announcements, onDelete, onEdit }) => {
+const List = ({ announcements, onDelete, onEdit }) => {
   return (
     <div className="space-y-4">
       {announcements.length === 0 ? (
@@ -41,4 +41,4 @@ const AdminAnnouncementList = ({ announcements, onDelete, onEdit }) => {
   );
 };
 
-export default AdminAnnouncementList;
+export default List;

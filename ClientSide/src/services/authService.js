@@ -66,3 +66,28 @@ export const getUserInfo = async () => {
     };
   }
 };
+
+export const changePassword = async (currentPassword, newPassword) => {
+  try {
+    const res = await apiClient.post("/auth/change-password", {
+      currentPassword,
+      newPassword,
+    });
+    if (res.status === 200) {
+      return {
+        success: true,
+        message: res.data,
+      };
+    } else {
+      return {
+        success: false,
+        message: res.data,
+      };
+    }
+  } catch (err) {
+    return {
+      success: false,
+      message: err.response?.data || "Internal error",
+    };
+  }
+};

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import NavBar from "../components/NavBar";
+import NavBar from "../components/NavBar/NavBar";
 import Hero from "../components/Hero";
 import Category from "../components/Category";
 import BookPreview from "../components/BookPreview";
@@ -12,24 +12,14 @@ import { getRole } from "../utils/authStorage";
 
 
 const HomePage = () => {
-
-  const announcement = {
-    title: "Summer Reading Sale!",
-    message: "Enjoy 30% off on all bestsellers until June 15th. Browse our collection now and find your next favorite book!",
-  };
-
   return (
     <div className="bg-[#f4f1ea] text-gray-800 font-sans">
       {/* Announcement Pop-up */}
-      <Announcement 
-        title={announcement.title}
-        message={announcement.message}
-        backgroundImage={announcement.backgroundImage}
-      />
+      <Announcement />
       
       <section
         className="relative w-full h-screen bg-cover bg-center"
-        style={{ backgroundImage: "url('/src/assets/hero-section-img.jpg')" }} // Updated path
+        style={{ backgroundImage: "url('/src/assets/hero-section-img.jpg')" }}
       >
         <div className="absolute inset-0 bg-black/40">
           <NavBar theme="dark"/>
@@ -42,7 +32,7 @@ const HomePage = () => {
       
       {/* Catalog Section */}
       <section id="book-catalog">
-      <BookPreview />
+        <BookPreview />
       </section>
       
       {/* Testimonials */}

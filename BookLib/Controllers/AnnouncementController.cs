@@ -2,6 +2,7 @@ using BookLib.Application.DTOs.Announcement;
 using BookLib.Application;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace BookLib.Controllers
 {
@@ -11,10 +12,12 @@ namespace BookLib.Controllers
     public class AnnouncementsController : ControllerBase
     {
         private readonly IAnnouncementService _announcementService;
+        private readonly ILogger<AnnouncementsController> _logger;
 
-        public AnnouncementsController(IAnnouncementService announcementService)
+        public AnnouncementsController(IAnnouncementService announcementService, ILogger<AnnouncementsController> logger)
         {
             _announcementService = announcementService;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -29,6 +32,16 @@ namespace BookLib.Controllers
         public async Task<ActionResult<IEnumerable<AnnouncementResponseDto>>> GetAllAnnouncements()
         {
             var announcements = await _announcementService.GetAllAnnouncementsAsync();
+            return Ok(announcements);
+        }
+
+        [HttpGet("current")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<AnnouncementResponseDto>>> GetCurrentAnnouncements()
+        {
+            _logger.LogInformation("Fetching current announcements");
+            var announcements = await _announcementService.GetCurrentAnnouncementsAsync();
+            _logger.LogInformation($"Found {announcements.Count()} current announcements");
             return Ok(announcements);
         }
 
@@ -49,14 +62,6 @@ namespace BookLib.Controllers
                 return NotFound();
             
             return NoContent();
-        }
-
-        [HttpGet("(current)")]
-        [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<AnnouncementResponseDto>>> GetCurrentAnnouncements()
-        {
-            var announcements = await _announcementService.GetCurrentAnnouncementsAsync();
-            return Ok(announcements);
         }
     }
 }

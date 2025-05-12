@@ -17,7 +17,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { getBookById } from "../services/bookService";
-import NavBar from "../components/NavBar";
+import NavBar from "../components/NavBar/NavBar";
 
 export default function BookDetailsPage() {
   const { id } = useParams();

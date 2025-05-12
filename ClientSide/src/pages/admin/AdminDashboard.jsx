@@ -20,7 +20,6 @@ const AdminDashboard = () => {
       {/* Main Content */}
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Top Navigation */}
-        <TopNavAdmin />
     <TopNavAdmin />
 
         {/* Content Area */}

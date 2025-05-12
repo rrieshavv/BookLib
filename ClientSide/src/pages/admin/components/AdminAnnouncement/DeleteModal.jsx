@@ -1,6 +1,6 @@
 import React from "react";
 
-const AdminAnnouncementDeleteModal = ({ item, onCancel, onConfirm }) => {
+const DeleteModal = ({ item, onCancel, onConfirm }) => {
   if (!item) return null;
 
   return (
@@ -30,4 +30,4 @@ const AdminAnnouncementDeleteModal = ({ item, onCancel, onConfirm }) => {
   );
 };
 
-export default AdminAnnouncementDeleteModal;
+export default DeleteModal;
