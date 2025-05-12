@@ -56,6 +56,7 @@ export default function BookDetailsPage() {
         setBookData({
           id: book.id,
           title: book.title,
+          currentDicountedPrice: book.currentDicountedPrice,
           author: book.authors[0]?.name || "Unknown Author",
           coverImage: book.imageUrl,
           price: book.price,
@@ -278,21 +279,18 @@ export default function BookDetailsPage() {
 
             <div className="border-t border-b border-gray-200 py-4 mb-6">
               <div className="flex items-baseline">
-                {bookData.onSale ? (
+                {bookData.currentDicountedPrice ? (
                   <>
+                    <span className="text-2xl line-through text-gray-500 mr-2">
+                      Rs. {bookData.price.toFixed(2)}
+                    </span>
                     <span className="text-3xl font-bold text-gray-800">
-                      ${bookData.price.toFixed(2)}
-                    </span>
-                    <span className="ml-2 text-xl text-gray-500 line-through">
-                      ${bookData.originalPrice.toFixed(2)}
-                    </span>
-                    <span className="ml-2 text-sm text-red-500 font-medium">
-                      Sale ends {bookData.saleEnds}
+                      Rs. {bookData.currentDicountedPrice.toFixed(2)}
                     </span>
                   </>
                 ) : (
                   <span className="text-3xl font-bold text-gray-800">
-                    ${bookData.price.toFixed(2)}
+                    Rs. {bookData.price.toFixed(2)} 
                   </span>
                 )}
               </div>

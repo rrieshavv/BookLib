@@ -21,11 +21,18 @@ import AdminAnnouncement from "../pages/admin/AdminAnnouncement";
 
 import ProcessOrders from "../pages/staff/ProcessOrders";
 import AddBookForm from "../pages/admin/components/AddBookForm";
+import FavouritesPage from "../pages/FavouritesPage";
 
 export const routeConfig = [
   {
     path: "/",
     component: HomePage,
+    public: true,
+  },
+
+  {
+  path: "/customer/favorites",
+    component: FavouritesPage,
     public: true,
   },
   {
