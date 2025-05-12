@@ -3,8 +3,12 @@ import AdminSideBar from "./components/AdminSideBar";
 import TopNavAdmin from "./components/TopNavAdmin";
 import { getAllBooks } from "../../services/bookService";
 import AdminBookCard from "./components/BookCard";
+import { useNavigate } from "react-router-dom";
+
+
 
 const BooksDashboard = () => {
+  const navigate = useNavigate()
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,6 +43,10 @@ const BooksDashboard = () => {
       setPagination(prev => ({ ...prev, page: newPage }));
     }
   };
+
+  const handleAddNewBook = () => {
+    navigate("/admin/books/add"); 
+  };
   
   return (
     <div className="flex h-screen bg-gray-100">
@@ -52,9 +60,14 @@ const BooksDashboard = () => {
         <main className="flex-1 overflow-y-auto p-6">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-semibold text-gray-800">Books Management</h1>
-            <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+            
+            <button
+              onClick={handleAddNewBook}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+            >
               Add New Book
             </button>
+            
           </div>
           
           {loading ? (

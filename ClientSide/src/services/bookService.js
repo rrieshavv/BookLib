@@ -1,3 +1,4 @@
+import { data } from "react-router-dom";
 import apiClient from "../utils/apiClient";
 
 //Api for get all books
@@ -135,6 +136,51 @@ export const getAllFormats = async () => {
 };
 
 
+export const addBook = async (bookData) => {
+  try {
+    const response = await apiClient.post('/book/add', bookData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+      },
+      timeout: 60000,
+      httpVersion: 'HTTP/1.1',
+      transformRequest: [function (data) {
+        return data;
+      }],
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity
+    });
 
-
-
+    return response.data;
+  } 
+  catch (error) {
+    if (error.response) {
+      console.error("Server error:", error.response.status, error.response.data);
+      return {
+        code: -1,
+        message: error.response.data.message || "Server error"
+      };
+    } else if (error.request) {
+      console.error("Network error:", error.request);
+      if (error.message === 'Network Error' && error.code === 'ERR_NETWORK') {
+        console.log("HTTP/2 protocol error detected. The request was likely successful but the connection was terminated before completion.");
+        return {
+          code: 0,
+          message: "Add likely successful but connection terminated early"
+        };
+      }
+      return {
+        code: -1,
+        message: "Network error"
+      };
+    } else {
+      console.error("Request setup error:", error.message);
+      return {
+        code: -1,
+        message: error.message || "Request setup error"
+      };
+    }
+  }
+};

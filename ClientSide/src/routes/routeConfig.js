@@ -20,6 +20,7 @@ import AdminBookDetailsPage from "../pages/admin/components/BookDetailPage";
 import AdminAnnouncement from "../pages/admin/AdminAnnouncement";
 
 import ProcessOrders from "../pages/staff/ProcessOrders";
+import AddBookForm from "../pages/admin/components/AddBookForm";
 
 export const routeConfig = [
   {
@@ -120,6 +121,11 @@ export const routeConfig = [
   {
     path: "/admin/announcements",
     component: AdminAnnouncement,
+    allowedRoles: ["admin"],
+  },
+  {
+    path: "/admin/books/add",
+    component: AddBookForm,
     allowedRoles: ["admin"],
   }
 ];

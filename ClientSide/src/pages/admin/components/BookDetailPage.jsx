@@ -112,13 +112,25 @@ const BookDetailPage = () => {
                             by {book?.authors?.map(author => author.name).join(', ')}
                           </p>
                         </div>
-                        
-                        <button
+                        <div className='flex space-x-2'>
+
+                          <button
+                          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition">
+                          Discount
+                          </button>
+
+                          <button
                           onClick={toggleEditMode}
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition"
-                        >
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition">
                           Edit Book
-                        </button>
+                          </button>
+
+
+                        </div>
+                        
+                          
+
+
                       </div>
                       
                       <div className="mt-6">
