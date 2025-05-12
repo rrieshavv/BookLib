@@ -319,7 +319,7 @@ namespace BookLib.Application.Services
             {
                 invoice.bulk_discount = totalPrice * 5 / 100;
                 invoice.bulk_discount_percentage = 5;
-                invoice.grand_total_amount = totalPrice - (totalPrice * invoice.bulk_discount / 100);
+                invoice.grand_total_amount = totalPrice - invoice.bulk_discount;
                 invoice.remarks = "5% discount applied.";
             }
             else
