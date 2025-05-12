@@ -10,5 +10,6 @@ namespace BookLib.Application
         Task<CommonResponse> ResetPasswordRequest(string username);
         Task<CommonResponse> VerifyResetPassword(ResetPasswordDto dto);
         Task<CommonResponse<UserDetailsDto>> GetUserDetails(string userId);
+        Task<CommonResponse> ChangePassword(string userId, ChangePasswordDto dto);
     }
 }
