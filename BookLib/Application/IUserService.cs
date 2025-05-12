@@ -15,5 +15,6 @@ namespace BookLib.Application
         Task<CommonResponse> UploadProfileImageAsync(string userId, IFormFile imageFile);
         Task<CommonResponse<UserDto>> UpdateUserProfileAsync(string userId, UserUpdateDto updateDto);
 
+        Task<CommonResponse> ChangePassword(string userId, ChangePasswordDto dto);
     }
 }

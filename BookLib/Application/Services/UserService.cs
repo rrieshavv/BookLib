@@ -247,6 +247,46 @@ namespace BookLib.Application.Services
             };
         }
 
+        public async Task<CommonResponse> ChangePassword(string userId, ChangePasswordDto dto)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return new CommonResponse
+                {
+                    Code = ResponseCode.Error,
+                    Message = "User not found"
+                };
+            }
+
+            // Verify current password
+            if (!await _userManager.CheckPasswordAsync(user, dto.CurrentPassword))
+            {
+                return new CommonResponse
+                {
+                    Code = ResponseCode.Error,
+                    Message = "Current password is incorrect"
+                };
+            }
+
+            // Change password
+            var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+            if (!result.Succeeded)
+            {
+                return new CommonResponse
+                {
+                    Code = ResponseCode.Error,
+                    Message = string.Join("; ", result.Errors.Select(e => e.Description))
+                };
+            }
+
+            return new CommonResponse
+            {
+                Code = ResponseCode.Success,
+                Message = "Password changed successfully"
+            };
+        }
+
         /// <summary>
         /// Generates the JWT authenticated token with the list of claims.
         /// </summary>

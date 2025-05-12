@@ -1,21 +1,73 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import announcementService from "../services/announcementService";
 
-const Announcement = ({
-  title = "Summer Reading Sale!",
-  message = "Enjoy 30% off on all bestsellers until June 15th. Browse our collection now and find your next favorite book!",
-}) => {
+const POLL_INTERVAL_MS = 5000; // 5 seconds
+
+const Announcement = () => {
+  const [announcements, setAnnouncements] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const hasFetched = useRef(false);
+  const prevAnnouncementsRef = useRef([]);
+  const navigate = useNavigate();
   
+  // Fetch announcements (used for both initial and polling)
+  const fetchCurrentAnnouncements = async (showPopup = false) => {
+    try {
+      const currentAnnouncements = await announcementService.getCurrentAnnouncements();
+      // Only update if there are new announcements
+      const isNew = JSON.stringify(currentAnnouncements) !== JSON.stringify(prevAnnouncementsRef.current);
+      if (currentAnnouncements && currentAnnouncements.length > 0 && isNew) {
+        setAnnouncements(currentAnnouncements);
+        setIsVisible(true);
+        setCurrentIndex(0);
+        prevAnnouncementsRef.current = currentAnnouncements;
+      } else if (currentAnnouncements.length === 0) {
+        setAnnouncements([]);
+        setIsVisible(false);
+        setCurrentIndex(0);
+        prevAnnouncementsRef.current = [];
+      }
+    } catch (error) {
+      console.error("Error fetching announcements:", error);
+    }
+  };
+
+  // Initial fetch
   useEffect(() => {
-    // Show the announcement when component mounts
-    setIsVisible(true);
+    fetchCurrentAnnouncements(true);
+    hasFetched.current = true;
+  }, []);
+
+  // Polling effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchCurrentAnnouncements();
+    }, POLL_INTERVAL_MS);
+    return () => clearInterval(interval);
   }, []);
   
   const handleClose = () => {
+    if (currentIndex < announcements.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+    } else {
+      setIsVisible(false);
+      setCurrentIndex(0);
+    }
+  };
+
+  const handleGoToCatalog = () => {
     setIsVisible(false);
+    setCurrentIndex(0);
+    navigate("/catalog");
   };
   
-  if (!isVisible) return null;
+  if (!isVisible || announcements.length === 0) {
+    return null;
+  }
+  
+  const currentAnnouncement = announcements[currentIndex];
   
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -44,7 +96,7 @@ const Announcement = ({
           <div className="w-full md:w-3/5 relative">
             <img 
               src="/src/assets/announcement-banner.jpg" 
-              alt="Person reading by coastal cliffs" 
+              alt="Announcement banner" 
               className="w-full h-full object-cover"
             />
           </div>
@@ -52,16 +104,16 @@ const Announcement = ({
           {/* Text Content */}
           <div className="w-full md:w-2/5 p-6 flex flex-col justify-between bg-gray-100">
             <div>
-              <h2 className="text-3xl font-bold mb-4 text-gray-800">{title}</h2>
-              <p className="text-lg text-gray-700">{message}</p>
+              <h2 className="text-3xl font-bold mb-4 text-gray-800">{currentAnnouncement.title}</h2>
+              <p className="text-lg text-gray-700">{currentAnnouncement.description}</p>
             </div>
             
-            <div className="mt-6">
+            <div className="mt-6 flex flex-col gap-2">
               <button
-                onClick={handleClose}
+                onClick={handleGoToCatalog}
                 className="px-6 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 transition font-medium w-full"
               >
-                Explore Now
+                Browse Catalog
               </button>
             </div>
           </div>

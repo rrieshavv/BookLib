@@ -152,5 +152,18 @@ namespace BookLib.Controllers
         
         }
 
+        [HttpPost("change-Password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            var userId = ClaimsHelper.GetUserIdFromClaims(User);
+            var result = await _userService.ChangePassword(userId, dto);
+            if (result.Code == ResponseCode.Error)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, result.Message);
+            }
+            return StatusCode(StatusCodes.Status200OK, result.Message);
+        }
+
     }
 }
