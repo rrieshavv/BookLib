@@ -67,14 +67,12 @@ const BooksDashboard = () => {
             </div>
           ) : (
             <>
-              {/* Grid layout for books - this is the key change */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {books.map((book) => (
                   <AdminBookCard key={book.id} book={book} />
                 ))}
               </div>
               
-              {/* Pagination Controls */}
               <div className="flex justify-between items-center mt-8">
                 <button
                   onClick={() => handlePageChange(pagination.page - 1)}

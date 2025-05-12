@@ -1,10 +1,26 @@
-import React, { useState } from 'react';
-import { updateBook } from '../../../services/bookService';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { 
+  updateBook, 
+  getAllAuthors, 
+  getAllGenres, 
+  getAllPublishers,
+  getAllLanguages,
+  getAllFormats
+} from '../../../services/bookService';
 
 const BookEditForm = ({ book, onCancel, onSuccess }) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  
+  const [authors, setAuthors] = useState([]);
+  const [genres, setGenres] = useState([]);
+  const [publishers, setPublishers] = useState([]);
+  const [languages, setLanguages] = useState([]);
+  const [formats, setFormats] = useState([]);
+  const [loadingOptions, setLoadingOptions] = useState(true);
   
   const [formData, setFormData] = useState({
     title: book.title || '',
@@ -24,20 +40,55 @@ const BookEditForm = ({ book, onCancel, onSuccess }) => {
 
   const [imagePreview, setImagePreview] = useState(book.imageUrl || null);
   
-  // For the existing authors, genres, and publishers
-  const existingAuthors = book.authors || [];
-  const existingGenres = book.genres || [];
-  const existingPublishers = book.publishers || [];
+  useEffect(() => {
+    const loadReferenceData = async () => {
+      setLoadingOptions(true);
+      try {
+        const [authorsRes, genresRes, publishersRes, languagesRes, formatsRes] = await Promise.all([
+          getAllAuthors(),
+          getAllGenres(),
+          getAllPublishers(),
+          getAllLanguages(),
+          getAllFormats()
+        ]);
+        
+        if (authorsRes.code === 0 && authorsRes.data) {
+          setAuthors(authorsRes.data);
+        }
+        
+        if (genresRes.code === 0 && genresRes.data) {
+          setGenres(genresRes.data);
+        }
+        
+        if (publishersRes.code === 0 && publishersRes.data) {
+          setPublishers(publishersRes.data);
+        }
+        
+        if (languagesRes.code === 0 && languagesRes.data) {
+          setLanguages(languagesRes.data);
+        }
+        
+        if (formatsRes.code === 0 && formatsRes.data) {
+          setFormats(formatsRes.data);
+        }
+      } catch (err) {
+        console.error("Error loading reference data:", err);
+        setError("Failed to load form options. Please try again.");
+      } finally {
+        setLoadingOptions(false);
+      }
+    };
+    
+    loadReferenceData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
     
     if (type === 'file') {
-      // Handle image file
       if (files[0]) {
         setFormData({ ...formData, imageFile: files[0] });
         
-        // Create preview
         const reader = new FileReader();
         reader.onload = (e) => {
           setImagePreview(e.target.result);
@@ -47,54 +98,105 @@ const BookEditForm = ({ book, onCancel, onSuccess }) => {
     } else if (type === 'checkbox') {
       setFormData({ ...formData, [name]: checked });
     } else if (name === 'price' || name === 'stockQty') {
-      // Convert to appropriate number type
       setFormData({ ...formData, [name]: name === 'price' ? parseFloat(value) : parseInt(value, 10) });
+    } else if (name === 'authorIds' || name === 'genreIds' || name === 'publisherIds') {
+      const options = Array.from(e.target.selectedOptions, option => option.value);
+      setFormData({ ...formData, [name]: options });
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
+  
+  try {
+    const bookFormData = new FormData();
+    
+    bookFormData.append('title', formData.title);
+    bookFormData.append('isbn', formData.isbn);
+    bookFormData.append('publicationDate', formData.publicationDate);
+    bookFormData.append('description', formData.description);
+    bookFormData.append('price', formData.price.toString());
+    bookFormData.append('stockQty', formData.stockQty.toString());
+    bookFormData.append('isOnSale', formData.isOnSale.toString());
+    bookFormData.append('language', formData.language);
+    bookFormData.append('format', formData.format);
+    
+    if (formData.authorIds && formData.authorIds.length > 0) {
+      formData.authorIds.forEach((id, index) => {
+        bookFormData.append(`authorIds[${index}]`, id);
+      });
+    }
+    
+    if (formData.genreIds && formData.genreIds.length > 0) {
+      formData.genreIds.forEach((id, index) => {
+        bookFormData.append(`genreIds[${index}]`, id);
+      });
+    }
+    
+    if (formData.publisherIds && formData.publisherIds.length > 0) {
+      formData.publisherIds.forEach((id, index) => {
+        bookFormData.append(`publisherIds[${index}]`, id);
+      });
+    }
+    
+    if (formData.imageFile instanceof File && formData.imageFile.size > 0) {
+      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+      if (formData.imageFile.size > MAX_FILE_SIZE) {
+        setError(`Image file too large (${Math.round(formData.imageFile.size/1024/1024)}MB). Please select a file smaller than 5MB.`);
+        setLoading(false);
+        return;
+      }
+      
+      bookFormData.append('imageFile', formData.imageFile);
+    }
     
     try {
-      // Create FormData object for file upload
-      const bookFormData = new FormData();
-      
-      // Append all form fields
-      Object.keys(formData).forEach(key => {
-        if (key === 'imageFile') {
-          if (formData.imageFile) {
-            bookFormData.append('imageFile', formData.imageFile);
-          }
-        } else if (Array.isArray(formData[key])) {
-          // Handle arrays like authorIds
-          formData[key].forEach(id => {
-            bookFormData.append(`${key}`, id);
-          });
-        } else {
-          bookFormData.append(key, formData[key]);
-        }
-      });
-      
-      // Send update request
       const response = await updateBook(book.id, bookFormData);
       
       if (response.code === 0) {
         setSuccess(true);
         if (onSuccess) onSuccess(response.data);
+        
+        setTimeout(() => {
+          window.location.href = `/admin/books/${book.id}`;
+        }, 10);
       } else {
         setError(response.message || 'Failed to update book');
       }
     } catch (err) {
-      setError(err.message || 'Failed to update book');
-      console.error(err);
-    } finally {
-      setLoading(false);
+      if (err.message === 'Network Error' && err.code === 'ERR_NETWORK' 
+          && err.request && err.request.status === 200) {
+        console.log("Handling likely HTTP/2 protocol error after successful operation");
+        setSuccess(true);
+        if (onSuccess) onSuccess(null);
+        
+        setTimeout(() => {
+          window.location.href = `/admin/books/${book.id}`;
+        }, 10);
+        return;
+      }
+      
+      setError(err.response?.data?.message || err.message || 'Failed to update book');
     }
-  };
+  } catch (err) {
+    setError("Form processing error: " + (err.message || 'Unknown error'));
+  } finally {
+    setLoading(false);
+  }
+};
+
+  if (loadingOptions) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <span className="ml-3 text-gray-700">Loading form data...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white shadow rounded-lg p-6">
@@ -117,13 +219,12 @@ const BookEditForm = ({ book, onCancel, onSuccess }) => {
       
       {success && (
         <div className="mb-4 bg-green-100 text-green-700 p-3 rounded">
-          Book updated successfully!
+            Book updated successfully! Redirecting to book details...
         </div>
       )}
       
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left Column */}
           <div>
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="title">
@@ -193,32 +294,42 @@ const BookEditForm = ({ book, onCancel, onSuccess }) => {
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="language">
                 Language *
               </label>
-              <input
-                type="text"
+              <select
                 id="language"
                 name="language"
                 value={formData.language}
                 onChange={handleChange}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 required
-                maxLength="50"
-              />
+              >
+                <option value="">Select language</option>
+                {languages.map(lang => (
+                  <option key={lang.id || lang.code || lang} value={lang.code || lang}>
+                    {lang.name || lang}
+                  </option>
+                ))}
+              </select>
             </div>
             
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="format">
                 Format *
               </label>
-              <input
-                type="text"
+              <select
                 id="format"
                 name="format"
                 value={formData.format}
                 onChange={handleChange}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 required
-                maxLength="255"
-              />
+              >
+                <option value="">Select format</option>
+                {formats.map(format => (
+                  <option key={format.id || format.code || format} value={format.code || format}>
+                    {format.name || format}
+                  </option>
+                ))}
+              </select>
             </div>
             
             <div className="mb-4">
@@ -252,57 +363,71 @@ const BookEditForm = ({ book, onCancel, onSuccess }) => {
             </div>
           </div>
           
-          {/* Right Column */}
           <div>
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="authorIds">
                 Authors *
               </label>
-              <div className="mb-2">
-                <p className="text-sm text-gray-600">Currently assigned:</p>
-                <ul className="list-disc pl-5 text-sm text-gray-700">
-                  {existingAuthors.map(author => (
-                    <li key={author.id}>{author.name}</li>
-                  ))}
-                </ul>
-              </div>
-              <p className="text-sm text-gray-500 mt-2">
-                Note: To change authors, you'll need to add the author management feature
-              </p>
+              <select
+                id="authorIds"
+                name="authorIds"
+                multiple
+                value={formData.authorIds}
+                onChange={handleChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-32"
+                required
+              >
+                {authors.map(author => (
+                  <option key={author.id} value={author.id}>
+                    {author.name}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd key to select multiple authors</p>
             </div>
             
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="genreIds">
                 Genres *
               </label>
-              <div className="mb-2">
-                <p className="text-sm text-gray-600">Currently assigned:</p>
-                <ul className="list-disc pl-5 text-sm text-gray-700">
-                  {existingGenres.map(genre => (
-                    <li key={genre.id}>{genre.name}</li>
-                  ))}
-                </ul>
-              </div>
-              <p className="text-sm text-gray-500 mt-2">
-                Note: To change genres, you'll need to add the genre management feature
-              </p>
+              <select
+                id="genreIds"
+                name="genreIds"
+                multiple
+                value={formData.genreIds}
+                onChange={handleChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-32"
+                required
+              >
+                {genres.map(genre => (
+                  <option key={genre.id} value={genre.id}>
+                    {genre.name}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd key to select multiple genres</p>
             </div>
             
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="publisherIds">
                 Publishers *
               </label>
-              <div className="mb-2">
-                <p className="text-sm text-gray-600">Currently assigned:</p>
-                <ul className="list-disc pl-5 text-sm text-gray-700">
-                  {existingPublishers.map(publisher => (
-                    <li key={publisher.id}>{publisher.name}</li>
-                  ))}
-                </ul>
-              </div>
-              <p className="text-sm text-gray-500 mt-2">
-                Note: To change publishers, you'll need to add the publisher management feature
-              </p>
+              <select
+                id="publisherIds"
+                name="publisherIds"
+                multiple
+                value={formData.publisherIds}
+                onChange={handleChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-24"
+                required
+              >
+                {publishers.map(publisher => (
+                  <option key={publisher.id} value={publisher.id}>
+                    {publisher.name}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd key to select multiple publishers</p>
             </div>
             
             <div className="mb-4">
@@ -313,7 +438,7 @@ const BookEditForm = ({ book, onCancel, onSuccess }) => {
                 {imagePreview && (
                   <div className="mr-4">
                     <img 
-                      src={imagePreview} 
+                      src={imagePreview}
                       alt="Book cover preview" 
                       className="h-24 w-auto object-cover"
                     />

@@ -9,6 +9,8 @@ namespace BookLib.Infrastructure.Data.Entities
         [Key]
         public Guid genre_id { get; set; }
         public string name { get; set; }
+       
         public ICollection<Book> books { get; set; }
+    
     }
 }

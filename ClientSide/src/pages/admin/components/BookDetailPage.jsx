@@ -94,8 +94,8 @@ const BookDetailPage = () => {
                     <div className="md:flex-shrink-0 p-6 flex justify-center md:w-1/3">
                       <img
                         className="h-64 object-cover rounded"
-                        src={book.imageUrl || '/placeholder-book.png'}
-                        alt={`Cover of ${book.title}`}
+                        src={book?.imageUrl || '/placeholder-book.png'}
+                        alt={`Cover of ${book?.title || 'Book'}`}
                       />
                     </div>
                     
@@ -103,13 +103,13 @@ const BookDetailPage = () => {
                       <div className="flex justify-between items-start">
                         <div>
                           <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">
-                            {book.genres?.map(genre => genre.name).join(', ')}
+                            {book?.genres?.map(genre => genre.name).join(', ')}
                           </div>
                           <h1 className="text-2xl font-bold text-gray-900 mt-1">
-                            {book.title}
+                            {book?.title}
                           </h1>
                           <p className="text-gray-600 mt-1">
-                            by {book.authors?.map(author => author.name).join(', ')}
+                            by {book?.authors?.map(author => author.name).join(', ')}
                           </p>
                         </div>
                         
@@ -123,51 +123,51 @@ const BookDetailPage = () => {
                       
                       <div className="mt-6">
                         <h2 className="text-lg font-semibold text-gray-800">Description</h2>
-                        <p className="mt-2 text-gray-600">{book.description}</p>
+                        <p className="mt-2 text-gray-600">{book?.description}</p>
                       </div>
                       
                       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                         <div>
                           <p className="text-sm text-gray-500">ISBN</p>
-                          <p className="font-medium">{book.isbn}</p>
+                          <p className="font-medium">{book?.isbn}</p>
                         </div>
                         
                         <div>
                           <p className="text-sm text-gray-500">Publication Date</p>
-                          <p className="font-medium">{formatDate(book.publicationDate)}</p>
+                          <p className="font-medium">{book?.publicationDate ? formatDate(book.publicationDate) : ''}</p>
                         </div>
                         
                         <div>
                           <p className="text-sm text-gray-500">Format</p>
-                          <p className="font-medium">{book.format}</p>
+                          <p className="font-medium">{book?.format}</p>
                         </div>
                         
                         <div>
                           <p className="text-sm text-gray-500">Language</p>
-                          <p className="font-medium">{book.language}</p>
+                          <p className="font-medium">{book?.language}</p>
                         </div>
                         
                         <div>
                           <p className="text-sm text-gray-500">Publishers</p>
-                          <p className="font-medium">{book.publishers?.map(p => p.name).join(', ')}</p>
+                          <p className="font-medium">{book?.publishers?.map(p => p.name).join(', ')}</p>
                         </div>
                         
                         <div>
                           <p className="text-sm text-gray-500">Stock Quantity</p>
-                          <p className="font-medium">{book.stockQty} available</p>
+                          <p className="font-medium">{book?.stockQty} available</p>
                         </div>
                         
                         <div>
                           <p className="text-sm text-gray-500">Created</p>
                           <p className="font-medium">
-                            {formatDate(book.createdDate)} by {book.createdBy}
+                            {book?.createdDate ? formatDate(book.createdDate) : ''} by {book?.createdBy}
                           </p>
                         </div>
                         
                         <div>
                           <p className="text-sm text-gray-500">Last Updated</p>
                           <p className="font-medium">
-                            {formatDate(book.updatedDate)} by {book.updatedBy}
+                            {book?.updatedDate ? formatDate(book.updatedDate) : ''} by {book?.updatedBy}
                           </p>
                         </div>
                       </div>
@@ -175,10 +175,10 @@ const BookDetailPage = () => {
                       <div className="mt-6 flex items-center justify-between">
                         <div>
                           <span className="text-2xl font-bold text-gray-900">
-                            ${book.price?.toFixed(2)}
+                            ${book?.price?.toFixed(2)}
                           </span>
                           
-                          {book.isOnSale && (
+                          {book?.isOnSale && (
                             <span className="ml-3 bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded">
                               On Sale
                             </span>

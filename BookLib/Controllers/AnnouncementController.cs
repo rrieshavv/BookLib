@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookLib.Controllers
 {
     [ApiController]
-    [Route("/api/[controller]")]
+    [Route("api/v1/announcements")]
     [Authorize]
-    public class AnnouncementController : ControllerBase
+    public class AnnouncementsController : ControllerBase
     {
         private readonly IAnnouncementService _announcementService;
 
-        public AnnouncementController(IAnnouncementService announcementService)
+        public AnnouncementsController(IAnnouncementService announcementService)
         {
             _announcementService = announcementService;
         }
@@ -32,10 +32,11 @@ namespace BookLib.Controllers
             return Ok(announcements);
         }
 
-        [HttpPut]
-        public async Task<ActionResult<AnnouncementResponseDto>> UpdateAnnouncement([FromBody] UpdateAnnouncementDto updateDto)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<AnnouncementResponseDto>> UpdateAnnouncement(Guid id, [FromBody] UpdateAnnouncementDto updateDto)
         {
             var updatedBy = User.Identity?.Name ?? "System";
+            updateDto.AnnouncementId = id; // Ensure the DTO has the correct ID
             var result = await _announcementService.UpdateAnnouncementAsync(updateDto, updatedBy);
             return Ok(result);
         }
