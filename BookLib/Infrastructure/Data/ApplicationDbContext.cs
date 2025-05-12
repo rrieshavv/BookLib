@@ -22,7 +22,8 @@ namespace BookLib.Infrastructure.Data
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<ErrorLog> ErrorLogs { get; set; }
         public DbSet<ApiAccessLog> ApiAccessLogs { get; set; }
-
+        public DbSet<Reviews> Reviews { get; set; }
+        public DbSet<Inventory> Inventory { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
