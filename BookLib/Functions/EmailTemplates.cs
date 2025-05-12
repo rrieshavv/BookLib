@@ -125,9 +125,9 @@ namespace BookLib.Functions
   <tr style=""border-top: 1px solid #f3f4f6;"">
             <td style=""padding: 0.5rem;"">{x.BookDetails.title}</td>
             <td style=""padding: 0.5rem; text-align: center;"">{x.quantity}</td>
-            <td style=""padding: 0.5rem; text-align: right;"">Rs. {x.price}</td>
-            <td style=""padding: 0.5rem; text-align: right;"">Rs. {x.discount}</td>
-            <td style=""padding: 0.5rem; text-align: right; font-weight: 500;"">Rs. {x.total_price}</td>
+            <td style=""padding: 0.5rem; text-align: right;"">Rs. {x.price.ToString("F2")}</td>
+            <td style=""padding: 0.5rem; text-align: right;"">Rs. {x.discount.ToString("F2")}</td>
+            <td style=""padding: 0.5rem; text-align: right; font-weight: 500;"">Rs. {x.total_price.ToString("F2")}</td>
           </tr>
 
 ";
@@ -143,15 +143,15 @@ namespace BookLib.Functions
       <div style=""max-width: 300px; margin-left: auto; font-size: 0.875rem; color: #374151;"">
         <div style=""display: flex; justify-content: space-between; padding: 0.25rem 0;"">
           <span>Subtotal:</span>
-          <span style=""font-weight: 500;"">Rs {invoice.total_amount}</span>
+          <span style=""font-weight: 500;"">Rs {invoice.total_amount.ToString("F2")}</span>
         </div>
         <div style=""display: flex; justify-content: space-between; color: #047857; padding: 0.25rem 0;"">
           <span>Volume Discount (5+ books) (5%):</span>
-          <span style=""font-weight: 500;"">- Rs {invoice.bulk_discount}</span>
+          <span style=""font-weight: 500;"">- Rs {invoice.bulk_discount.ToString("F2")}</span>
         </div>
         <div style=""display: flex; justify-content: space-between; padding-top: 0.5rem; border-top: 1px solid #e5e7eb; font-size: 1rem; font-weight: bold;"">
           <span>Total:</span>
-          <span>Rs {invoice.grand_total_amount}</span>
+          <span>Rs {invoice.grand_total_amount.ToString("F2")}</span>
         </div>
       </div>
 
