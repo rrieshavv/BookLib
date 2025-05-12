@@ -13,6 +13,13 @@ namespace BookLib.Infrastructure.Data.Entities
 
         public int quantity { get; set; }
 
+        [StringLength(500)]
+        public string company_name { get; set; }
+        [StringLength(20)]
+        public string company_reg_no { get; set; }
+        [StringLength(500)]
+        public string company_address { get; set; }
+
         [Precision(10, 2)]
         public decimal price_per_book { get; set; }
 
