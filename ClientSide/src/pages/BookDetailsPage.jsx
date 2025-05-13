@@ -33,8 +33,14 @@ export default function BookDetailsPage() {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [cartIds, setCartIds] = useState([]);
   const [favoriteIds, setFavoriteIds] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   useEffect(() => {
+    // Check if user is logged in
+    const userLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(userLoggedIn);
+
     setCartIds(JSON.parse(localStorage.getItem("cart") || "[]"));
     setFavoriteIds(JSON.parse(localStorage.getItem("favorites") || "[]"));
     const fetchBookData = async () => {
@@ -152,7 +158,23 @@ export default function BookDetailsPage() {
     setExpandedSection(expandedSection === section ? null : section);
   };
 
+  const handleWriteReviewClick = () => {
+    if (isLoggedIn) {
+      setShowReviewForm(!showReviewForm);
+      setShowLoginPrompt(false);
+    } else {
+      setShowLoginPrompt(true);
+      setShowReviewForm(false);
+    }
+  };
+
   const submitReview = () => {
+    // Only logged-in users can submit a review (additional check)
+    if (!isLoggedIn) {
+      setShowLoginPrompt(true);
+      return;
+    }
+    
     alert(`Thank you for your ${reviewRating}-star review!`);
     setReviewComment("");
     setShowReviewForm(false);
@@ -178,6 +200,14 @@ export default function BookDetailsPage() {
     }
     setFavoriteIds(updatedFavorites);
     localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+  };
+
+  const redirectToLogin = () => {
+    // Redirect to login page
+    // For demonstration, we'll use an alert, but in a real app, you would use navigation
+    alert("Please log in to write a review");
+    // In a real application, you might use:
+    // navigate("/login", { state: { returnUrl: `/books/${id}` } });
   };
 
   const renderStars = (rating) => {
@@ -590,14 +620,38 @@ export default function BookDetailsPage() {
                       Customer Reviews
                     </h3>
                     <button
-                      onClick={() => setShowReviewForm(!showReviewForm)}
+                      onClick={handleWriteReviewClick}
                       className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
                     >
                       Write a Review
                     </button>
                   </div>
 
-                  {showReviewForm && (
+                  {/* Login Prompt - Shown when non-logged in user tries to review */}
+                  {showLoginPrompt && (
+                    <div className="mb-8 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                      <div className="flex items-start">
+                        <Info className="text-yellow-500 mr-3 flex-shrink-0 mt-1" size={20} />
+                        <div>
+                          <h4 className="font-medium text-gray-800 mb-1">
+                            Login Required
+                          </h4>
+                          <p className="text-gray-700 mb-3">
+                            You need to be logged in to write a review.
+                          </p>
+                          <button
+                            onClick={redirectToLogin}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                          >
+                            Log In
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Review Form - Only shown to logged-in users */}
+                  {isLoggedIn && showReviewForm && (
                     <div className="mb-8 bg-gray-50 p-4 rounded-lg border border-gray-200">
                       <h4 className="font-medium text-gray-800 mb-3">
                         Your Review
