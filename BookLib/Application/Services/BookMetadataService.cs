@@ -131,6 +131,30 @@ namespace BookLib.Application.Services
             return response;
         }
 
+        public async Task<CommonResponse<AuthorDto>> GetAuthorByIdAsync(Guid id)
+        {
+            var response = new CommonResponse<AuthorDto>();
+            try
+            {
+                var author = await _context.Authors.FindAsync(id);
+                if (author == null)
+                {
+                    response.Code = ResponseCode.Error;
+                    response.Message = "Author not found";
+                    return response;
+                }
+                response.Code = ResponseCode.Success;
+                response.Message = "Author retrieved successfully";
+                response.Data = new AuthorDto { Id = author.author_id, Name = author.name };
+            }
+            catch (Exception ex)
+            {
+                response.Code = ResponseCode.Exception;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+
         // Publisher operations
         public async Task<CommonResponse<PublisherDto>> CreatePublisherAsync(string name, string username)
         {
@@ -247,6 +271,30 @@ namespace BookLib.Application.Services
             return response;
         }
 
+        public async Task<CommonResponse<PublisherDto>> GetPublisherByIdAsync(Guid id)
+        {
+            var response = new CommonResponse<PublisherDto>();
+            try
+            {
+                var publisher = await _context.Publishers.FindAsync(id);
+                if (publisher == null)
+                {
+                    response.Code = ResponseCode.Error;
+                    response.Message = "Publisher not found";
+                    return response;
+                }
+                response.Code = ResponseCode.Success;
+                response.Message = "Publisher retrieved successfully";
+                response.Data = new PublisherDto { Id = publisher.publisher_id, Name = publisher.name };
+            }
+            catch (Exception ex)
+            {
+                response.Code = ResponseCode.Exception;
+                response.Message = ex.Message;
+            }
+            return response;
+        }
+
         // Genre operations
         public async Task<CommonResponse<GenreDto>> CreateGenreAsync(string name, string username)
         {
@@ -360,6 +408,30 @@ namespace BookLib.Application.Services
                 response.Message = ex.Message;
             }
 
+            return response;
+        }
+
+        public async Task<CommonResponse<GenreDto>> GetGenreByIdAsync(Guid id)
+        {
+            var response = new CommonResponse<GenreDto>();
+            try
+            {
+                var genre = await _context.Genres.FindAsync(id);
+                if (genre == null)
+                {
+                    response.Code = ResponseCode.Error;
+                    response.Message = "Genre not found";
+                    return response;
+                }
+                response.Code = ResponseCode.Success;
+                response.Message = "Genre retrieved successfully";
+                response.Data = new GenreDto { Id = genre.genre_id, Name = genre.name };
+            }
+            catch (Exception ex)
+            {
+                response.Code = ResponseCode.Exception;
+                response.Message = ex.Message;
+            }
             return response;
         }
     }

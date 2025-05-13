@@ -489,7 +489,7 @@ const Catalog = () => {
                           By{" "}
                           <span className="text-emerald-600">
                             {book.authors && book.authors.length > 0
-                              ? book.authors[0].name
+                              ? book.authors.map(a => a.name).join(",")
                               : "Unknown Author"}
                           </span>
                         </p>
