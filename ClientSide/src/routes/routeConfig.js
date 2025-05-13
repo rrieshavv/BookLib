@@ -22,6 +22,7 @@ import AdminAnnouncement from "../pages/admin/AdminAnnouncement";
 import ProcessOrders from "../pages/staff/ProcessOrders";
 import AddBookForm from "../pages/admin/components/AddBookForm";
 import FavouritesPage from "../pages/FavouritesPage";
+import CustomersDashboard from "../pages/admin/CustomersDashboard";
 
 export const routeConfig = [
   {
@@ -133,6 +134,11 @@ export const routeConfig = [
   {
     path: "/admin/books/add",
     component: AddBookForm,
+    allowedRoles: ["admin"],
+  },
+  {
+    path: "/admin/customers",
+    component: CustomersDashboard,
     allowedRoles: ["admin"],
   }
 ];

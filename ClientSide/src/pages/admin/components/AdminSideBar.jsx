@@ -8,6 +8,7 @@ import {
   FiFileText,
   FiBell,
   FiLogOut,
+  FiUser,
 } from "react-icons/fi";
 import SideBarItem from "./SideBarItem";
 import { Link } from "react-router-dom";
@@ -28,6 +29,9 @@ const AdminSideBar = () => {
           </Link>
           <Link to="/admin/books">
             <SideBarItem icon={<FiUsers className="h-5 w-5" />} text="Books" />
+          </Link>
+          <Link to="/admin/customers">
+            <SideBarItem icon={<FiUser className="h-5 w-5" />} text="Customers" />
           </Link>
           <Link to="/admin/announcements">
             <SideBarItem icon={<FiBell className="h-5 w-5" />} text="Announcements" />
