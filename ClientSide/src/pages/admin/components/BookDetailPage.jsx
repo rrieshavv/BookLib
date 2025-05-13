@@ -130,6 +130,15 @@ const BookDetailPage = () => {
                           Edit Book
                           </button>
 
+                          <button
+                          onClick={toggleEditMode}
+                          className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded transition">
+                           Inventory
+                          </button>
+
+
+
+                          
 
                         </div>
                         

@@ -26,6 +26,7 @@ import BookDiscountHistory from "../pages/admin/components/BookDiscountHistory";
 import AddBookDiscount from "../pages/admin/components/AddBookDiscount";
 import EditBookDiscount from "../pages/admin/components/EditBookDiscount";
 import FavouritesPage from "../pages/FavouritesPage";
+import Inventory from "../pages/admin/components/Inventary";
 
 export const routeConfig = [
   {
@@ -159,5 +160,10 @@ export const routeConfig = [
     component: EditBookDiscount,
     allowedRoles: ["admin"],
   },
+  {
+    path: "/admin/inventory",
+    component: Inventory,
+    allowedRoles: ["admin"],
+  }
 
 ];

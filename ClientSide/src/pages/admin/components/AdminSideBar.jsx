@@ -37,7 +37,7 @@ const AdminSideBar = () => {
           <Link to="/admin/books/discount">
             <SideBarItem icon={<FiTag className="h-5 w-5" />} text="All History" />
           </Link>
-          <Link to="/admin/books/discount">
+          <Link to="/admin/inventory">
             <SideBarItem icon={<FiBox className="h-5 w-5" />} text="Inventory" />
           </Link>
           {/* <SideBarItem
