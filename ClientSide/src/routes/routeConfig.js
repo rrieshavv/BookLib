@@ -28,6 +28,9 @@ import EditBookDiscount from "../pages/admin/components/EditBookDiscount";
 import FavouritesPage from "../pages/FavouritesPage";
 import CustomersDashboard from "../pages/admin/CustomersDashboard";
 import Inventory from "../pages/admin/components/Inventary";
+import OrderConfirm from "../pages/OrderConfirm";
+import OrderHistory from "../pages/OrderHistory";
+import CustomerOrderDetails from "../pages/CustomerOrderDetails";
 
 export const routeConfig = [
   {
@@ -37,7 +40,7 @@ export const routeConfig = [
   },
 
   {
-  path: "/customer/favorites",
+    path: "/customer/favorites",
     component: FavouritesPage,
     public: true,
   },
@@ -92,6 +95,21 @@ export const routeConfig = [
     public: true,
   },
   {
+    path: "/order-placed",
+    component: OrderConfirm,
+    allowedRoles: ["customer"],
+  },
+  {
+    path: "/order-history",
+    component: OrderHistory,
+    allowedRoles: ["customer"],
+  },
+   {
+    path: "/order/details",
+    component: CustomerOrderDetails,
+    allowedRoles: ["customer", "admin"],
+  },
+  {
     path: "/invoice",
     component: InvoicePage,
     public: true,
@@ -104,7 +122,7 @@ export const routeConfig = [
   {
     path: "/profile",
     component: ProfilePage,
-    public: true,
+    allowedRoles: ["customer"],
   },
   {
     path: "/staff/dashboard",
@@ -170,6 +188,5 @@ export const routeConfig = [
     path: "/admin/inventory",
     component: Inventory,
     allowedRoles: ["admin"],
-  }
-
+  },
 ];

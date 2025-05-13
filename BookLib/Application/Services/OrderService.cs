@@ -401,7 +401,7 @@ namespace BookLib.Application.Services
                 };
             }
 
-            var orders = await _context.Orders.Include(x=>x.Invoice).Where(x => x.user_id == userId).ToListAsync();
+            var orders = await _context.Orders.Include(x=>x.Invoice).Where(x => x.user_id == userId).OrderByDescending(x=>x.created_ts).ToListAsync();
             List<CustomerOrdersDto> customerOrders = new List<CustomerOrdersDto>();
             foreach (var order in orders)
             {
@@ -447,14 +447,7 @@ namespace BookLib.Application.Services
                     Message = "Order not found"
                 };
             }
-            if (order.status != "Pending")
-            {
-                return new CommonResponse<OrderDetailsDto>
-                {
-                    Code = ResponseCode.Error,
-                    Message = "Order cannot be processed"
-                };
-            }
+         
 
             var orderItems = await _context.OrderItems
                 .Where(x => x.order_id == order.order_id)

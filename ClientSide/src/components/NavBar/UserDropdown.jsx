@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FiUser, FiSettings, FiLogOut } from "react-icons/fi";
+import { FiUser, FiSettings, FiLogOut, FiOctagon, FiActivity } from "react-icons/fi";
 import ProfileAvatar from "./ProfileAvatar";
 
 const UserDropdown = ({ name, email, img, role, onLogout, onChangePassword }) => {
@@ -38,6 +38,12 @@ const UserDropdown = ({ name, email, img, role, onLogout, onChangePassword }) =>
             </div>
           </Link>
         )}
+
+        <Link to='/order-history' className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+          <div className="flex items-center">
+              <FiActivity className="mr-2" /> Order History
+            </div>
+        </Link>
 
         <button
           onClick={onChangePassword}

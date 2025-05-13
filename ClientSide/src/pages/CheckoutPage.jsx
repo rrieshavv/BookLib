@@ -134,7 +134,7 @@ const CheckoutPage = () => {
       if (result.success) {
         toast.success("Order placed successfully.");
         localStorage.removeItem("cartQty"); // Clear cart after successful order
-        navigate("/");
+        navigate("/order-placed");
       } else {
         setProcessing(false);
         toast.error(result.message);
