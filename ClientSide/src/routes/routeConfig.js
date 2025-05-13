@@ -21,6 +21,10 @@ import AdminAnnouncement from "../pages/admin/AdminAnnouncement";
 
 import ProcessOrders from "../pages/staff/ProcessOrders";
 import AddBookForm from "../pages/admin/components/AddBookForm";
+import DiscountHistory from "../pages/admin/DiscountHistory";
+import BookDiscountHistory from "../pages/admin/components/BookDiscountHistory";
+import AddBookDiscount from "../pages/admin/components/AddBookDiscount";
+import EditBookDiscount from "../pages/admin/components/EditBookDiscount";
 
 export const routeConfig = [
   {
@@ -127,5 +131,26 @@ export const routeConfig = [
     path: "/admin/books/add",
     component: AddBookForm,
     allowedRoles: ["admin"],
-  }
+  },
+  {
+    path: "/admin/books/discount",
+    component: DiscountHistory,
+    allowedRoles: ["admin"],
+  },
+  {
+    path: "/admin/books/discount/:bookId",
+    component: BookDiscountHistory,
+    allowedRoles: ["admin"],
+  },
+  {
+    path: "/admin/books/:bookId/add-discount",
+    component: AddBookDiscount,
+    allowedRoles: ["admin"],
+  },
+  {
+    path: "/admin/books/:bookId/edit-discount/:discountId",
+    component: EditBookDiscount,
+    allowedRoles: ["admin"],
+  },
+
 ];

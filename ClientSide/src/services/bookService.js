@@ -41,6 +41,8 @@ export const getFilteredBooks = async (filters = {}) => {
   });
 };
 
+
+// Api for update book
 export const updateBook = async (id, bookData) => {
   try {
     const response = await apiClient.put(`/book/${id}`, bookData, {

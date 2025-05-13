@@ -111,6 +111,46 @@ namespace BookLib.Controllers
             }
         }
 
+        [HttpGet("book/getDiscountById/{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetDiscountById(Guid id)
+        {
+            try
+            {
+                var response = await _discountService.GetDiscountByIdAsync(id);
+
+                if (response.Code == ResponseCode.Success)
+                {
+                    return StatusCode(StatusCodes.Status200OK, response);
+                }
+                return StatusCode(StatusCodes.Status400BadRequest, response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("book/discount/getDiscountById/{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetDiscountByDiscountId(Guid id)
+        {
+            try
+            {
+                var response = await _discountService.GetDiscountByDiscountIdAsync(id);
+
+                if (response.Code == ResponseCode.Success)
+                {
+                    return StatusCode(StatusCodes.Status200OK, response);
+                }
+                return StatusCode(StatusCodes.Status400BadRequest, response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+        }
+
 
     }
 }
