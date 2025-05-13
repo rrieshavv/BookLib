@@ -13,9 +13,15 @@ import {
   FiBox,
 } from "react-icons/fi";
 import SideBarItem from "./SideBarItem";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { clearAuthData } from "../../../utils/authStorage";
 
 const AdminSideBar = () => {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    clearAuthData();
+    navigate("/login");
+  };
   return (
     <div className="hidden md:flex flex-col w-64 bg-white border-r">
       <div className="flex items-center justify-center h-16 border-b">
@@ -33,16 +39,34 @@ const AdminSideBar = () => {
             <SideBarItem icon={<FiUsers className="h-5 w-5" />} text="Books" />
           </Link>
           <Link to="/admin/customers">
-            <SideBarItem icon={<FiUser className="h-5 w-5" />} text="Customers" />
+            <SideBarItem
+              icon={<FiUser className="h-5 w-5" />}
+              text="Customers"
+            />
+          </Link>
+          <Link to="/admin/all-orders">
+            <SideBarItem
+              icon={<FiTag className="h-5 w-5" />}
+              text="All Orders"
+            />
           </Link>
           <Link to="/admin/announcements">
-            <SideBarItem icon={<FiBell className="h-5 w-5" />} text="Announcements" />
+            <SideBarItem
+              icon={<FiBell className="h-5 w-5" />}
+              text="Announcements"
+            />
           </Link>
           <Link to="/admin/books/discount">
-            <SideBarItem icon={<FiTag className="h-5 w-5" />} text="All History" />
+            <SideBarItem
+              icon={<FiTag className="h-5 w-5" />}
+              text="All Discount History"
+            />
           </Link>
           <Link to="/admin/inventory">
-            <SideBarItem icon={<FiBox className="h-5 w-5" />} text="Inventory" />
+            <SideBarItem
+              icon={<FiBox className="h-5 w-5" />}
+              text="Inventory"
+            />
           </Link>
           {/* <SideBarItem
             icon={<FiShoppingBag className="h-5 w-5" />}
@@ -62,7 +86,10 @@ const AdminSideBar = () => {
           /> */}
         </nav>
         <div className="mt-auto mb-4">
-          <button className="flex items-center w-full px-4 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-100">
+          <button
+            onClick={handleLogout}
+            className="flex items-center w-full px-4 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-100"
+          >
             <FiLogOut className="h-5 w-5 mr-3" />
             Logout
           </button>

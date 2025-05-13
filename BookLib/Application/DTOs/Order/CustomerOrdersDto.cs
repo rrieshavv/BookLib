@@ -6,6 +6,7 @@ namespace BookLib.Application.DTOs.Order
     {
         public Guid OrderId { get; set; }
         public string Status { get; set; }
+        public string OrderCode { get; set; }
         public decimal TotalAmount { get; set; }
         public DateTime OrderDate { get; set; }   
         public string ClaimCode { get; set; }

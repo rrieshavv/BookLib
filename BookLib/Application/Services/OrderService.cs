@@ -401,7 +401,7 @@ namespace BookLib.Application.Services
                 };
             }
 
-            var orders = await _context.Orders.Include(x=>x.Invoice).Where(x => x.user_id == userId).ToListAsync();
+            var orders = await _context.Orders.Include(x=>x.Invoice).Where(x => x.user_id == userId).OrderByDescending(x=>x.created_ts).ToListAsync();
             List<CustomerOrdersDto> customerOrders = new List<CustomerOrdersDto>();
             foreach (var order in orders)
             {
@@ -425,7 +425,7 @@ namespace BookLib.Application.Services
 
         
 
-        public async Task<CommonResponse<OrderDetailsDto>> GetOrderDetailsByCustomer(string userId, Guid orderId)
+        public async Task<CommonResponse<OrderDetailsDto>> GetOrderDetailsByCustomer(string userId, Guid orderId, bool requestByAdmin)
         {
             var customer = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
             if (customer == null)
@@ -436,8 +436,19 @@ namespace BookLib.Application.Services
                     Message = "User not found"
                 };
             }
-            var order = await _context.Orders
-                .FirstOrDefaultAsync(x => x.order_id == orderId && x.user_id == userId);
+
+            var order = new Order();
+
+            if (!requestByAdmin)
+            {
+                 order = await _context.Orders
+                  .FirstOrDefaultAsync(x => x.order_id == orderId && x.user_id == userId);
+            }
+            else
+            {
+                order = await _context.Orders
+                  .FirstOrDefaultAsync(x => x.order_id == orderId);
+            }
 
             if (order == null)
             {
@@ -447,14 +458,7 @@ namespace BookLib.Application.Services
                     Message = "Order not found"
                 };
             }
-            if (order.status != "Pending")
-            {
-                return new CommonResponse<OrderDetailsDto>
-                {
-                    Code = ResponseCode.Error,
-                    Message = "Order cannot be processed"
-                };
-            }
+         
 
             var orderItems = await _context.OrderItems
                 .Where(x => x.order_id == order.order_id)
@@ -530,13 +534,19 @@ namespace BookLib.Application.Services
         public async Task<CommonResponse<List<CustomerOrdersDto>>> GetAllOrders(string status)
         {
         
-            var orders = await _context.Orders.Include(x => x.Invoice).Include(x=>x.UserDetails).Where(x => x.status.ToLower() == status.ToLower()).ToListAsync();
+            var orders = await _context.Orders
+                .Include(x => x.Invoice)
+                .Include(x=>x.UserDetails)
+                .Where(x => x.status.ToLower() == status.ToLower())
+                .OrderByDescending(x=>x.created_ts)
+                .ToListAsync();
             List<CustomerOrdersDto> customerOrders = new List<CustomerOrdersDto>();
             foreach (var order in orders)
             {
                 customerOrders.Add(new CustomerOrdersDto
                 {
                     OrderId = order.order_id,
+                    OrderCode = order.order_code,
                     Status = order.status,
                     TotalAmount = order.Invoice.grand_total_amount,
                     OrderDate = order.created_ts,

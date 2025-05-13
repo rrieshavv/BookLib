@@ -31,6 +31,10 @@ import Inventory from "../pages/admin/components/Inventary";
 import BookInventoryPage from "../pages/admin/components/BookInventoryPage";
 import EditInventoryForm from "../pages/admin/components/EditInventoryForm";
 
+import OrderConfirm from "../pages/OrderConfirm";
+import OrderHistory from "../pages/OrderHistory";
+import CustomerOrderDetails from "../pages/CustomerOrderDetails";
+import OrdersPage from "../pages/admin/OrdersPage";
 
 export const routeConfig = [
   {
@@ -40,7 +44,7 @@ export const routeConfig = [
   },
 
   {
-  path: "/customer/favorites",
+    path: "/customer/favorites",
     component: FavouritesPage,
     public: true,
   },
@@ -95,6 +99,26 @@ export const routeConfig = [
     public: true,
   },
   {
+    path: "/order-placed",
+    component: OrderConfirm,
+    allowedRoles: ["customer"],
+  },
+  {
+    path: "/order-history",
+    component: OrderHistory,
+    allowedRoles: ["customer"],
+  },
+    {
+    path: "/admin/all-orders",
+    component: OrdersPage,
+    allowedRoles: ["admin"],
+  },
+   {
+    path: "/order/details",
+    component: CustomerOrderDetails,
+    allowedRoles: ["customer","admin"],
+  },
+  {
     path: "/invoice",
     component: InvoicePage,
     public: true,
@@ -107,7 +131,7 @@ export const routeConfig = [
   {
     path: "/profile",
     component: ProfilePage,
-    public: true,
+    allowedRoles: ["customer"],
   },
   {
     path: "/staff/dashboard",
@@ -184,6 +208,5 @@ export const routeConfig = [
     path: "/admin/book/inventory/edit/:bookId/:inventoryId",
     component: EditInventoryForm,
     allowedRoles: ["admin"],
-  }
-
+  },
 ];

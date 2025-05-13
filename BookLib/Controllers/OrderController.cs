@@ -87,10 +87,19 @@ namespace BookLib.Controllers
         }
 
         [HttpGet("customer-order-details/{orderId}")]
-        [Authorize(Roles = $"{nameof(UserRole.customer)}")]
+        [Authorize(Roles = $"{nameof(UserRole.customer)},{nameof(UserRole.admin)}")]
         public async Task<IActionResult> GetCustomerOrderDetails(Guid orderId)
         {
-            var orderDetails = await _orderService.GetOrderDetailsByCustomer(ClaimsHelper.GetUserIdFromClaims(User), orderId);
+            var orderDetails = new CommonResponse<OrderDetailsDto>();
+            if (User.IsInRole(nameof(UserRole.admin)))
+            {
+                orderDetails = await _orderService.GetOrderDetailsByCustomer(ClaimsHelper.GetUserIdFromClaims(User), orderId, true);
+            }
+            else
+            {
+                orderDetails = await _orderService.GetOrderDetailsByCustomer(ClaimsHelper.GetUserIdFromClaims(User), orderId, false);
+            }
+
             if (orderDetails.Code == ResponseCode.Error)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, orderDetails.Message);

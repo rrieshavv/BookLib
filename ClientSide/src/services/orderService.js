@@ -1,5 +1,88 @@
 import apiClient from "../utils/apiClient";
 
+export const getAllOrders = async(status) =>{
+  return (await apiClient.get(`/order/all-orders/${status}`)).data
+}
+
+export const cancelOrder = async ({ orderId, password }) => {
+  try {
+    const res = await apiClient.post(`/order/cancel-order`, {
+      orderId,
+      password,
+    });
+    return {
+      success: true,
+      message: "Successfully fetched.",
+      data: res.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      data: error.response.data,
+    };
+  }
+};
+
+export const getCustomerOrderHistory = async () => {
+  try {
+    const res = await apiClient.get(`/order/customer-orders`);
+    return {
+      success: true,
+      message: "Successfully fetched.",
+      data: res.data,
+    };
+  } catch (error) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data || "Failed to fetch order details",
+        error: error.response.data,
+      };
+    } else if (error.request) {
+      return {
+        success: false,
+        message: "No response received from server",
+      };
+    } else {
+      return {
+        success: false,
+        message: error.message || "Error setting up request",
+      };
+    }
+  }
+};
+
+export const getCustomerOrderDetails = async (id) =>{
+   try {
+    const res = await apiClient.get(
+      `/order/customer-order-details/${id}`
+    );
+    return {
+      success: true,
+      message: "Successfully fetched.",
+      data: res.data,
+    };
+  } catch (error) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data || "Failed to fetch order details",
+        error: error.response.data,
+      };
+    } else if (error.request) {
+      return {
+        success: false,
+        message: "No response received from server",
+      };
+    } else {
+      return {
+        success: false,
+        message: error.message || "Error setting up request",
+      };
+    }
+  }
+}
+
 export const getOrderDetails = async (membershipId, claimCode) => {
   try {
     const res = await apiClient.get(
