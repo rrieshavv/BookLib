@@ -114,10 +114,7 @@ const BookDetailPage = () => {
                         </div>
                         <div className='flex space-x-2'>
 
-                          {/* <button
-                          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition">
-                          Discount
-                          </button> */}
+                          
                           <Link to={`/admin/books/discount/${book.id}`}>
                           <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition">
                           Discount
@@ -130,15 +127,13 @@ const BookDetailPage = () => {
                           Edit Book
                           </button>
 
-                          <button
-                          onClick={toggleEditMode}
-                          className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded transition">
-                           Inventory
+                        <Link to={`/admin/book/inventory/${book.id}`}>
+                          <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition">
+                          Inventory 
                           </button>
-
-
-
+                        </Link>
                           
+
 
                         </div>
                         
