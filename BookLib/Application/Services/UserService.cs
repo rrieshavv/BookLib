@@ -313,7 +313,6 @@ namespace BookLib.Application.Services
 
         public async Task<CommonResponse<UserDto>> UpdateUserProfileAsync(string userId, UserUpdateDto updateDto)
         {
-
             var response = new CommonResponse<UserDto>();
 
             var user = await _userManager.FindByIdAsync(userId);
@@ -325,9 +324,35 @@ namespace BookLib.Application.Services
                 return response;
             }
 
+            // Check if email is being changed and if it already exists
+            if (user.Email != updateDto.Email)
+            {
+                var existingUserWithEmail = await _userManager.FindByEmailAsync(updateDto.Email);
+                if (existingUserWithEmail != null && existingUserWithEmail.Id != userId)
+                {
+                    response.Code = ResponseCode.Error;
+                    response.Message = "Email address is already in use by another user";
+                    return response;
+                }
+            }
+
+            // Check if phone number is being changed and if it already exists
+            if (user.PhoneNumber != updateDto.PhoneNumber)
+            {
+                var existingUserWithPhone = await _userManager.Users
+                    .FirstOrDefaultAsync(u => u.PhoneNumber == updateDto.PhoneNumber && u.Id != userId);
+                if (existingUserWithPhone != null)
+                {
+                    response.Code = ResponseCode.Error;
+                    response.Message = "Phone number is already in use by another user";
+                    return response;
+                }
+            }
+
             user.FirstName = updateDto.FirstName;
             user.LastName = updateDto.LastName;
             user.PhoneNumber = updateDto.PhoneNumber;
+            user.Email = updateDto.Email;
 
             if (updateDto.ProfileImage != null && updateDto.ProfileImage.Length > 0)
             {
