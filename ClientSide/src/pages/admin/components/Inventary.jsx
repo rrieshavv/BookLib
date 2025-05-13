@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getInventories } from '../../../services/inventaryService';
+import { getInventories } from '../../../services/inventory Service';
 import AdminSideBar from './AdminSideBar';
 import TopNavAdmin from './TopNavAdmin';
 

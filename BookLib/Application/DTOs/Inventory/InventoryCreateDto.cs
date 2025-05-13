@@ -1,11 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace BookLib.Application.DTOs.Inventory
+﻿namespace BookLib.Application.DTOs.Inventory
 {
-
-    public class InventoryDto
+    public class InventoryCreateDto
     {
-        public Guid Id { get; set; }
         public Guid BookId { get; set; }
         public int Quantity { get; set; }
         public string CompanyName { get; set; }
@@ -13,14 +9,5 @@ namespace BookLib.Application.DTOs.Inventory
         public string CompanyAddress { get; set; }
         public decimal PricePerBook { get; set; }
         public decimal Discount { get; set; }
-        public decimal TotalAmount { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public string BookTitle { get; set; }
     }
-
-   
-
-    
-
-
 }
