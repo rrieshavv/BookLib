@@ -1,10 +1,8 @@
-﻿using System.Threading.Tasks;
-using BookLib.Application;
-using BookLib.Application.DTOs.Auth;
+﻿using BookLib.Application.DTOs.Auth;
 using BookLib.Application.DTOs.User;
+using BookLib.Application.Interface;
 using BookLib.Functions;
-using BookLib.Infrastructure.Data.Entities;
-using BookLib.Models;
+using BookLib.Infrastructure.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -119,7 +117,7 @@ namespace BookLib.Controllers
             }
 
             var result = await _userService.UpdateUserProfileAsync(userId, updateDto);
-            if (result.Code == Models.ResponseCode.Success)
+            if (result.Code == ResponseCode.Success)
             {
                 return Ok(result);
             }
@@ -144,7 +142,7 @@ namespace BookLib.Controllers
 
             var result = await _userService.UploadProfileImageAsync(userId, imageFile);
 
-            if (result.Code == Models.ResponseCode.Success)
+            if (result.Code == ResponseCode.Success)
             {
                 return Ok(result);
             }

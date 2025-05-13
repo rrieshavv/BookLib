@@ -1,0 +1,21 @@
+﻿namespace BookLib.Infrastructure.Common
+{
+    public class CommonResponse
+    {
+        public ResponseCode Code { get; set; }
+        public string Message { get; set; }
+
+    }
+
+    public class CommonResponse<T>:CommonResponse
+    {
+        public T Data { get; set; } 
+    }
+
+    public enum ResponseCode
+    {
+        Success = 0,
+        Error = 1,
+        Exception = 2
+    }
+}

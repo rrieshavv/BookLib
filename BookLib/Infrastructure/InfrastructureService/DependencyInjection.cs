@@ -1,0 +1,117 @@
+﻿using System;
+using System.Text;
+using BookLib.Application.Data;
+using BookLib.Application.Data.Entities;
+using BookLib.Application.Interface;
+using BookLib.Infrastructure.Common;
+using BookLib.Infrastructure.Configurations;
+using BookLib.Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+
+namespace BookLib.Infrastructure.InfrastructureService
+{
+    public static class DependencyInjection
+    {
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        {
+            string connectionString = configuration.GetConnectionString("MainDbConnection")!;
+            var emailSettings = configuration.GetSection("EmailSettings").Get<EmailConfig>()!;
+
+            services.AddSingleton(db => new EmailSettings(emailSettings.From, emailSettings.DisplayName, emailSettings.SmtpServer, emailSettings.Port, emailSettings.Username, emailSettings.Password));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("MainDbConnection")));
+
+            services.AddMemoryCache();
+
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IBookService, BookService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<ILoggerService, LoggerService>();
+            services.AddScoped<IDiscountService, DiscountService>();
+            services.AddScoped<IAnnouncementService, AnnouncementService>();
+            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IInventoryService, InventoryService>();
+            services.AddScoped<IBookMetaDataService, BookMetaDataService>();
+            services.AddScoped<IDashboardService, DashboardService>();
+
+
+
+            // add config for the identity setup
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
+            // add config for the reset password (for token lifespan)
+            services.Configure<DataProtectionTokenProviderOptions>(
+                opts => opts.TokenLifespan = TimeSpan.FromHours(10));
+
+            // add config for the authentication with JWT bearer tokens
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = configuration["JWT:ValidAudience"],
+                    ValidIssuer = configuration["JWT:ValidIssuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]!))
+                };
+            });
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigins", policy =>
+                {
+                    policy.WithOrigins("http://localhost:5173", "http://localhost:5174")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
+
+            services.AddHttpContextAccessor();
+            services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+            services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
+
+            services.AddSwaggerGen(option =>
+            {
+                option.SwaggerDoc("v1", new OpenApiInfo { Title = "Auth API", Version = "v1" });
+                option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter a valid token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "Bearer"
+                });
+                option.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type=ReferenceType.SecurityScheme,
+                                Id="Bearer"
+                            }
+                        },
+                        new string[]{}
+                    }
+                });
+            });
+
+            return services;
+        }
+    }
+}

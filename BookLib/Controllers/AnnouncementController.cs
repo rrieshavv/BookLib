@@ -1,8 +1,8 @@
 using BookLib.Application.DTOs.Announcement;
-using BookLib.Application;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using BookLib.Application.Interface;
 
 namespace BookLib.Controllers
 {

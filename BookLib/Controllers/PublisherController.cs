@@ -1,5 +1,5 @@
-using BookLib.Application;
-using BookLib.Models;
+using BookLib.Application.Interface;
+using BookLib.Infrastructure.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
