@@ -172,7 +172,17 @@ namespace BookLib.Application.Services
                     return response;
                 }
 
+                DateTime currentTime = DateTime.UtcNow;
+
+                var discount = await _context.Discounts
+                    .Where(d => d.book_id == book.book_id && d.start_date <= currentTime && d.end_date >= DateTime.UtcNow)
+                    .FirstOrDefaultAsync();
+
                 var bookDto = MapToBookDto(book);
+                if (discount != null)
+                {
+                    bookDto.CurrentDicountedPrice = book.price - (book.price * discount.discount_percentage / 100);
+                }
 
                 response.Code = ResponseCode.Success;
                 response.Message = "Book retrieved successfully";
@@ -308,7 +318,22 @@ namespace BookLib.Application.Services
                     .Take(filterDto.PageSize)
                     .ToListAsync();
 
-                List<BookDto> bookDtoList = pagedBooks.Select(MapToBookDto).ToList();
+                var currentDate = DateTime.UtcNow;
+                var activeDiscounts = await _context.Discounts
+                    .Where(d => d.start_date <= currentDate && d.end_date >= currentDate )
+                    .ToListAsync();
+
+                List<BookDto> bookDtoList = pagedBooks.Select(book =>
+                {
+                    var bookDto = MapToBookDto(book);
+                    var discount = activeDiscounts.FirstOrDefault(d => d.book_id == book.book_id);
+                    if (discount != null)
+                    {
+                        bookDto.CurrentDicountedPrice = book.price - (book.price * discount.discount_percentage / 100);
+                    }
+                    return bookDto;
+                }).ToList();
+
 
 
                 var paginatedResponse = new PaginatedBookResponseDto

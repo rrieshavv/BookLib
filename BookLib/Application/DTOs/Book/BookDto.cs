@@ -11,6 +11,7 @@ namespace BookLib.Application.DTOs.Book
         public string ISBN { get; set; }
 
         public DateTime PublicationDate { get; set; }
+        public decimal CurrentDicountedPrice { get; set; }
 
         public string Description { get; set; }
 
