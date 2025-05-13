@@ -20,7 +20,7 @@ namespace BookLib.Application.Interface
         Task<CommonResponse<List<PublisherDto>>> GetAllPublishersAsync();
         Task<CommonResponse<List<string>>> GetAllLanguagesAsync(); 
         Task<CommonResponse<List<string>>> GetAllFormatsAsync();
-
+        Task<CommonResponse> AddReview(BookReviewDto dto);
 
 
 

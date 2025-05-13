@@ -245,10 +245,10 @@ namespace BookLib.Infrastructure.Services
                     .Include(b => b.genres)
                     .Include(b => b.publishers);
 
-                
+
 
                 if (!string.IsNullOrEmpty(filterDto.SearchTerm))
-                {                 
+                {
 
                     var searchTermLower = filterDto.SearchTerm.ToLower();
                     query = query.Where(b =>
@@ -336,7 +336,7 @@ namespace BookLib.Infrastructure.Services
 
                 var currentDate = DateTime.UtcNow;
                 var activeDiscounts = await _context.Discounts
-                    .Where(d => d.start_date <= currentDate && d.end_date >= currentDate )
+                    .Where(d => d.start_date <= currentDate && d.end_date >= currentDate)
                     .ToListAsync();
 
                 List<BookDto> bookDtoList = pagedBooks.Select(book =>
@@ -548,7 +548,8 @@ namespace BookLib.Infrastructure.Services
             if (string.IsNullOrEmpty(imageUrl))
             {
                 return null;
-            };
+            }
+            ;
 
             try
             {
@@ -710,6 +711,69 @@ namespace BookLib.Infrastructure.Services
             }
 
             return response;
+        }
+
+        public async Task<CommonResponse> AddReview(BookReviewDto dto)
+        {
+            var user = await _context.Users.Where(x => x.Id == dto.UserId).FirstOrDefaultAsync();
+
+            var book = await _context.Books.Where(x => x.book_id == dto.BookId).FirstOrDefaultAsync();
+            if (user == null || book == null)
+            {
+                return new CommonResponse
+                {
+                    Code = ResponseCode.Error,
+                    Message = "User or Book not found"
+                };
+            }
+
+            //allow user to create the review only if user has ordered the book
+            var orderItems = await _context.OrderItems
+                            .Include(x => x.OrderDetails)
+                            .Where(x => x.book_id == dto.BookId && x.OrderDetails.user_id == dto.UserId)
+                            .ToListAsync();
+
+            if (orderItems == null || orderItems.Count == 0)
+            {
+                return new CommonResponse
+                {
+                    Code = ResponseCode.Error,
+                    Message = "User has not ordered the book"
+                };
+            }
+
+            //check if user has already reviewed the book
+            var existingReview = await _context.Reviews
+                .Where(x => x.user_id == dto.UserId && x.book_id == dto.BookId)
+                .FirstOrDefaultAsync();
+
+            if (existingReview != null)
+            {
+                return new CommonResponse
+                {
+                    Code = ResponseCode.Error,
+                    Message = "User has already reviewed the book"
+                };
+            }
+
+            var review = new Reviews
+            {
+                review_id = Guid.NewGuid(),
+                book_id = dto.BookId,
+                user_id = dto.UserId,
+                rating = dto.Rating,
+                review_message = dto.Review,
+                created_date = DateTime.UtcNow
+            };
+
+            await _context.Reviews.AddAsync(review);
+            await _context.SaveChangesAsync();
+
+            return new CommonResponse
+            {
+                Code = ResponseCode.Success,
+                Message = "Review added successfully"
+            };
         }
     }
 }
