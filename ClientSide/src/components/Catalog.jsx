@@ -97,6 +97,17 @@ const Catalog = () => {
         sortAscending,
       };
 
+
+    
+      if (appliedFilters.searchTerm) params.searchTerm = appliedFilters.searchTerm;
+
+      if (appliedFilters.authorIds.length > 0) params.authorIds = appliedFilters.authorIds;
+      if (appliedFilters.genreIds.length > 0) params.genreIds = appliedFilters.genreIds;
+      if (appliedFilters.publisherIds.length > 0) params.publisherIds = appliedFilters.publisherIds;
+
+      if (appliedFilters.minPrice) params.minPrice = parseFloat(appliedFilters.minPrice);
+      if (appliedFilters.maxPrice) params.maxPrice = parseFloat(appliedFilters.maxPrice);
+
       if (appliedFilters.searchTerm)
         params.searchTerm = appliedFilters.searchTerm;
       if (appliedFilters.authorIds.length > 0)
@@ -109,12 +120,14 @@ const Catalog = () => {
         params.minPrice = parseFloat(appliedFilters.minPrice);
       if (appliedFilters.maxPrice)
         params.maxPrice = parseFloat(appliedFilters.maxPrice);
+
       if (appliedFilters.language) params.language = appliedFilters.language;
       if (appliedFilters.format) params.format = appliedFilters.format;
       if (appliedFilters.inStock) params.inStock = appliedFilters.inStock;
       if (appliedFilters.onSale) params.onSale = appliedFilters.onSale;
       if (appliedFilters.minRating)
         params.minRating = parseInt(appliedFilters.minRating);
+
 
       const response = await getFilteredBooks(params);
 
@@ -131,7 +144,9 @@ const Catalog = () => {
     }
   };
 
-  // Handle filter changes
+
+
+  //Handle filter changes
   const handleFilterChange = (e) => {
     const { name, value, type, checked } = e.target;
     let updatedFilters = { ...filters };
@@ -151,6 +166,8 @@ const Catalog = () => {
     setFilters(updatedFilters);
     setAppliedFilters({ ...updatedFilters, pageNumber: 1 });
   };
+
+
 
   const applyFilters = () => {
     setAppliedFilters({ ...filters, pageNumber: 1 });
@@ -216,7 +233,7 @@ const Catalog = () => {
                 <select
                   name="authorIds"
                   value={filters.authorIds[0] || ""}
-                  onChange={handleFilterChange}
+                  onChange={handleFilterChange}   
                   className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 >
                   <option value="">All Authors</option>
