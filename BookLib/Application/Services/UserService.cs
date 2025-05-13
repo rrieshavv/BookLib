@@ -3,12 +3,14 @@ using System.Security.Claims;
 using System.Text;
 using BookLib.Application.DTOs.Auth;
 using BookLib.Application.DTOs.User;
+using BookLib.Application.DTOs.Users;
 using BookLib.Functions;
 using BookLib.Infrastructure.Data;
 using BookLib.Infrastructure.Data.Entities;
 using BookLib.Models;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -145,7 +147,7 @@ namespace BookLib.Application.Services
                 SecurityStamp = Guid.NewGuid().ToString()
             };
 
-            if(role == UserRole.customer)
+            if (role == UserRole.customer)
             {
                 applicationUser.MembershipCode = ("bmem" + Helper.GenerateNumberWithDigits(7)).ToUpper();
             }
@@ -432,5 +434,33 @@ namespace BookLib.Application.Services
             ProfileImage = user.ProfileImage
         };
 
+        public async Task<CommonResponse<List<CustomerDetailsDto>>> GetAllCustomers()
+        {
+            var users = await _userManager.GetUsersInRoleAsync("customer");
+
+            List<CustomerDetailsDto> customerDetails = new List<CustomerDetailsDto>();
+
+            foreach (var user in users)
+            {
+                var customerDetail = new CustomerDetailsDto
+                {
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Username = user.UserName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    MembershipCode = user.MembershipCode,
+                    ProfileImage = user.ProfileImage
+                };
+                customerDetails.Add(customerDetail);
+            }
+            return new CommonResponse<List<CustomerDetailsDto>>
+            {
+                Code = ResponseCode.Success,
+                Message = "Customers retrieved successfully",
+                Data = customerDetails
+            };
+        }
     }
 }

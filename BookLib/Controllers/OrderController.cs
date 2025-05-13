@@ -73,5 +73,41 @@ namespace BookLib.Controllers
             }
             return StatusCode(StatusCodes.Status200OK, processOrder.Message);
         }
+
+        [HttpGet("customer-orders")]
+        [Authorize(Roles = nameof(UserRole.customer))]
+        public async Task<IActionResult> GetCustomerOrders()
+        {
+            var customerOrders = await _orderService.GetCustomerOrders(ClaimsHelper.GetUserIdFromClaims(User));
+            if (customerOrders.Code == ResponseCode.Error)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, customerOrders.Message);
+            }
+            return StatusCode(StatusCodes.Status200OK, customerOrders.Data);
+        }
+
+        [HttpGet("customer-order-details/{orderId}")]
+        [Authorize(Roles = $"{nameof(UserRole.customer)}")]
+        public async Task<IActionResult> GetCustomerOrderDetails(Guid orderId)
+        {
+            var orderDetails = await _orderService.GetOrderDetailsByCustomer(ClaimsHelper.GetUserIdFromClaims(User), orderId);
+            if (orderDetails.Code == ResponseCode.Error)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, orderDetails.Message);
+            }
+            return StatusCode(StatusCodes.Status200OK, orderDetails.Data);
+        }
+
+        [HttpGet("all-orders/{status}")]
+        [Authorize(Roles = $"{nameof(UserRole.admin)}")]
+        public async Task<IActionResult> GetAllOrders(string status)
+        {
+            var allOrders = await _orderService.GetAllOrders(status);
+            if (allOrders.Code == ResponseCode.Error)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, allOrders.Message);
+            }
+            return StatusCode(StatusCodes.Status200OK, allOrders.Data);
+        }
     }
 }
