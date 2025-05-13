@@ -56,14 +56,15 @@ export default function BookDetailsPage() {
         setBookData({
           id: book.id,
           title: book.title,
-          author: book.authors[0]?.name || "Unknown Author",
+          currentDicountedPrice: book.currentDicountedPrice,
+          authors: book.authors && book.authors.length > 0 ? book.authors.map(a => a.name) : ["Unknown Author"],
           coverImage: book.imageUrl,
           price: book.price,
           originalPrice: book.isOnSale ? book.price * 1.2 : book.price,
           discountPercent: book.isOnSale ? 16 : 0,
           onSale: book.isOnSale,
           saleEnds: book.isOnSale ? "May 20, 2025" : null,
-          publisher: book.publishers[0]?.name || "Unknown Publisher",
+          publishers: book.publishers && book.publishers.length > 0 ? book.publishers.map(p => p.name) : ["Unknown Publisher"],
           publishDate: new Date(book.publicationDate).toLocaleDateString(
             "en-US",
             {
@@ -262,7 +263,7 @@ export default function BookDetailsPage() {
             <h1 className="text-3xl font-bold text-gray-800 mb-1">
               {bookData.title}
             </h1>
-            <h2 className="text-xl text-gray-600 mb-3">by {bookData.author}</h2>
+            <h2 className="text-xl text-gray-600 mb-3">by {bookData.authors.join(", ")}</h2>
 
             <div className="flex items-center mb-4 space-x-2">
               <div className="flex items-center">
@@ -278,21 +279,18 @@ export default function BookDetailsPage() {
 
             <div className="border-t border-b border-gray-200 py-4 mb-6">
               <div className="flex items-baseline">
-                {bookData.onSale ? (
+                {bookData.currentDicountedPrice ? (
                   <>
+                    <span className="text-2xl line-through text-gray-500 mr-2">
+                      Rs. {bookData.price.toFixed(2)}
+                    </span>
                     <span className="text-3xl font-bold text-gray-800">
-                      ${bookData.price.toFixed(2)}
-                    </span>
-                    <span className="ml-2 text-xl text-gray-500 line-through">
-                      ${bookData.originalPrice.toFixed(2)}
-                    </span>
-                    <span className="ml-2 text-sm text-red-500 font-medium">
-                      Sale ends {bookData.saleEnds}
+                      Rs. {bookData.currentDicountedPrice.toFixed(2)}
                     </span>
                   </>
                 ) : (
                   <span className="text-3xl font-bold text-gray-800">
-                    ${bookData.price.toFixed(2)}
+                    Rs. {bookData.price.toFixed(2)} 
                   </span>
                 )}
               </div>
@@ -494,9 +492,9 @@ export default function BookDetailsPage() {
                             </td>
                           </tr>
                           <tr className="border-b border-gray-200">
-                            <td className="py-3 text-gray-500">Author</td>
+                            <td className="py-3 text-gray-500">Authors</td>
                             <td className="py-3 text-gray-800 font-medium">
-                              {bookData.author}
+                              {bookData.authors.join(", ")}
                             </td>
                           </tr>
                           <tr className="border-b border-gray-200">
@@ -506,9 +504,9 @@ export default function BookDetailsPage() {
                             </td>
                           </tr>
                           <tr className="border-b border-gray-200">
-                            <td className="py-3 text-gray-500">Publisher</td>
+                            <td className="py-3 text-gray-500">Publishers</td>
                             <td className="py-3 text-gray-800 font-medium">
-                              {bookData.publisher}
+                              {bookData.publishers.join(", ")}
                             </td>
                           </tr>
                           <tr className="border-b border-gray-200">

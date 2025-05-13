@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FiShoppingCart } from "react-icons/fi";
+import { FiHeart, FiShoppingCart } from "react-icons/fi";
 
 const NavLinks = ({ role }) => {
   return (
@@ -28,6 +28,13 @@ const NavLinks = ({ role }) => {
         className="ml-4 text-xl hover:text-emerald-500 transition"
       >
         <FiShoppingCart />
+      </Link>
+      <Link 
+      to='/customer/favorites'
+          aria-label="Cart"
+        className="ml-4 text-xl hover:text-emerald-500 transition"
+      >
+        <FiHeart/>
       </Link>
     </nav>
   );

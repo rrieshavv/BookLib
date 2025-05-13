@@ -91,3 +91,39 @@ export const changePassword = async (currentPassword, newPassword) => {
     };
   }
 };
+
+export const updateUserProfile = async (userData) => {
+  try {
+    const formData = new FormData();
+    formData.append('firstName', userData.firstName);
+    formData.append('lastName', userData.lastName);
+    formData.append('email', userData.email);
+    formData.append('phoneNumber', userData.phoneNumber);
+    if (userData.profileImage) {
+      formData.append('profileImage', userData.profileImage);
+    }
+
+    const res = await apiClient.put("/auth/user/profile", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    if (res.status === 200) {
+      return {
+        success: true,
+        data: res.data,
+      };
+    } else {
+      return {
+        success: false,
+        message: res.data.message || "Failed to update profile",
+      };
+    }
+  } catch (err) {
+    return {
+      success: false,
+      message: err.response?.data?.message || err.response?.data || "Failed to update profile",
+    };
+  }
+};

@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import { Filter } from "lucide-react";
-import { getFilteredBooks, getAllAuthors, getAllGenres, getAllPublishers, getAllLanguages, getAllFormats } from "../services/bookService";
+import {
+  getFilteredBooks,
+  getAllAuthors,
+  getAllGenres,
+  getAllPublishers,
+  getAllLanguages,
+  getAllFormats,
+} from "../services/bookService";
 import { Link } from "react-router-dom";
 
 const Catalog = () => {
@@ -43,7 +50,13 @@ const Catalog = () => {
   useEffect(() => {
     const fetchFilterOptions = async () => {
       try {
-        const [authorsData, genresData, publishersData, languagesData, formatsData] = await Promise.all([
+        const [
+          authorsData,
+          genresData,
+          publishersData,
+          languagesData,
+          formatsData,
+        ] = await Promise.all([
           getAllAuthors(),
           getAllGenres(),
           getAllPublishers(),
@@ -84,6 +97,7 @@ const Catalog = () => {
         sortAscending,
       };
 
+
     
       if (appliedFilters.searchTerm) params.searchTerm = appliedFilters.searchTerm;
 
@@ -93,11 +107,26 @@ const Catalog = () => {
 
       if (appliedFilters.minPrice) params.minPrice = parseFloat(appliedFilters.minPrice);
       if (appliedFilters.maxPrice) params.maxPrice = parseFloat(appliedFilters.maxPrice);
+
+      if (appliedFilters.searchTerm)
+        params.searchTerm = appliedFilters.searchTerm;
+      if (appliedFilters.authorIds.length > 0)
+        params.authorIds = appliedFilters.authorIds;
+      if (appliedFilters.genreIds.length > 0)
+        params.genreIds = appliedFilters.genreIds;
+      if (appliedFilters.publisherIds.length > 0)
+        params.publisherIds = appliedFilters.publisherIds;
+      if (appliedFilters.minPrice)
+        params.minPrice = parseFloat(appliedFilters.minPrice);
+      if (appliedFilters.maxPrice)
+        params.maxPrice = parseFloat(appliedFilters.maxPrice);
+
       if (appliedFilters.language) params.language = appliedFilters.language;
       if (appliedFilters.format) params.format = appliedFilters.format;
       if (appliedFilters.inStock) params.inStock = appliedFilters.inStock;
       if (appliedFilters.onSale) params.onSale = appliedFilters.onSale;
-      if (appliedFilters.minRating) params.minRating = parseInt(appliedFilters.minRating);
+      if (appliedFilters.minRating)
+        params.minRating = parseInt(appliedFilters.minRating);
 
 
       const response = await getFilteredBooks(params);
@@ -122,7 +151,11 @@ const Catalog = () => {
     const { name, value, type, checked } = e.target;
     let updatedFilters = { ...filters };
 
-    if (name === "authorIds" || name === "genreIds" || name === "publisherIds") {
+    if (
+      name === "authorIds" ||
+      name === "genreIds" ||
+      name === "publisherIds"
+    ) {
       updatedFilters[name] = value ? [value] : [];
     } else if (type === "checkbox") {
       updatedFilters[name] = checked;
@@ -194,7 +227,9 @@ const Catalog = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Author Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Author</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Author
+                </label>
                 <select
                   name="authorIds"
                   value={filters.authorIds[0] || ""}
@@ -212,7 +247,9 @@ const Catalog = () => {
 
               {/* Genre Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Genre</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Genre
+                </label>
                 <select
                   name="genreIds"
                   value={filters.genreIds[0] || ""}
@@ -230,7 +267,9 @@ const Catalog = () => {
 
               {/* Publisher Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Publisher</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Publisher
+                </label>
                 <select
                   name="publisherIds"
                   value={filters.publisherIds[0] || ""}
@@ -248,7 +287,9 @@ const Catalog = () => {
 
               {/* Format Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Format</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Format
+                </label>
                 <select
                   name="format"
                   value={filters.format}
@@ -266,7 +307,9 @@ const Catalog = () => {
 
               {/* Price Range Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Price Range</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Price Range
+                </label>
                 <div className="flex items-center gap-2">
                   <input
                     name="minPrice"
@@ -290,7 +333,9 @@ const Catalog = () => {
 
               {/* Language Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Language</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Language
+                </label>
                 <select
                   name="language"
                   value={filters.language}
@@ -308,7 +353,9 @@ const Catalog = () => {
 
               {/* Availability Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Availability</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Availability
+                </label>
                 <div className="flex items-center gap-6">
                   <label className="flex items-center cursor-pointer">
                     <input
@@ -335,7 +382,9 @@ const Catalog = () => {
 
               {/* Search Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Search</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Search
+                </label>
                 <input
                   name="searchTerm"
                   value={filters.searchTerm}
@@ -348,7 +397,9 @@ const Catalog = () => {
 
               {/* Minimum Rating Filter */}
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Min Rating</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Min Rating
+                </label>
                 <input
                   name="minRating"
                   value={filters.minRating}
@@ -365,7 +416,9 @@ const Catalog = () => {
             {/* Sorting and Action Buttons */}
             <div className="flex flex-col md:flex-row justify-between items-center mt-8 gap-4">
               <div className="w-full md:w-auto">
-                <label className="block mb-2 text-sm font-medium text-gray-700">Sort By</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Sort By
+                </label>
                 <select
                   name="sortOption"
                   value={filters.sortOption}
@@ -497,14 +550,25 @@ const Catalog = () => {
                           By{" "}
                           <span className="text-emerald-600">
                             {book.authors && book.authors.length > 0
-                              ? book.authors[0].name
+                              ? book.authors.map(a => a.name).join(",")
                               : "Unknown Author"}
                           </span>
                         </p>
                         <div className="mt-4">
-                          <span className="text-2xl font-bold text-emerald-700">
-                            Rs. {book.price}
-                          </span>
+                          {book.currentDicountedPrice ? (
+                            <div className="flex items-center gap-2">
+                              <span className="text-2xl font-bold text-emerald-700">
+                                Rs. {book.currentDicountedPrice}
+                              </span>
+                              <span className="text-lg text-gray-500 line-through">
+                                Rs. {book.price}
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-2xl font-bold text-emerald-700">
+                              Rs. {book.price}
+                            </span>
+                          )}
                         </div>
                       </div>
 
@@ -599,8 +663,12 @@ const Catalog = () => {
                       d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
                     />
                   </svg>
-                  <p className="text-xl text-gray-500">No books found matching your criteria</p>
-                  <p className="text-gray-400 mt-2">Try adjusting your filters or search terms</p>
+                  <p className="text-xl text-gray-500">
+                    No books found matching your criteria
+                  </p>
+                  <p className="text-gray-400 mt-2">
+                    Try adjusting your filters or search terms
+                  </p>
                 </div>
               )}
             </div>
