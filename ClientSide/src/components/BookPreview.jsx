@@ -115,79 +115,92 @@ const BookPreview = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {books.map((book) => (
-              <div
-                key={book.id}
-                className="bg-white rounded-xl shadow-md hover:shadow-xl transition duration-300 flex flex-col overflow-hidden border border-gray-100"
-              >
-                <div className="relative h-64 bg-gray-100 overflow-hidden group">
-                  <img
-                    src={book.imageUrl || "/api/placeholder/240/320"}
-                    alt={book.title}
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition duration-300"
-                  />
-                  <button
-                    onClick={() => handleAddToFavorites(book.id)}
-                    className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition"
-                  >
-                    {favoriteIds.includes(book.id) ? (
-                      <svg
+            {books.map((book) => {
+              console.log("Book authors:", book.authors);
+              console.log("Book publishers:", book.publishers);
+              return (
+                <div
+                  key={book.id}
+                  className="bg-white rounded-xl shadow-md hover:shadow-xl transition duration-300 flex flex-col overflow-hidden border border-gray-100"
+                >
+                  <div className="relative h-64 bg-gray-100 overflow-hidden group">
+                    <img
+                      src={book.imageUrl || "/api/placeholder/240/320"}
+                      alt={book.title}
+                      className="w-full h-full object-cover object-center group-hover:scale-105 transition duration-300"
+                    />
+                    <button
+                      onClick={() => handleAddToFavorites(book.id)}
+                      className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition"
+                    >
+                      {favoriteIds.includes(book.id) ? (
+                        <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-5 w-5 text-red-500"
                         viewBox="0 0 20 20"
                         fill="currentColor"
                       >
-                        <path
+                          <path
                           fillRule="evenodd"
                           d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
                           clipRule="evenodd"
                         />
-                      </svg>
-                    ) : (
-                      <svg
+                        </svg>
+                      ) : (
+                        <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-5 w-5 text-gray-400 hover:text-red-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
                       >
-                        <path
+                          <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
                           d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                         />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-
-                <div className="p-5 flex-grow flex flex-col justify-between">
-                  <div>
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-bold text-xl text-gray-800 line-clamp-2 hover:text-emerald-600 transition">
-                        <Link to={`/books/${book.id}`}>{book.title}</Link>
-                      </h3>
-                      {book.stockQty > 0 ? (
-                        <span className="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full">
-                          In Stock
-                        </span>
-                      ) : (
-                        <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
-                          Out of Stock
-                        </span>
+                        </svg>
                       )}
-                    </div>
-                    <p className="text-sm text-gray-600 mt-1">
-                      By{" "}
-                      <span className="text-emerald-600">
-                        {book.authors && book.authors.length > 0
-                          ? book.authors[0].name
-                          : "Unknown Author"}
-                      </span>
-                    </p>
-                    <div className="mt-4">
-                      {book.currentDicountedPrice ? (
+                    </button>
+                  </div>
+
+                  <div className="p-5 flex-grow flex flex-col justify-between">
+                    <div>
+                      <div className="flex justify-between items-start">
+                        <h3 className="font-bold text-xl text-gray-800 line-clamp-2 hover:text-emerald-600 transition">
+                          <Link to={`/books/${book.id}`}>{book.title}</Link>
+                        </h3>
+                        {book.stockQty > 0 ? (
+                          <span className="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full">
+                            In Stock
+                          </span>
+                        ) : (
+                          <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
+                            Out of Stock
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">
+                        By{" "}
+                        <span className="text-emerald-600">
+                          {book.authors && book.authors.length > 0
+                            ? book.authors.map(a => a.name).join(", ")
+                            : "Unknown Author"}
+                        </span>
+                      </p>
+                      {book.publishers && book.publishers.length > 0 && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          Publishers: {book.publishers.map(p => p.name).join(", ")}
+                        </p>
+                      )}
+                      {book.genres && book.genres.length > 0 && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          Genres: {book.genres.map(g => g.name).join(", ")}
+                        </p>
+                      )}
+                      <div className="mt-4">
+                        {book.currentDicountedPrice ? (
                         <div className="flex items-center gap-2">
                           <span className="text-xl line-through text-gray-500">
                             Rs. {book.price}
@@ -198,87 +211,88 @@ const BookPreview = () => {
                         </div>
                       ) : (
                         <span className="text-2xl font-bold text-emerald-700">
-                          Rs. {book.price}
-                        </span>
-                      )}
+                            Rs. {book.price}
+                          </span>
+                        )}
                     </div>
-                  </div>
+                    </div>
 
-                  <div className="mt-6 space-y-3">
-                    <button
-                      onClick={() => handleAddToCart(book.id)}
-                      disabled={book.stockQty <= 0}
-                      className={`flex items-center justify-center gap-2 w-full px-4 py-2 text-sm font-medium rounded-lg transition
-                        ${
+                    <div className="mt-6 space-y-3">
+                      <button
+                        onClick={() => handleAddToCart(book.id)}
+                        disabled={book.stockQty <= 0}
+                        className={`flex items-center justify-center gap-2 w-full px-4 py-2 text-sm font-medium rounded-lg transition
+                          ${
                           book.stockQty <= 0
-                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                            : cartIds.includes(book.id)
-                            ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                            : "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
+                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                              : cartIds.includes(book.id)
+                              ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                              : "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
                         }`}
-                    >
-                      {cartIds.includes(book.id) ? (
-                        <>
-                          <svg
+                      >
+                        {cartIds.includes(book.id) ? (
+                          <>
+                            <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-5 w-5"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
                           >
-                            <path
+                              <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeWidth={2}
                               d="M6 18L18 6M6 6l12 12"
                             />
-                          </svg>
-                          Remove from Cart
-                        </>
-                      ) : (
-                        <>
-                          <svg
+                            </svg>
+                            Remove from Cart
+                          </>
+                        ) : (
+                          <>
+                            <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-5 w-5"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
                           >
-                            <path
+                              <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeWidth={2}
                               d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                             />
-                          </svg>
-                          Add to Cart
-                        </>
-                      )}
-                    </button>
+                            </svg>
+                            Add to Cart
+                          </>
+                        )}
+                      </button>
 
-                    <Link to={`/books/${book.id}`} className="block">
-                      <button className="flex items-center justify-center gap-2 w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">
-                        View Details
-                        <svg
+                      <Link to={`/books/${book.id}`} className="block">
+                        <button className="flex items-center justify-center gap-2 w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">
+                          View Details
+                          <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="h-5 w-5"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
                         >
-                          <path
+                            <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth={2}
                             d="M13 7l5 5m0 0l-5 5m5-5H6"
                           />
-                        </svg>
-                      </button>
-                    </Link>
+                          </svg>
+                        </button>
+                      </Link>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 

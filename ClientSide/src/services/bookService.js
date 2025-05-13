@@ -19,8 +19,6 @@ export const getAllBooks = async (page = 1, size = 10) => {
   };
 
 
-
-
 // Api for get book by Id
 export const getBookById = async (id) => {
     try {
