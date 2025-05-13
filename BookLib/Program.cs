@@ -10,8 +10,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using BookLib.Infrastructure.Configurations;
 using BookLib.Middlewares;
-using BookLib.Application;
-using BookLib.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -94,9 +92,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
-builder.Services.AddScoped<IBookService, BookService>();
-builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
-builder.Services.AddScoped<IBookMetaDataService, BookMetaDataService>();
+
 
 var app = builder.Build();
 

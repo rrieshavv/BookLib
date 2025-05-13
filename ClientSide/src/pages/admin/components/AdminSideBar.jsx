@@ -44,6 +44,12 @@ const AdminSideBar = () => {
               text="Customers"
             />
           </Link>
+          <Link to="/admin/all-orders">
+            <SideBarItem
+              icon={<FiTag className="h-5 w-5" />}
+              text="All Orders"
+            />
+          </Link>
           <Link to="/admin/announcements">
             <SideBarItem
               icon={<FiBell className="h-5 w-5" />}
@@ -51,10 +57,16 @@ const AdminSideBar = () => {
             />
           </Link>
           <Link to="/admin/books/discount">
-            <SideBarItem icon={<FiTag className="h-5 w-5" />} text="All History" />
+            <SideBarItem
+              icon={<FiTag className="h-5 w-5" />}
+              text="All Discount History"
+            />
           </Link>
           <Link to="/admin/inventory">
-            <SideBarItem icon={<FiBox className="h-5 w-5" />} text="Inventory" />
+            <SideBarItem
+              icon={<FiBox className="h-5 w-5" />}
+              text="Inventory"
+            />
           </Link>
           {/* <SideBarItem
             icon={<FiShoppingBag className="h-5 w-5" />}
@@ -74,7 +86,10 @@ const AdminSideBar = () => {
           /> */}
         </nav>
         <div className="mt-auto mb-4">
-          <button onClick={handleLogout} className="flex items-center w-full px-4 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-100">
+          <button
+            onClick={handleLogout}
+            className="flex items-center w-full px-4 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-100"
+          >
             <FiLogOut className="h-5 w-5 mr-3" />
             Logout
           </button>

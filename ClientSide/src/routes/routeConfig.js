@@ -31,6 +31,7 @@ import Inventory from "../pages/admin/components/Inventary";
 import OrderConfirm from "../pages/OrderConfirm";
 import OrderHistory from "../pages/OrderHistory";
 import CustomerOrderDetails from "../pages/CustomerOrderDetails";
+import OrdersPage from "../pages/admin/OrdersPage";
 
 export const routeConfig = [
   {
@@ -104,10 +105,15 @@ export const routeConfig = [
     component: OrderHistory,
     allowedRoles: ["customer"],
   },
+    {
+    path: "/admin/all-orders",
+    component: OrdersPage,
+    allowedRoles: ["admin"],
+  },
    {
     path: "/order/details",
     component: CustomerOrderDetails,
-    allowedRoles: ["customer", "admin"],
+    allowedRoles: ["customer","admin"],
   },
   {
     path: "/invoice",

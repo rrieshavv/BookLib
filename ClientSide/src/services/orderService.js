@@ -1,5 +1,9 @@
 import apiClient from "../utils/apiClient";
 
+export const getAllOrders = async(status) =>{
+  return (await apiClient.get(`/order/all-orders/${status}`)).data
+}
+
 export const cancelOrder = async ({ orderId, password }) => {
   try {
     const res = await apiClient.post(`/order/cancel-order`, {

@@ -29,6 +29,8 @@ namespace BookLib.Infrastructure.DI
             services.AddScoped<IAnnouncementService, AnnouncementService>();
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IInventoryService, InventoryService>();
+            services.AddScoped<IBookMetaDataService, BookMetaDataService>();
+            services.AddScoped<IDashboardService, DashboardService>();
 
 
 
