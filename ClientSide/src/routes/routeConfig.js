@@ -25,11 +25,18 @@ import DiscountHistory from "../pages/admin/DiscountHistory";
 import BookDiscountHistory from "../pages/admin/components/BookDiscountHistory";
 import AddBookDiscount from "../pages/admin/components/AddBookDiscount";
 import EditBookDiscount from "../pages/admin/components/EditBookDiscount";
+import FavouritesPage from "../pages/FavouritesPage";
 
 export const routeConfig = [
   {
     path: "/",
     component: HomePage,
+    public: true,
+  },
+
+  {
+  path: "/customer/favorites",
+    component: FavouritesPage,
     public: true,
   },
   {
