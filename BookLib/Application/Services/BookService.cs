@@ -234,17 +234,29 @@ namespace BookLib.Application.Services
                     .Include(b => b.genres)
                     .Include(b => b.publishers);
 
+                
+
                 if (!string.IsNullOrEmpty(filterDto.SearchTerm))
-                {
+                {                 
+
+                    var searchTermLower = filterDto.SearchTerm.ToLower();
                     query = query.Where(b =>
-                        b.title.Contains(filterDto.SearchTerm) ||
-                        b.description.Contains(filterDto.SearchTerm) ||
-                        b.isbn.Contains(filterDto.SearchTerm));
+                        b.title.ToLower().Contains(searchTermLower) ||
+                        b.description.ToLower().Contains(searchTermLower) ||
+                        b.isbn.ToLower().Contains(searchTermLower));
+
+
                 }
+
+
+
+
 
                 if (filterDto.AuthorIds != null && filterDto.AuthorIds.Any())
                 {
-                    query = query.Where(b => b.authors.Any(a => filterDto.AuthorIds.Contains(a.author_id)));
+
+                    query = query.Where(b =>
+                        b.authors.Any(a => filterDto.AuthorIds.Contains(a.author_id)));
                 }
 
                 if (filterDto.GenreIds != null && filterDto.GenreIds.Any())
@@ -256,6 +268,9 @@ namespace BookLib.Application.Services
                 {
                     query = query.Where(b => b.publishers.Any(p => filterDto.PublisherIds.Contains(p.publisher_id)));
                 }
+
+
+
 
                 if (filterDto.MinPrice.HasValue)
                 {
