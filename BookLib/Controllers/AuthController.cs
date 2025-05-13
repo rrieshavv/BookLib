@@ -149,7 +149,7 @@ namespace BookLib.Controllers
                 return Ok(result);
             }
             return BadRequest(result);
-        
+
         }
 
         [HttpPost("change-Password")]
@@ -165,5 +165,16 @@ namespace BookLib.Controllers
             return StatusCode(StatusCodes.Status200OK, result.Message);
         }
 
+        [HttpGet("Get-all-customers")]
+        [Authorize(Roles = nameof(UserRole.admin))]
+        public async Task<IActionResult> GetAllCustomers()
+        {
+            var result = await _userService.GetAllCustomers();
+            if (result.Code == ResponseCode.Error)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, result.Message);
+            }
+            return StatusCode(StatusCodes.Status200OK, result.Data);
+        }
     }
 }

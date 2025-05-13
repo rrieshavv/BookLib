@@ -319,7 +319,7 @@ namespace BookLib.Application.Services
             {
                 invoice.bulk_discount = totalPrice * 5 / 100;
                 invoice.bulk_discount_percentage = 5;
-                invoice.grand_total_amount = totalPrice - (totalPrice * invoice.bulk_discount / 100);
+                invoice.grand_total_amount = totalPrice - invoice.bulk_discount;
                 invoice.remarks = "5% discount applied.";
             }
             else
@@ -386,6 +386,169 @@ namespace BookLib.Application.Services
             {
                 Code = ResponseCode.Success,
                 Message = "Order processed successfully"
+            };
+        }
+
+        public async Task<CommonResponse<List<CustomerOrdersDto>>> GetCustomerOrders(string userId)
+        {
+            var user = await _context.Users.Where(x => x.Id == userId).FirstOrDefaultAsync();
+            if(user == null)
+            {
+                return new CommonResponse<List<CustomerOrdersDto>>
+                {
+                    Code = ResponseCode.Error,
+                    Message = "User not found"
+                };
+            }
+
+            var orders = await _context.Orders.Include(x=>x.Invoice).Where(x => x.user_id == userId).ToListAsync();
+            List<CustomerOrdersDto> customerOrders = new List<CustomerOrdersDto>();
+            foreach (var order in orders)
+            {
+                customerOrders.Add(new CustomerOrdersDto
+                {
+                    OrderId = order.order_id,
+                    Status = order.status,
+                    TotalAmount = order.Invoice.grand_total_amount,
+                    OrderDate = order.created_ts,
+                    ClaimCode = order.claim_code,
+                    MembershipCode = user.MembershipCode
+                });
+            }
+            return new CommonResponse<List<CustomerOrdersDto>>
+            {
+                Code = ResponseCode.Success,
+                Message = "Orders retrieved successfully",
+                Data = customerOrders
+            };
+        }
+
+        
+
+        public async Task<CommonResponse<OrderDetailsDto>> GetOrderDetailsByCustomer(string userId, Guid orderId)
+        {
+            var customer = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            if (customer == null)
+            {
+                return new CommonResponse<OrderDetailsDto>
+                {
+                    Code = ResponseCode.Error,
+                    Message = "User not found"
+                };
+            }
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(x => x.order_id == orderId && x.user_id == userId);
+
+            if (order == null)
+            {
+                return new CommonResponse<OrderDetailsDto>
+                {
+                    Code = ResponseCode.Error,
+                    Message = "Order not found"
+                };
+            }
+            if (order.status != "Pending")
+            {
+                return new CommonResponse<OrderDetailsDto>
+                {
+                    Code = ResponseCode.Error,
+                    Message = "Order cannot be processed"
+                };
+            }
+
+            var orderItems = await _context.OrderItems
+                .Where(x => x.order_id == order.order_id)
+                .ToListAsync();
+            if (orderItems == null || orderItems.Count == 0)
+            {
+                return new CommonResponse<OrderDetailsDto>
+                {
+                    Code = ResponseCode.Error,
+                    Message = "Order items not found"
+                };
+            }
+            var bookIds = orderItems.Select(x => x.book_id).ToList();
+            var books = await _context.Books
+                .Where(x => bookIds.Contains(x.book_id))
+                .ToListAsync();
+            if (books == null || books.Count == 0)
+            {
+                return new CommonResponse<OrderDetailsDto>
+                {
+                    Code = ResponseCode.Error,
+                    Message = "Books not found"
+                };
+            }
+            var orderDetails = new OrderDetailsDto
+            {
+                OrderCode = order.order_code,
+                ClaimCode = order.claim_code,
+                FirstName = order.first_name,
+                LastName = order.last_name,
+                PhoneNumber = order.phone,
+                AddressLine1 = order.address_line_1,
+                AddressLine2 = order.address_line_2,
+                City = order.city,
+                State = order.state,
+                ZipCode = order.zip_code,
+                Country = order.country,
+                OrderItems = new List<OrderDetailsItemDto>()
+            };
+            foreach (var item in orderItems)
+            {
+                var book = books.FirstOrDefault(x => x.book_id == item.book_id);
+                if (book != null)
+                {
+                    orderDetails.OrderItems.Add(new OrderDetailsItemDto
+                    {
+                        BookId = book.book_id,
+                        BookName = book.title,
+                        Quantity = item.quantity,
+                        Price = item.price,
+                        Discount = item.discount,
+                        TotalPrice = item.total_price
+                    });
+                }
+            }
+            var invoice = await _context.Invoices
+                .FirstOrDefaultAsync(x => x.invoice_id == order.order_id);
+            if (invoice != null)
+            {
+                orderDetails.InvoiceCode = invoice.invoice_no;
+                orderDetails.TotalAmount = invoice.total_amount;
+                orderDetails.BulkDiscount = invoice.bulk_discount;
+                orderDetails.GrandTotalAmount = invoice.grand_total_amount;
+            }
+            return new CommonResponse<OrderDetailsDto>
+            {
+                Code = ResponseCode.Success,
+                Message = "Order details retrieved successfully",
+                Data = orderDetails
+            };
+        }
+
+        public async Task<CommonResponse<List<CustomerOrdersDto>>> GetAllOrders(string status)
+        {
+        
+            var orders = await _context.Orders.Include(x => x.Invoice).Include(x=>x.UserDetails).Where(x => x.status.ToLower() == status.ToLower()).ToListAsync();
+            List<CustomerOrdersDto> customerOrders = new List<CustomerOrdersDto>();
+            foreach (var order in orders)
+            {
+                customerOrders.Add(new CustomerOrdersDto
+                {
+                    OrderId = order.order_id,
+                    Status = order.status,
+                    TotalAmount = order.Invoice.grand_total_amount,
+                    OrderDate = order.created_ts,
+                    ClaimCode = order.claim_code,
+                    MembershipCode = order.UserDetails.MembershipCode
+                });
+            }
+            return new CommonResponse<List<CustomerOrdersDto>>
+            {
+                Code = ResponseCode.Success,
+                Message = "Orders retrieved successfully",
+                Data = customerOrders
             };
         }
     }
