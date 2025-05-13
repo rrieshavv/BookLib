@@ -1,12 +1,9 @@
-﻿using System.Threading.Tasks;
-using BookLib.Application;
-using BookLib.Application.DTOs.Order;
+﻿using BookLib.Application.DTOs.Order;
+using BookLib.Application.Interface;
 using BookLib.Functions;
-using BookLib.Infrastructure.Data.Entities;
-using BookLib.Models;
+using BookLib.Infrastructure.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static System.Net.WebRequestMethods;
 
 namespace BookLib.Controllers
 {
@@ -16,10 +13,8 @@ namespace BookLib.Controllers
     public class OrderController : Controller
     {
         private readonly IOrderService _orderService;
-        private readonly IEmailService _emailService;
-        public OrderController(IOrderService orderService, IEmailService emailService)
+        public OrderController(IOrderService orderService)
         {
-            _emailService = emailService;
             _orderService = orderService;
         }
 

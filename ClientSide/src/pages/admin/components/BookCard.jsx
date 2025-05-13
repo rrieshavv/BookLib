@@ -48,7 +48,7 @@ const BookCard = ({ book }) => {
           
           <div className="mt-4 pt-3 border-t border-gray-200 flex items-center justify-between">
             <span className="text-lg font-bold text-gray-900">
-              ${book.price?.toFixed(2)}
+              Rs. {book.price?.toFixed(2)}
             </span>
             
             <Link to={`/admin/books/${book.id}`}>

@@ -1,5 +1,5 @@
-﻿using BookLib.Application.DTOs.Order;
-using BookLib.Infrastructure.Data.Entities;
+﻿using BookLib.Application.Data.Entities;
+using BookLib.Application.DTOs.Order;
 
 namespace BookLib.Functions
 {

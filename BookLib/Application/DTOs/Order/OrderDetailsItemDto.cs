@@ -1,4 +1,4 @@
-﻿using BookLib.Infrastructure.Data.Entities;
+﻿using BookLib.Application.Data.Entities;
 
 namespace BookLib.Application.DTOs.Order
 {

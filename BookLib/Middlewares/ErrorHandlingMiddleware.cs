@@ -1,4 +1,4 @@
-﻿using BookLib.Application;
+﻿using BookLib.Application.Interface;
 
 public class ErrorHandlingMiddleware
 {

@@ -1,7 +1,7 @@
-﻿using BookLib.Application;
-using BookLib.Application.DTOs.Book;
+﻿using BookLib.Application.DTOs.Book;
+using BookLib.Application.Interface;
 using BookLib.Functions;
-using BookLib.Models;
+using BookLib.Infrastructure.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -79,7 +79,7 @@ namespace BookLib.Controllers
                 {
                     return StatusCode(StatusCodes.Status200OK, bookResponse);
                 }
-                return StatusCode(StatusCodes.Status404NotFound, bookResponse); 
+                return StatusCode(StatusCodes.Status404NotFound, bookResponse);
             }
             catch (Exception ex)
             {
@@ -251,7 +251,25 @@ namespace BookLib.Controllers
             }
         }
 
-
+        [HttpPost("review")]
+        [Authorize(Roles = nameof(UserRole.customer))]
+        public async Task<IActionResult> AddBookReview([FromBody] BookReviewDto bookReviewDto)
+        {
+            try
+            {
+                var username = TokenManager.GetUserName(_contextAccessor);
+                var response = await _bookService.AddReview(bookReviewDto);
+                if (response.Code == ResponseCode.Success)
+                {
+                    return StatusCode(StatusCodes.Status201Created, response);
+                }
+                return StatusCode(StatusCodes.Status400BadRequest, response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+        }
 
     }
 }
