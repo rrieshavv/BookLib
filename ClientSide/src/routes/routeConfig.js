@@ -21,8 +21,13 @@ import AdminAnnouncement from "../pages/admin/AdminAnnouncement";
 
 import ProcessOrders from "../pages/staff/ProcessOrders";
 import AddBookForm from "../pages/admin/components/AddBookForm";
+import DiscountHistory from "../pages/admin/DiscountHistory";
+import BookDiscountHistory from "../pages/admin/components/BookDiscountHistory";
+import AddBookDiscount from "../pages/admin/components/AddBookDiscount";
+import EditBookDiscount from "../pages/admin/components/EditBookDiscount";
 import FavouritesPage from "../pages/FavouritesPage";
 import CustomersDashboard from "../pages/admin/CustomersDashboard";
+import Inventory from "../pages/admin/components/Inventary";
 
 export const routeConfig = [
   {
@@ -140,5 +145,31 @@ export const routeConfig = [
     path: "/admin/customers",
     component: CustomersDashboard,
     allowedRoles: ["admin"],
+  },
+  {
+    path: "/admin/books/discount",
+    component: DiscountHistory,
+    allowedRoles: ["admin"],
+  },
+  {
+    path: "/admin/books/discount/:bookId",
+    component: BookDiscountHistory,
+    allowedRoles: ["admin"],
+  },
+  {
+    path: "/admin/books/:bookId/add-discount",
+    component: AddBookDiscount,
+    allowedRoles: ["admin"],
+  },
+  {
+    path: "/admin/books/:bookId/edit-discount/:discountId",
+    component: EditBookDiscount,
+    allowedRoles: ["admin"],
+  },
+  {
+    path: "/admin/inventory",
+    component: Inventory,
+    allowedRoles: ["admin"],
   }
+
 ];

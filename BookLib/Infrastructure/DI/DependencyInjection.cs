@@ -28,6 +28,8 @@ namespace BookLib.Infrastructure.DI
             services.AddScoped<IDiscountService, DiscountService>();
             services.AddScoped<IAnnouncementService, AnnouncementService>();
             services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IInventoryService, InventoryService>();
+
 
 
             return services;

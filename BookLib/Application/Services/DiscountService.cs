@@ -312,8 +312,66 @@ namespace BookLib.Application.Services
             }
         }
 
+        public async Task<CommonResponse<DiscountDto>> GetDiscountByIdAsync(Guid id)
+        {
+            CommonResponse<DiscountDto> response = new CommonResponse<DiscountDto>();
 
+            try
+            {
+                var book = await _context.Discounts
+                    .FirstOrDefaultAsync(b => b.book_id == id);
 
+                if (book == null)
+                {
+                    response.Code = ResponseCode.Error;
+                    response.Message = "Discount not found";
+                    return response;
+                }
 
+                var bookDto = MapToDiscountDto(book);
+
+                response.Code = ResponseCode.Success;
+                response.Message = "Discount retrieved successfully";
+                response.Data = bookDto;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Code = ResponseCode.Exception;
+                response.Message = ex.Message;
+                return response;
+            }
+
+        }
+
+        public async Task<CommonResponse<DiscountDto>> GetDiscountByDiscountIdAsync(Guid id)
+        {
+            CommonResponse<DiscountDto> response = new CommonResponse<DiscountDto>();
+            try
+            {
+                var discount = await _context.Discounts
+                    .FirstOrDefaultAsync(d => d.discount_id == id);
+
+                if (discount == null)
+                {
+                    response.Code = ResponseCode.Error;
+                    response.Message = "Discount not found";
+                    return response;
+                }
+
+                var discountDto = MapToDiscountDto(discount);
+
+                response.Code = ResponseCode.Success;
+                response.Message = "Discount retrieved successfully";
+                response.Data = discountDto;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Code = ResponseCode.Exception;
+                response.Message = ex.Message;
+                return response;
+            }
+        }
     }
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getBookById } from '../../../services/bookService';
 import AdminSideBar from './AdminSideBar';
 import TopNavAdmin from './TopNavAdmin';
@@ -114,10 +114,15 @@ const BookDetailPage = () => {
                         </div>
                         <div className='flex space-x-2'>
 
-                          <button
+                          {/* <button
                           className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition">
                           Discount
+                          </button> */}
+                          <Link to={`/admin/books/discount/${book.id}`}>
+                          <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition">
+                          Discount
                           </button>
+                          </Link>
 
                           <button
                           onClick={toggleEditMode}
@@ -125,6 +130,15 @@ const BookDetailPage = () => {
                           Edit Book
                           </button>
 
+                          <button
+                          onClick={toggleEditMode}
+                          className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded transition">
+                           Inventory
+                          </button>
+
+
+
+                          
 
                         </div>
                         
