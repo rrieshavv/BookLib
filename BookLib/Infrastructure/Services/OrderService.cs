@@ -315,6 +315,41 @@ namespace BookLib.Infrastructure.Services
                 total_amount = totalPrice,
             };
 
+            var totalOrdersOfUser = await _context.Orders
+              .Where(x => x.user_id == userId && x.status == "Completed")
+              .CountAsync();
+
+            decimal loyaltyDiscount = 0;
+            decimal bulkDiscount = 0;
+            int bulkDiscountPercentage = 0;
+            int loyaltyDiscountPercentage = 0;
+
+            // Check for bulk discount
+            if (totalBooks > 5)
+            {
+                bulkDiscount = totalPrice * 5 / 100;
+                bulkDiscountPercentage = 5;
+            }
+
+            // Check for loyalty discount (every 10 completed orders)
+            if (totalOrdersOfUser > 0 && totalOrdersOfUser % 10 == 0)
+            {
+                loyaltyDiscount = totalPrice * 10 / 100;
+                loyaltyDiscountPercentage = 10;
+            }
+
+            decimal totalDiscount = bulkDiscount + loyaltyDiscount;
+
+            invoice.bulk_discount = totalDiscount;
+            invoice.bulk_discount_percentage = bulkDiscountPercentage + loyaltyDiscountPercentage;
+            invoice.grand_total_amount = totalPrice - totalDiscount;
+
+            // Set remarks accordingly
+            List<string> remarks = new();
+            if (bulkDiscount > 0) remarks.Add("5% bulk discount applied");
+            if (loyaltyDiscount > 0) remarks.Add("10% loyalty discount applied");
+            invoice.remarks = remarks.Count > 0 ? string.Join(", ", remarks) + "." : "No discount applied.";
+
             // if there are more than 5 books, apply 5% bulk discount
             if (totalBooks > 5)
             {
