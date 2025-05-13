@@ -341,9 +341,8 @@ const handleSubmit = async (e) => {
                 id="stockQty"
                 name="stockQty"
                 value={formData.stockQty}
-                onChange={handleChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                required
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline hover:cursor-not-allowed"
+                readOnly
                 min="0"
               />
             </div>

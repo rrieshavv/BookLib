@@ -1,6 +1,5 @@
 ﻿using BookLib.Application;
-using BookLib.Application.DTOs.Book;
-using BookLib.Application.Services;
+using BookLib.Application.DTOs.Inventory;
 using BookLib.Functions;
 using BookLib.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -12,52 +11,23 @@ namespace BookLib.Controllers
     [Authorize]
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class DiscountController:Controller
+    public class InventoryController : Controller
     {
-
-        private readonly IDiscountService _discountService;
+        private readonly IInventoryService _inventoryService;
         private readonly IHttpContextAccessor _contextAccessor;
 
-
-        public DiscountController(IDiscountService discountService, IHttpContextAccessor contextAccessor)
+        public InventoryController(IInventoryService inventoryService, IHttpContextAccessor contextAccessor)
         {
-            _discountService = discountService;
+            _inventoryService = inventoryService;
             _contextAccessor = contextAccessor;
         }
 
-
-        [HttpPost("book/addDiscount")]
-
-        public async Task<IActionResult> AddDiscount([FromBody] DiscountCreateDto discountDto)
+        [HttpGet("all")]
+        public async Task<IActionResult> GetInventories()
         {
             try
             {
-                var username = TokenManager.GetUserName(_contextAccessor);
-
-                var response = await _discountService.AddDiscountAsync(discountDto, username);
-
-                if (response.Code == ResponseCode.Success)
-                {
-                    return StatusCode(StatusCodes.Status201Created, response);
-                }
-                return StatusCode(StatusCodes.Status400BadRequest, response);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-        }
-
-
-        [HttpPut("book/editDiscount/{discountId}")]
-        public async Task<IActionResult> EditDiscount(Guid discountId, [FromBody] DiscountUpdateDto discountDto)
-        {
-            try
-            {
-                var username = TokenManager.GetUserName(_contextAccessor);
-
-                var response = await _discountService.EditDiscountAsync(discountId, discountDto, username);
-
+                var response = await _inventoryService.GetInventoriesAsync();
                 if (response.Code == ResponseCode.Success)
                 {
                     return StatusCode(StatusCodes.Status200OK, response);
@@ -70,15 +40,12 @@ namespace BookLib.Controllers
             }
         }
 
-
-
-        [HttpDelete("book/deleteDiscount/{discountId}")]
-        public async Task<IActionResult> DeleteDiscount(Guid discountId)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetInventoryById(Guid id)
         {
             try
             {
-                var response = await _discountService.DeleteDiscountAsync(discountId);
-
+                var response = await _inventoryService.GetInventoryByIdAsync(id);
                 if (response.Code == ResponseCode.Success)
                 {
                     return StatusCode(StatusCodes.Status200OK, response);
@@ -91,14 +58,50 @@ namespace BookLib.Controllers
             }
         }
 
-        [HttpGet("book/getDiscounts")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetDiscounts([FromQuery] DiscountFilterDto filterDto)
+        [HttpGet("book/{bookId}")]
+        public async Task<IActionResult> GetInventoryByBookId(Guid bookId)
         {
             try
             {
-                var response = await _discountService.GetDiscountsAsync(filterDto);
+                var response = await _inventoryService.GetInventoryByBookIdAsync(bookId);
+                if (response.Code == ResponseCode.Success)
+                {
+                    return StatusCode(StatusCodes.Status200OK, response);
+                }
+                return StatusCode(StatusCodes.Status404NotFound, response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+        }
 
+        [HttpPost("add")]
+        public async Task<IActionResult> AddInventory([FromBody] InventoryCreateDto inventoryDto)
+        {
+            try
+            {
+                string username = TokenManager.GetUserName(_contextAccessor);
+                var response = await _inventoryService.AddInventoryAsync(inventoryDto, username);
+                if (response.Code == ResponseCode.Success)
+                {
+                    return StatusCode(StatusCodes.Status201Created, response);
+                }
+                return StatusCode(StatusCodes.Status400BadRequest, response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateInventory(Guid id, [FromBody] InventoryUpdateDto inventoryDto)
+        {
+            try
+            {
+                string username = TokenManager.GetUserName(_contextAccessor);
+                var response = await _inventoryService.EditInventoryAsync(id, inventoryDto, username);
                 if (response.Code == ResponseCode.Success)
                 {
                     return StatusCode(StatusCodes.Status200OK, response);
@@ -111,14 +114,12 @@ namespace BookLib.Controllers
             }
         }
 
-        [HttpGet("book/getDiscountById/{id}")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetDiscountById(Guid id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteInventory(Guid id)
         {
             try
             {
-                var response = await _discountService.GetDiscountByIdAsync(id);
-
+                var response = await _inventoryService.DeleteInventoryAsync(id);
                 if (response.Code == ResponseCode.Success)
                 {
                     return StatusCode(StatusCodes.Status200OK, response);
@@ -130,27 +131,6 @@ namespace BookLib.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
         }
-
-        [HttpGet("book/discount/getDiscountById/{id}")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetDiscountByDiscountId(Guid id)
-        {
-            try
-            {
-                var response = await _discountService.GetDiscountByDiscountIdAsync(id);
-
-                if (response.Code == ResponseCode.Success)
-                {
-                    return StatusCode(StatusCodes.Status200OK, response);
-                }
-                return StatusCode(StatusCodes.Status400BadRequest, response);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
-            }
-        }
-
-
     }
+
 }

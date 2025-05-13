@@ -1,12 +1,6 @@
-// export const getCurrentDiscounts = async (id) => {
-//     try {
-//       const response = await apiClient.get(`/Discount/book/getDiscounts`);
-//       return response.data; 
-//     } catch (error) {
-//       console.error("Error fetching book by ID:", error);
-//       throw error;
-//     }
-// };
+import { data } from "react-router-dom";
+import apiClient from "../utils/apiClient";
+
 
 export const getCurrentDiscounts = async (bookId) => {
   try {
@@ -51,6 +45,29 @@ export const deleteDiscount = async (discountId) => {
     return response.data;
   } catch (error) {
     console.error("Error deleting discount:", error);
+    throw error;
+  }
+};
+
+
+
+export const getDiscountById = async (id) => {
+  try {
+    const response = await apiClient.get(`/Discount/book/getDiscountById/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching discount by ID:", error);
+    throw error;
+  }
+};
+
+
+export const getDiscountByDiscountId = async (id) => {
+  try {
+    const response = await apiClient.get(`/Discount/book/discount/getDiscountById/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching discount by ID:", error);
     throw error;
   }
 };

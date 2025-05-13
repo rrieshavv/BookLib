@@ -11,5 +11,11 @@ namespace BookLib.Application
         Task<CommonResponse<bool>> DeleteDiscountAsync(Guid discountId);
         Task<CommonResponse<PaginatedDiscountResponseDto>> GetDiscountsAsync(DiscountFilterDto filterDto);
 
+        Task<CommonResponse<DiscountDto>> GetDiscountByIdAsync(Guid id);
+        Task<CommonResponse<DiscountDto>> GetDiscountByDiscountIdAsync(Guid id);
+
+
+
+
     }
 }
