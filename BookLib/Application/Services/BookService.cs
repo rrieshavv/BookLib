@@ -252,7 +252,7 @@ namespace BookLib.Application.Services
                     var searchTermLower = filterDto.SearchTerm.ToLower();
                     query = query.Where(b =>
                         b.title.ToLower().Contains(searchTermLower) ||
-                        b.description.ToLower().Contains(searchTermLower) ||
+                        //b.description.ToLower().Contains(searchTermLower) ||
                         b.isbn.ToLower().Contains(searchTermLower));
 
 

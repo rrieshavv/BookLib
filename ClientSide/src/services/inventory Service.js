@@ -12,14 +12,24 @@ export const getInventories = async () => {
   }
 };
 
-export const getInventoryByBookId = async (bookId) => {
+
+export const getInventoryById = async (id) => {
   try {
-    const response = await apiClient.get(`/Inventory/book/${bookId}`);
-    return response.data; 
+    const response = await apiClient.get(`/Inventory/${id}`);
+    
+    return response.data;
   } catch (error) {
-    console.error(`Error fetching inventory for bookId ${bookId}:`, error);
+    console.error(`Error fetching inventory with id ${id}:`, error);
     throw error;
   }
+};
+
+export const getInventoryByBookId = async (bookId) => {
+  
+    console.log("Fetching inventory for bookId:", bookId);
+    const response = await apiClient.get(`/Inventory/book/${bookId}`);
+    console.log("Inventory response:", response.data);
+    return response.data;
 };
 
 export const addInventory = async (inventoryData) => {
@@ -27,6 +37,7 @@ export const addInventory = async (inventoryData) => {
     const response = await apiClient.post("/Inventory/add", inventoryData);
     return response.data;
   } catch (error) {
+    
     console.error("Error adding inventory:", error);
     throw error;
   }

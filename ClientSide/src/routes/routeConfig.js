@@ -28,6 +28,9 @@ import EditBookDiscount from "../pages/admin/components/EditBookDiscount";
 import FavouritesPage from "../pages/FavouritesPage";
 import CustomersDashboard from "../pages/admin/CustomersDashboard";
 import Inventory from "../pages/admin/components/Inventary";
+import BookInventoryPage from "../pages/admin/components/BookInventoryPage";
+import EditInventoryForm from "../pages/admin/components/EditInventoryForm";
+
 
 export const routeConfig = [
   {
@@ -169,6 +172,17 @@ export const routeConfig = [
   {
     path: "/admin/inventory",
     component: Inventory,
+    allowedRoles: ["admin"],
+  },
+
+   {
+    path: "/admin/book/inventory/:bookId",
+    component: BookInventoryPage,
+    allowedRoles: ["admin"],
+  },
+  {
+    path: "/admin/book/inventory/edit/:bookId/:inventoryId",
+    component: EditInventoryForm,
     allowedRoles: ["admin"],
   }
 
